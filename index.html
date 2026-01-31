@@ -7,555 +7,716 @@
 <style>
   :root{
     --g:#4cff9a;
-    --g2:rgba(76,255,154,.75);
-    --g3:rgba(76,255,154,.35);
-    --bg:#000;
-    --panel:#050b07;
+    --g2: rgba(76,255,154,.65);
+    --bg:#050b07;
+    --glass: rgba(0,0,0,.55);
+    --line: rgba(76,255,154,.25);
+    --shadow: 0 0 45px rgba(76,255,154,0.25), inset 0 0 140px rgba(0,0,0,0.95);
   }
-
   html,body{
-    margin:0;height:100%;
-    background:var(--bg);
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    display:flex;align-items:center;justify-content:center;
+    margin:0; height:100%; background:#000;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    display:flex; justify-content:center; align-items:center;
     overflow:hidden;
+    color:var(--g);
   }
-
-  /* CRT frame */
   #crt{
     width:min(980px, 92vw);
-    height:min(820px, 86vh);
-    background:linear-gradient(180deg, rgba(7,14,10,.95), rgba(2,6,4,.98));
+    height:min(80vh, 760px);
+    background:var(--bg);
     border-radius:22px;
-    border:3px solid var(--g3);
-    box-shadow:0 0 55px rgba(76,255,154,.22), inset 0 0 160px rgba(0,0,0,.92);
+    padding:26px;
     position:relative;
     overflow:hidden;
-    padding:22px 22px 18px;
+    display:flex;
+    flex-direction:column;
+    border:3px solid rgba(76,255,154,0.35);
+    box-shadow: var(--shadow);
   }
 
-  /* soft vignette + bloom */
-  #crt::before{
+  /* glow vignette */
+  #crt:before{
     content:"";
     position:absolute; inset:-40px;
-    background:radial-gradient(circle at 50% 35%, rgba(76,255,154,.10), transparent 55%),
-               radial-gradient(circle at 50% 60%, rgba(76,255,154,.06), transparent 60%);
+    background: radial-gradient(ellipse at center,
+      rgba(76,255,154,.12) 0%,
+      rgba(76,255,154,.06) 22%,
+      rgba(0,0,0,.0) 45%,
+      rgba(0,0,0,.55) 72%,
+      rgba(0,0,0,.85) 100%);
     pointer-events:none;
-    filter:blur(2px);
-    opacity:.95;
+    mix-blend-mode: screen;
+    filter: blur(1px);
   }
 
-  /* scanlines */
-  #scanlines{
-    position:absolute; inset:0;
-    background:repeating-linear-gradient(
-      to bottom,
-      rgba(0,0,0,.25), rgba(0,0,0,.25) 1px,
-      transparent 1px, transparent 3px
-    );
-    mix-blend-mode:overlay;
-    pointer-events:none;
-    opacity:.75;
-  }
-
-  /* subtle flicker */
-  #flicker{
-    position:absolute; inset:0;
-    background:rgba(76,255,154,.03);
-    animation:flicker 5.5s infinite;
-    pointer-events:none;
-    opacity:.25;
-  }
-  @keyframes flicker{
-    0%,100%{opacity:.15}
-    10%{opacity:.28}
-    11%{opacity:.10}
-    25%{opacity:.22}
-    40%{opacity:.12}
-    70%{opacity:.26}
-    71%{opacity:.08}
-  }
-
-  /* header */
-  #topbar{
+  /* HEADER */
+  #uiWrap{
     position:relative;
-    display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
-    border-bottom:1px solid rgba(76,255,154,.25);
-    padding-bottom:12px;
-    margin-bottom:12px;
     z-index:2;
+    margin-bottom:10px;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--line);
   }
-  #title{
+  #uiTop{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  #uiBar{
     color:var(--g);
-    text-shadow:0 0 4px rgba(76,255,154,.75), 0 0 14px rgba(76,255,154,.35);
-    letter-spacing:1px;
     font-size:14px;
-    line-height:1.25;
+    letter-spacing:1px;
   }
-  #status{
-    color:rgba(76,255,154,.75);
-    font-size:12px;
+  #uiStatus{
     margin-top:6px;
-    letter-spacing:.9px;
+    color:rgba(76,255,154,0.85);
+    font-size:12px;
+    letter-spacing:0.8px;
   }
 
+  /* AUDIO BUTTON */
   #audioBtn{
-    border:2px solid rgba(76,255,154,.55);
+    border:2px solid rgba(76,255,154,0.55);
     background:transparent;
-    color:rgba(76,255,154,.85);
-    padding:8px 12px;
+    color:rgba(76,255,154,0.85);
+    font-family:inherit;
+    padding:6px 10px;
     border-radius:8px;
     cursor:pointer;
     font-size:12px;
     letter-spacing:1px;
-    z-index:3;
-    text-shadow:0 0 6px rgba(76,255,154,.25);
   }
   #audioBtn.on{
     border-color:var(--g);
     color:var(--g);
-    box-shadow:0 0 16px rgba(76,255,154,.18);
+    box-shadow: 0 0 12px rgba(76,255,154,.25);
   }
 
-  /* content area */
-  #content{
-    position:relative;
-    height:calc(100% - 70px);
-    display:flex;
-    z-index:2;
-  }
-
-  /* TERMINAL VIEW */
-  #terminalView{
-    width:100%;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-  }
+  /* TERMINAL */
   #terminal{
-    flex:1;
-    overflow-y:auto;
+    position:relative;
+    z-index:2;
     color:var(--g);
-    text-shadow:0 0 4px rgba(76,255,154,.7), 0 0 12px rgba(76,255,154,.25);
-    letter-spacing:.4px;
-    font-size:14px;
+    text-shadow:0 0 4px rgba(76,255,154,0.7), 0 0 10px rgba(76,255,154,0.4);
     white-space:pre-wrap;
-    padding:2px 2px 0;
-  }
-  #inputRow{
-    display:flex;
-    gap:10px;
-    align-items:center;
-  }
-  #prompt{
-    color:rgba(76,255,154,.9);
-    text-shadow:0 0 6px rgba(76,255,154,.25);
-    letter-spacing:1px;
-    font-size:12px;
-    min-width:85px;
-  }
-  #inputBox{
+    overflow-y:auto;
     flex:1;
-    background:rgba(0,0,0,.55);
+    padding-right:6px;
+  }
+
+  /* INPUT */
+  #inputBox{
+    position:relative;
+    z-index:2;
+    display:none;
+    width:min(520px, 92%);
+    margin-top:10px;
+    background:rgba(0,0,0,0.6);
     color:var(--g);
-    border:2px solid rgba(76,255,154,.65);
-    border-radius:8px;
-    padding:12px 12px;
+    border:2px solid var(--g);
+    padding:10px 12px;
+    border-radius:10px;
     font-size:16px;
     outline:none;
-    box-shadow:inset 0 0 18px rgba(0,0,0,.6);
+    box-shadow: 0 0 20px rgba(76,255,154,.12);
   }
 
-  /* cursor */
+  /* CURSOR */
   #cursor{
     display:inline-block;
     width:10px;
-    height:1.1em;
-    transform:translateY(2px);
     background:var(--g);
-    margin-left:3px;
-    animation:blink 1s infinite;
+    margin-left:2px;
+    animation: blink 1s infinite;
+    box-shadow: 0 0 10px rgba(76,255,154,.35);
   }
   @keyframes blink{50%{opacity:0;}}
 
-  /* HUD VIEW */
-  #hudView{
-    width:100%;
-    display:none;
-    flex-direction:column;
-    gap:12px;
-  }
-
-  .hudFrame{
-    flex:1;
-    border:2px solid rgba(76,255,154,.35);
-    border-radius:16px;
-    padding:14px;
-    position:relative;
-    box-shadow:inset 0 0 85px rgba(0,0,0,.75);
-  }
-  .hudTabs{
-    display:flex; gap:18px; flex-wrap:wrap;
-    border-bottom:1px solid rgba(76,255,154,.25);
-    padding-bottom:10px;
-    margin-bottom:10px;
-    color:rgba(76,255,154,.85);
-    letter-spacing:1px;
-    font-size:14px;
-    text-shadow:0 0 4px rgba(76,255,154,.5);
-  }
-  .hudTabs .active{
-    color:var(--g);
-    border-bottom:2px solid rgba(76,255,154,.8);
-    padding-bottom:6px;
-  }
-
-  .hudInner{
-    height:calc(100% - 44px);
-    border:2px solid rgba(76,255,154,.25);
-    border-radius:14px;
-    padding:14px;
-    position:relative;
-    overflow:hidden;
-  }
-
-  /* Center "Vault-Tec Industries" in same text style as terminal */
-  .hudCenter{
+  /* SCANLINES + NOISE */
+  #scanlines{
     position:absolute; inset:0;
+    background:
+      repeating-linear-gradient(to bottom,
+        rgba(0,0,0,.22), rgba(0,0,0,.22) 1px,
+        transparent 1px, transparent 3px);
+    pointer-events:none;
+    z-index:5;
+  }
+  #noise{
+    position:absolute; inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+    opacity:.18;
+    pointer-events:none;
+    z-index:6;
+  }
+
+  /* STATUS SCREEN */
+  #statusScreen{
+    position:absolute;
+    inset:88px 26px 26px 26px; /* below header */
+    z-index:3;
+    display:none;
+    border:2px solid rgba(76,255,154,.35);
+    border-radius:18px;
+    padding:18px;
+    background: rgba(0,0,0,.20);
+    box-shadow: inset 0 0 60px rgba(0,0,0,.65);
+  }
+
+  .topTabs{
     display:flex;
-    align-items:center;
-    justify-content:center;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:14px;
+    margin-bottom:10px;
+  }
+  .tabsLeft{
+    display:flex;
+    gap:16px;
+    font-size:18px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+  }
+  .tab{
+    opacity:.75;
+    padding-bottom:6px;
+    border-bottom:2px solid transparent;
+  }
+  .tab.active{
+    opacity:1;
+    border-bottom-color: rgba(76,255,154,.85);
+    text-shadow: 0 0 12px rgba(76,255,154,.18);
+  }
+  .subTabs{
+    margin-top:6px;
+    display:flex;
+    gap:18px;
+    font-size:14px;
+    letter-spacing:2px;
+    opacity:.8;
+    text-transform:uppercase;
+  }
+  .subTabs .active{ opacity:1; }
+
+  .statusGrid{
+    display:grid;
+    grid-template-columns: 160px 1fr 220px;
+    gap:14px;
+    margin-top:14px;
+    height: calc(100% - 64px);
+    min-height: 360px;
+  }
+
+  .panel{
+    border:2px solid rgba(76,255,154,.28);
+    border-radius:14px;
+    padding:12px;
+    background: rgba(0,0,0,.22);
+    box-shadow: inset 0 0 30px rgba(0,0,0,.65);
+  }
+
+  .leftMenu .item{
+    border:2px solid rgba(76,255,154,.28);
+    border-radius:12px;
+    padding:10px 10px;
+    margin-bottom:10px;
+    text-transform:uppercase;
+    letter-spacing:2px;
+    font-size:13px;
+    cursor:pointer;
+    user-select:none;
+    background: rgba(0,0,0,.20);
+  }
+  .leftMenu .item.active{
+    border-color: rgba(76,255,154,.9);
+    box-shadow: 0 0 16px rgba(76,255,154,.12);
+  }
+
+  .rightPanel .smallTitle{
+    text-transform:uppercase;
+    letter-spacing:2px;
+    font-size:12px;
+    opacity:.8;
+    margin-bottom:10px;
+  }
+
+  .kv{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    font-size:13px;
+    padding:6px 0;
+    border-bottom:1px solid rgba(76,255,154,.14);
+  }
+  .kv:last-child{ border-bottom:none; }
+  .kv b{ font-weight:700; }
+
+  .centerPanel{
+    display:flex;
     flex-direction:column;
+    justify-content:space-between;
+    align-items:center;
     gap:10px;
   }
-  .hudCenter .big{
-    color:var(--g);
-    text-shadow:0 0 4px rgba(76,255,154,.75), 0 0 16px rgba(76,255,154,.25);
-    letter-spacing:3px;
-    font-size:clamp(20px, 4.2vw, 46px);
-    font-weight:700;
-  }
-  .hudCenter .mid{
-    color:rgba(76,255,154,.85);
-    text-shadow:0 0 4px rgba(76,255,154,.55);
-    letter-spacing:8px;
-    font-size:clamp(10px, 1.8vw, 16px);
-    font-weight:600;
-  }
-  .hudCenter .code{
-    margin-top:8px;
-    color:rgba(76,255,154,.95);
-    text-shadow:0 0 5px rgba(76,255,154,.65), 0 0 18px rgba(76,255,154,.18);
-    letter-spacing:6px;
-    font-size:clamp(14px, 2.2vw, 20px);
-    font-weight:800;
-  }
 
-  /* HUD corner boxes */
-  .corner{
+  /* Outline dude SVG area */
+  #dudeWrap{
+    width:100%;
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    position:relative;
+    min-height:260px;
+  }
+  .hudBar{
     position:absolute;
-    border:2px solid rgba(76,255,154,.35);
-    border-radius:10px;
-    padding:10px 12px;
-    color:rgba(76,255,154,.9);
-    text-shadow:0 0 5px rgba(76,255,154,.35);
-    letter-spacing:1px;
-    font-size:12px;
-    background:rgba(0,0,0,.25);
+    width:52px; height:8px;
+    background: rgba(76,255,154,.85);
+    box-shadow: 0 0 18px rgba(76,255,154,.25);
+    opacity:.9;
   }
-  .tl{top:14px;left:14px}
-  .tr{top:14px;right:14px}
-  .bl{bottom:14px;left:14px}
-  .br{bottom:14px;right:14px}
+  .hb-top{ top: 18px; left: 50%; transform:translateX(-50%); }
+  .hb-bot{ bottom: 18px; left: 50%; transform:translateX(-50%); }
+  .hb-l1{ left: 20px; top: 38%; }
+  .hb-l2{ left: 20px; top: 64%; }
+  .hb-r1{ right: 20px; top: 38%; }
+  .hb-r2{ right: 20px; top: 64%; }
 
-  /* small hint line */
-  .hint{
-    margin-top:10px;
-    color:rgba(76,255,154,.65);
+  /* bottom stats bar */
+  .bottomBar{
+    width:100%;
+    display:grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap:10px;
+    align-items:center;
+  }
+  .meter{
+    border:2px solid rgba(76,255,154,.35);
+    border-radius:12px;
+    padding:10px;
+    background: rgba(0,0,0,.18);
+    text-transform:uppercase;
+    letter-spacing:2px;
     font-size:12px;
-    letter-spacing:.8px;
-    text-shadow:0 0 4px rgba(76,255,154,.2);
+  }
+  .levelBox{
+    border:2px solid rgba(76,255,154,.35);
+    border-radius:12px;
+    padding:10px;
+    background: rgba(0,0,0,.18);
+    text-transform:uppercase;
+    letter-spacing:2px;
+    font-size:12px;
+  }
+  .bar{
+    margin-top:8px;
+    height:10px;
+    border:1px solid rgba(76,255,154,.35);
+    border-radius:999px;
+    overflow:hidden;
+  }
+  .bar > div{
+    height:100%;
+    width:68%;
+    background: rgba(76,255,154,.85);
+    box-shadow: 0 0 20px rgba(76,255,154,.25);
+  }
+
+  .hint{
+    position:absolute;
+    left:16px; bottom:10px;
+    font-size:11px;
+    opacity:.75;
+    letter-spacing:1px;
+  }
+
+  /* make it comfy on phones */
+  @media (max-width:760px){
+    #crt{ padding:18px; }
+    #statusScreen{ inset:88px 18px 18px 18px; }
+    .statusGrid{ grid-template-columns: 1fr; }
+    .rightPanel{ order:3; }
+    .leftMenu{ order:2; display:flex; gap:10px; flex-wrap:wrap; }
+    .leftMenu .item{ margin-bottom:0; flex:1; text-align:center; min-width: 90px; }
+    .tabsLeft{ font-size:16px; }
   }
 </style>
 </head>
 
 <body>
-  <div id="crt">
-    <div id="topbar">
-      <div>
-        <div id="title">VAULT 131 DATABASE │ STATUS: LOCKED</div>
-        <div id="status">STANDBY… AWAITING INPUT</div>
-      </div>
+<div id="crt">
+  <div id="uiWrap">
+    <div id="uiTop">
+      <div id="uiBar">VAULT 131 DATABASE │ STATUS: LOCKED</div>
       <button id="audioBtn">AUDIO: OFF</button>
     </div>
+    <div id="uiStatus">STANDBY… AWAITING INPUT</div>
+  </div>
 
-    <div id="content">
-      <!-- TERMINAL -->
-      <div id="terminalView">
-        <div id="terminal"></div>
+  <!-- TERMINAL MODE -->
+  <div id="terminal"></div>
+  <input id="inputBox" autocomplete="off" spellcheck="false" />
 
-        <div id="inputRow">
-          <div id="prompt">&gt; INPUT</div>
-          <input id="inputBox" autocomplete="off" placeholder="ENTER ID" />
+  <!-- STATUS MODE -->
+  <div id="statusScreen">
+    <div class="topTabs">
+      <div>
+        <div class="tabsLeft">
+          <div class="tab active">STAT</div>
+          <div class="tab">INV</div>
+          <div class="tab">DATA</div>
+          <div class="tab">MAP</div>
+          <div class="tab">RADIO</div>
+        </div>
+        <div class="subTabs">
+          <div class="active">STATUS</div>
+          <div>S.P.E.C.I.A.L</div>
+          <div>PERKS</div>
         </div>
       </div>
-
-      <!-- HUD -->
-      <div id="hudView">
-        <div class="hudFrame">
-          <div class="hudTabs">
-            <div class="active">STAT</div>
-            <div>INV</div>
-            <div>DATA</div>
-            <div>MAP</div>
-            <div>RADIO</div>
-          </div>
-
-          <div class="hudInner">
-            <div class="corner tl">VAULT 131<br/>STATUS: READY</div>
-            <div class="corner tr">AUDIO: <span id="hudAudio">OFF</span></div>
-            <div class="corner bl">AUTHORIZED MODULES LOADED</div>
-            <div class="corner br">SIGNAL: STABLE</div>
-
-            <div class="hudCenter">
-              <div class="big">VAULT-TEC</div>
-              <div class="mid">INDUSTRIES</div>
-              <!-- this is your end-code vibe (like the “531” you mentioned) -->
-              <div class="code" id="finalCode">531</div>
-              <div class="hint">SYSTEM NOTE: Hub restricted to authorized users only.</div>
-            </div>
-          </div>
-        </div>
+      <div style="text-align:right; font-size:12px; letter-spacing:2px; opacity:.8; text-transform:uppercase;">
+        <div>STATS</div>
+        <div style="margin-top:6px; opacity:.9;">LVL <b id="lvlTxt">14</b> &nbsp; HP <b id="hpTxt">131/131</b> &nbsp; AP <b id="apTxt">90/90</b> &nbsp; XP <b id="xpTxt">MAX</b></div>
       </div>
     </div>
 
-    <div id="flicker"></div>
-    <div id="scanlines"></div>
+    <div class="statusGrid">
+      <!-- LEFT MENU -->
+      <div class="panel leftMenu" id="leftMenu">
+        <div class="item active" data-panel="info">INFO</div>
+        <div class="item" data-panel="vault">VAULT 131</div>
+        <div class="item" data-panel="perk">???</div>
+      </div>
+
+      <!-- CENTER -->
+      <div class="panel centerPanel">
+        <div id="dudeWrap" aria-label="Status outline">
+          <div class="hudBar hb-top"></div>
+          <div class="hudBar hb-bot"></div>
+          <div class="hudBar hb-l1"></div>
+          <div class="hudBar hb-l2"></div>
+          <div class="hudBar hb-r1"></div>
+          <div class="hudBar hb-r2"></div>
+
+          <!-- ORIGINAL outline "status body" (inspired by layout, not copied art) -->
+          <svg width="420" height="320" viewBox="0 0 420 320" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width:100%; height:auto;">
+            <defs>
+              <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="2.5" result="b"/>
+                <feMerge>
+                  <feMergeNode in="b"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+
+            <!-- frame ticks -->
+            <g opacity="0.9" stroke="rgba(76,255,154,.85)" stroke-width="6" filter="url(#glow)">
+              <line x1="90" y1="88" x2="130" y2="88"/>
+              <line x1="290" y1="88" x2="330" y2="88"/>
+              <line x1="90" y1="232" x2="130" y2="232"/>
+              <line x1="290" y1="232" x2="330" y2="232"/>
+            </g>
+
+            <!-- body outline -->
+            <g stroke="rgba(76,255,154,.95)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+              <!-- head -->
+              <path d="M210 62
+                       c-26 0-46 20-46 44
+                       c0 24 20 44 46 44
+                       c26 0 46-20 46-44
+                       c0-24-20-44-46-44z"/>
+              <!-- face -->
+              <path d="M196 110 q8-10 18 0" opacity="0.85"/>
+              <path d="M226 102 q6-8 12 0" opacity="0.75"/>
+              <path d="M184 102 q6-8 12 0" opacity="0.75"/>
+
+              <!-- torso -->
+              <path d="M186 152
+                       c-18 16-26 30-26 52
+                       c0 28 18 50 50 50
+                       h0
+                       c32 0 50-22 50-50
+                       c0-22-8-36-26-52
+                       c-10-8-18-12-24-12
+                       h-0
+                       c-6 0-14 4-24 12z"/>
+              <!-- waist -->
+              <path d="M178 224 h64" opacity="0.85"/>
+
+              <!-- arms out -->
+              <path d="M160 180
+                       c-34 10-54 16-74 22
+                       c-10 3-14 10-10 16
+                       c4 6 12 8 20 5
+                       c20-8 42-18 76-30" />
+              <path d="M260 180
+                       c34 10 54 16 74 22
+                       c10 3 14 10 10 16
+                       c-4 6-12 8-20 5
+                       c-20-8-42-18-76-30" />
+
+              <!-- legs -->
+              <path d="M196 254
+                       c-10 18-16 34-18 50
+                       c-1 10 6 14 14 14
+                       c8 0 12-4 14-12
+                       c4-16 10-30 18-44"/>
+              <path d="M224 254
+                       c10 18 16 34 18 50
+                       c1 10-6 14-14 14
+                       c-8 0-12-4-14-12
+                       c-4-16-10-30-18-44"/>
+            </g>
+
+            <!-- limb bars -->
+            <g opacity="0.9" fill="rgba(76,255,154,.85)" filter="url(#glow)">
+              <rect x="178" y="80" width="64" height="10" rx="4"/>
+              <rect x="112" y="196" width="66" height="10" rx="4"/>
+              <rect x="242" y="196" width="66" height="10" rx="4"/>
+              <rect x="168" y="260" width="40" height="10" rx="4"/>
+              <rect x="212" y="260" width="40" height="10" rx="4"/>
+            </g>
+
+            <!-- labels -->
+            <g opacity="0.85" fill="rgba(76,255,154,.85)" font-family="monospace" font-size="12" letter-spacing="2">
+              <text x="64" y="64">CND</text>
+              <text x="64" y="86" opacity="0.7">RAD</text>
+              <text x="64" y="108" opacity="0.7">EFF</text>
+              <text x="288" y="64" opacity="0.75">(12) STIMPAK A</text>
+              <text x="306" y="86" opacity="0.75">LIMBS</text>
+            </g>
+          </svg>
+        </div>
+
+        <div class="bottomBar">
+          <div class="meter">
+            HP <b id="hpBottom">131/131</b>
+            <div class="bar"><div style="width:86%"></div></div>
+          </div>
+          <div class="levelBox">
+            LEVEL <b id="lvlBottom">14</b>
+            <div class="bar"><div style="width:100%"></div></div>
+          </div>
+          <div class="meter">
+            AP <b id="apBottom">90/90</b>
+            <div class="bar"><div style="width:100%"></div></div>
+          </div>
+        </div>
+
+        <div class="hint">TIP: Tap a module to open it. (Hub locked to authorized users only.)</div>
+      </div>
+
+      <!-- RIGHT PANEL (dynamic) -->
+      <div class="panel rightPanel" id="rightPanel">
+        <!-- filled by JS -->
+      </div>
+    </div>
   </div>
 
-<script>
-/* ---------------------------
-   AUDIO (user-activated)
----------------------------- */
-let audioOn = false;
-const audioBtn = document.getElementById("audioBtn");
+  <div id="scanlines"></div>
+  <div id="noise"></div>
+</div>
 
-let ctx, hum, gain;
-function initAudio(){
-  if(ctx) return;
-  ctx = new (window.AudioContext||window.webkitAudioContext)();
-  hum = ctx.createOscillator();
-  gain = ctx.createGain();
-  hum.type = "sawtooth";
-  hum.frequency.value = 60;
-  gain.gain.value = 0;
-  hum.connect(gain);
-  gain.connect(ctx.destination);
-  hum.start();
-}
-function beep(){
-  if(!audioOn || !ctx) return;
+<script>
+/* ---------------- AUDIO (user-activated) ---------------- */
+let audioOn = false;
+const ctx = new (window.AudioContext||window.webkitAudioContext)();
+const hum = ctx.createOscillator();
+const gain = ctx.createGain();
+hum.type = "sawtooth";
+hum.frequency.value = 60;
+gain.gain.value = 0;
+hum.connect(gain);
+gain.connect(ctx.destination);
+hum.start();
+
+function beep(freq=880, dur=0.03, vol=0.03){
+  if(!audioOn) return;
   const o = ctx.createOscillator(), g = ctx.createGain();
   o.connect(g); g.connect(ctx.destination);
-  o.frequency.value = 880;
-  g.gain.value = 0.03;
+  o.frequency.value = freq;
+  g.gain.value = vol;
   o.start();
-  o.stop(ctx.currentTime + 0.03);
+  o.stop(ctx.currentTime + dur);
 }
-audioBtn.onclick = async ()=>{
-  initAudio();
+
+document.getElementById("audioBtn").onclick = async ()=>{
   await ctx.resume();
   audioOn = !audioOn;
   gain.gain.linearRampToValueAtTime(audioOn ? 0.02 : 0, ctx.currentTime + 0.25);
-  audioBtn.textContent = audioOn ? "AUDIO: ON" : "AUDIO: OFF";
-  audioBtn.classList.toggle("on", audioOn);
-  document.getElementById("hudAudio").textContent = audioOn ? "ON" : "OFF";
+  const btn = document.getElementById("audioBtn");
+  btn.textContent = audioOn ? "AUDIO: ON" : "AUDIO: OFF";
+  btn.classList.toggle("on", audioOn);
+  beep(audioOn ? 980 : 420, 0.05, 0.035);
 };
 
-/* ---------------------------
-   TERMINAL TYPEWRITER
----------------------------- */
-const title = document.getElementById("title");
-const statusLine = document.getElementById("status");
+/* ---------------- ELEMENTS ---------------- */
+const uiBar = document.getElementById("uiBar");
+const uiStatus = document.getElementById("uiStatus");
 const term = document.getElementById("terminal");
 const input = document.getElementById("inputBox");
+const statusScreen = document.getElementById("statusScreen");
+const rightPanel = document.getElementById("rightPanel");
+const leftMenu = document.getElementById("leftMenu");
 
 const cursor = document.createElement("span");
-cursor.id = "cursor";
+cursor.id="cursor";
+term.appendChild(cursor);
 
-function clearTerminal(){
-  term.innerHTML = "";
-  term.appendChild(cursor);
-}
-function lineBreak(){
-  const d = document.createElement("div");
-  d.textContent = "";
-  term.insertBefore(d, cursor);
-}
-function typeLines(lines, speed=22, done){
-  let i = 0;
-  (function nextLine(){
-    if(i >= lines.length){ done && done(); return; }
-    const d = document.createElement("div");
-    term.insertBefore(d, cursor);
-    let j = 0;
-    (function typeChar(){
-      if(j >= lines[i].length){
-        i++;
-        setTimeout(nextLine, 180);
-        return;
-      }
+/* ---------------- TYPEWRITER ---------------- */
+function type(lines, speed=28, cb){
+  let i=0;
+  (function next(){
+    if(i>=lines.length){ cb && cb(); return; }
+    const d=document.createElement("div");
+    term.insertBefore(d,cursor);
+    let j=0;
+    (function c(){
+      if(j>=lines[i].length){ i++; setTimeout(next, 180); return; }
       d.textContent += lines[i][j++];
-      beep();
+      beep(880, 0.02, 0.02);
       term.scrollTop = term.scrollHeight;
-      setTimeout(typeChar, speed);
+      setTimeout(c, speed);
     })();
   })();
 }
 
-/* ---------------------------
-   FLOW / STATE MACHINE
----------------------------- */
-const SECRET_ID = "14-LOVE-READY";
-
-const riddles = [
-  {
-    q: "RIDDLE 1: What has keys but can't open locks?",
-    a: ["PIANO","A PIANO"]
-  },
-  {
-    q: "RIDDLE 2: I speak without a mouth and hear without ears. What am I?",
-    a: ["ECHO","AN ECHO"]
-  },
-  {
-    q: "RIDDLE 3: What runs but never walks?",
-    a: ["WATER","A RIVER","RIVER"]
+/* ---------------- HELPERS ---------------- */
+function clearTerm(){
+  term.innerHTML="";
+  term.appendChild(cursor);
+}
+function showInput(ph){
+  input.style.display="block";
+  input.placeholder=ph;
+  input.value="";
+  input.focus();
+}
+function hideInput(){
+  input.style.display="none";
+}
+function setMode(mode){
+  // mode: "terminal" | "status"
+  if(mode==="terminal"){
+    statusScreen.style.display="none";
+    term.style.display="block";
+    input.style.display="block";
+  }else{
+    term.style.display="none";
+    input.style.display="none";
+    statusScreen.style.display="block";
   }
-];
-
-// change this to whatever you want your end-code to be:
-const END_CODE = "531";
-
-let mode = "LOGIN"; // LOGIN -> RIDDLE -> HUD
-let rIndex = 0;
-
-function norm(s){
-  return (s||"").trim().toUpperCase();
 }
 
+/* ---------------- STATUS CONTENT ---------------- */
+function renderInfo(){
+  rightPanel.innerHTML = `
+    <div class="smallTitle">INFO MODULE</div>
+    <div class="kv"><span>ACCESS</span><b>AUTHORIZED</b></div>
+    <div class="kv"><span>BUILD TIME</span><b>~ 6 DAYS (NOT 3 HOURS)</b></div>
+    <div class="kv"><span>PROJECT</span><b>VAULT 131 VALENTINE TERMINAL</b></div>
+    <div class="kv"><span>STATUS</span><b>READY</b></div>
+    <div class="kv"><span>NOTE</span><b>“I DID THIS BECAUSE I LOVE YOU.”</b></div>
+    <div style="margin-top:12px; font-size:12px; opacity:.85; line-height:1.4;">
+      This terminal interface was assembled through multiple sessions,
+      persistent debugging, and pure stubborn devotion.
+    </div>
+  `;
+}
+function renderVault(){
+  rightPanel.innerHTML = `
+    <div class="smallTitle">VAULT 131</div>
+    <div class="kv"><span>LOCATION</span><b>CLASSIFIED</b></div>
+    <div class="kv"><span>SECURITY</span><b>ENABLED</b></div>
+    <div class="kv"><span>OVERRIDE</span><b>14-LOVE-READY</b></div>
+    <div class="kv"><span>MESSAGE</span><b>STANDBY…</b></div>
+    <div style="margin-top:12px; font-size:12px; opacity:.85; line-height:1.4;">
+      Authorized Modules Loaded. Select STAT to continue.
+    </div>
+  `;
+}
+function renderPerk(){
+  rightPanel.innerHTML = `
+    <div class="smallTitle">??? MODULE</div>
+    <div style="font-size:12px; letter-spacing:2px; opacity:.85; text-transform:uppercase; margin-bottom:10px;">
+      Choose a perk:
+    </div>
+    <div class="kv"><span>PERK A</span><b>“UNBREAKABLE BOND”</b></div>
+    <div class="kv"><span>PERK B</span><b>“LAUGH BOOST +10”</b></div>
+    <div class="kv"><span>PERK C</span><b>“LOVE RESISTANCE: MAX”</b></div>
+    <div style="margin-top:12px; font-size:12px; opacity:.85; line-height:1.4;">
+      (Next step: we can make these selectable and lead into riddles.)
+    </div>
+  `;
+}
+function setActiveMenu(key){
+  [...leftMenu.querySelectorAll(".item")].forEach(el=>{
+    el.classList.toggle("active", el.dataset.panel===key);
+  });
+  if(key==="info") renderInfo();
+  if(key==="vault") renderVault();
+  if(key==="perk") renderPerk();
+}
+
+/* click menu */
+leftMenu.addEventListener("click", (e)=>{
+  const item = e.target.closest(".item");
+  if(!item) return;
+  beep(740, 0.03, 0.03);
+  setActiveMenu(item.dataset.panel);
+});
+
+/* ---------------- TERMINAL FLOW ---------------- */
 function boot(){
-  mode = "LOGIN";
-  rIndex = 0;
-
-  title.textContent = "VAULT 131 DATABASE │ STATUS: LOCKED";
-  statusLine.textContent = "STANDBY… AWAITING INPUT";
-
-  clearTerminal();
-  typeLines([
+  setMode("terminal");
+  clearTerm();
+  uiBar.textContent="VAULT 131 DATABASE │ STATUS: LOCKED";
+  uiStatus.textContent="STANDBY… AWAITING INPUT";
+  type([
     "VAULT 131 DATABASE",
     "SECURITY: ENABLED",
     "ENTER IDENTIFICATION:",
     "> "
-  ], 22, ()=>{
-    input.value = "";
-    input.placeholder = "ENTER ID";
-    input.focus();
-  });
+  ], 26, ()=>showInput("ENTER ID (try 14-LOVE-READY)"));
 }
 
-function deny(msg="ACCESS DENIED"){
-  typeLines([msg, ""], 18, ()=>{
-    input.value = "";
-    input.placeholder = (mode === "LOGIN") ? "ENTER ID" : "ENTER ANSWER";
-    input.focus();
-  });
+function unlockToStatus(){
+  // flip to status screen
+  uiBar.textContent="VAULT 131 DATABASE │ STATUS: READY";
+  uiStatus.textContent="AUTHORIZED MODULES LOADED";
+  setMode("status");
+  setActiveMenu("info");
+  beep(980, 0.08, 0.035);
 }
 
-function startRiddles(){
-  mode = "RIDDLE";
-  title.textContent = "VAULT 131 DATABASE │ STATUS: READY";
-  statusLine.textContent = "AUTHORIZED MODULES LOADED";
-  clearTerminal();
-  typeLines([
-    "IDENTIFICATION ACCEPTED",
-    "",
-    "LOADING CHALLENGE SEQUENCE…",
-    ""
-  ], 20, ()=>{
-    askRiddle();
-  });
-}
+input.addEventListener("keydown",(e)=>{
+  if(e.key!=="Enter") return;
 
-function askRiddle(){
-  const r = riddles[rIndex];
-  typeLines([
-    r.q,
-    "",
-    "> "
-  ], 20, ()=>{
-    input.value = "";
-    input.placeholder = "TYPE ANSWER";
-    input.focus();
-  });
-}
+  const val = (input.value || "").trim();
+  hideInput();
 
-function correct(){
-  typeLines(["CONFIRMED.", ""], 18, ()=>{
-    rIndex++;
-    if(rIndex >= riddles.length){
-      finishToHUD();
-    }else{
-      askRiddle();
-    }
-  });
-}
+  // Accept code case-insensitively
+  const code = val.toUpperCase();
 
-function finishToHUD(){
-  typeLines([
-    "SEQUENCE COMPLETE.",
-    "",
-    "UNLOCKING HUD…",
-    ""
-  ], 18, ()=>{
-    // Switch view
-    document.getElementById("terminalView").style.display = "none";
-    document.getElementById("hudView").style.display = "flex";
-
-    // Set end code text (your “531” vibe)
-    document.getElementById("finalCode").textContent = END_CODE;
-
-    // Update header
-    title.textContent = "VAULT 131 DATABASE │ STATUS: READY";
-    statusLine.textContent = "AUTHORIZED MODULES LOADED";
-  });
-}
-
-input.addEventListener("keydown", (e)=>{
-  if(e.key !== "Enter") return;
-
-  const val = norm(input.value);
-
-  // prevent double-enter spamming while typing lines
-  input.blur();
-
-  if(mode === "LOGIN"){
-    if(val === norm(SECRET_ID)){
-      startRiddles();
-    }else{
-      // don’t reset the whole boot; just deny and re-prompt
-      deny("ACCESS DENIED");
-    }
-    return;
-  }
-
-  if(mode === "RIDDLE"){
-    const expected = riddles[rIndex].a;
-    if(expected.includes(val)){
-      correct();
-    }else{
-      deny("INCORRECT");
-    }
-    return;
+  if(code === "14-LOVE-READY"){
+    // small terminal confirmation then swap
+    type([
+      "IDENTIFICATION ACCEPTED.",
+      "HANDSHAKE: COMPLETE.",
+      "LOADING MODULES...",
+      ""
+    ], 22, ()=>{
+      setTimeout(unlockToStatus, 250);
+    });
+  } else if(code.length){
+    type(["ACCESS DENIED",""], 24, ()=>showInput("ENTER ID"));
+  } else {
+    showInput("ENTER ID");
   }
 });
 
