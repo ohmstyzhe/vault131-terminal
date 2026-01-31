@@ -2,19 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-
-  <!-- IMPORTANT: keep ONE viewport line only -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
   <title>VAULT 131 DATABASE</title>
 
-  <!-- Cache-bust. If you commit changes and iPad still shows old stuff,
-       bump v=3 -> v=4 -->
-  <link rel="stylesheet" href="./styles.css?v=3" />
+  <!-- Main styles -->
+  <link rel="stylesheet" href="./styles.css?v=4" />
 </head>
 
 <body>
   <div id="crt">
+    <!-- HEADER -->
     <div id="uiWrap">
       <div id="uiTop">
         <div id="uiBar">VAULT 131 DATABASE │ STATUS: LOCKED</div>
@@ -23,8 +23,10 @@
       <div id="uiStatus">STANDBY… AWAITING INPUT</div>
     </div>
 
+    <!-- TERMINAL OUTPUT -->
     <div id="terminal"></div>
 
+    <!-- INPUT -->
     <input
       id="inputBox"
       type="text"
@@ -34,15 +36,18 @@
       spellcheck="false"
     />
 
+    <!-- HINT BUTTONS -->
     <div id="hintContainer"></div>
 
+    <!-- EFFECT LAYERS -->
     <div id="powerDip"></div>
     <div id="scanlines"></div>
   </div>
 
-  <!-- IMPORTANT:
-       - app.js must be at the repo ROOT (same level as index.html)
-       - do NOT include any other script tags (no modules/app.js, no duplicates) -->
-  <script src="./app.js?v=3"></script>
+  <!-- SCRIPTS (ORDER MATTERS) -->
+  <script src="./js/audio.js?v=4"></script>
+  <script src="./js/ui.js?v=4"></script>
+  <script src="./js/game.js?v=4"></script>
+  <script src="./app.js?v=4"></script>
 </body>
 </html>
