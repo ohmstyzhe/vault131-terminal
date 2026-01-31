@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VAULT 131 DATABASE</title>
+
+<style>
+html, body{
+margin:0; height:100%; background:#000;
+font-family: monospace;
+display:flex; justify-content:center; align-items:center;
+overflow:hidden;
+}
+
+#crt{
+width:90%;
+max-width:980px;
+height:80vh;
+background:#050b07;
+border-radius:22px;
+padding:34px;
+position:relative;
+overflow:hidden;
+display:flex;
+flex-direction:column;
+border:3px solid rgba(76,255,154,0.35);
+box-shadow:0 0 45px rgba(76,255,154,0.25), inset 0 0 140px rgba(0,0,0,0.95);
+}
+
+/* HEADER */
+#uiWrap{
+margin-bottom:10px;
+padding-bottom:10px;
+border-bottom:1px solid rgba(76,255,154,0.3);
+}
+#uiTop{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+flex-wrap:wrap;
+}
+#uiBar{
+color:#4cff9a;
+font-size:14px;
+letter-spacing:1px;
+}
+#uiStatus{
+margin-top:6px;
+color:rgba(76,255,154,0.85);
+font-size:12px;
+letter-spacing:0.8px;
+}
+
+/* AUDIO BUTTON */
+#audioBtn{
+border:2px solid rgba(76,255,154,0.55);
+background:transparent;
+color:rgba(76,255,154,0.85);
+font-family:monospace;
+padding:6px 10px;
+border-radius:6px;
+cursor:pointer;
+font-size:12px;
+letter-spacing:1px;
+}
+#audioBtn.on{
+border-color:#4cff9a;
+color:#4cff9a;
+}
+
+/* TERMINAL */
+#terminal{
+color:#4cff9a;
+text-shadow:0 0 4px rgba(76,255,154,0.7),0 0 10px rgba(76,255,154,0.4);
+white-space:pre-wrap;
+overflow-y:auto;
+flex:1;
+}
+
+/* INPUT */
+#inputBox{
+display:none;
+width:80%;
+margin-top:10px;
+background:rgba(0,0,0,0.6);
+color:#4cff9a;
+border:2px solid #4cff9a;
+padding:10px;
+border-radius:6px;
+font-size:16px;
+outline:none;
+}
+
+/* HINTS */
+#hintContainer{margin-top:6px;display:flex;flex-wrap:wrap;}
+button{
+border:2px solid #4cff9a;
+background:transparent;
+color:#4cff9a;
+font-family:monospace;
+padding:6px 12px;
+margin:6px 6px 0 0;
+border-radius:6px;
+cursor:pointer;
+}
+
+/* CURSOR */
+#cursor{
+display:inline-block;
+width:10px;
+background:#4cff9a;
+margin-left:2px;
+animation: blink 1s infinite;
+}
+@keyframes blink{50%{opacity:0;}}
+
+/* SCANLINES */
+#scanlines{
+position:absolute; inset:0;
+background:repeating-linear-gradient(to bottom,
+rgba(0,0,0,.28), rgba(0,0,0,.28) 1px,
+transparent 1px, transparent 3px);
+pointer-events:none;
+}
+</style>
+</head>
+
+<body>
+<div id="crt">
+  <div id="uiWrap">
+    <div id="uiTop">
+      <div id="uiBar">VAULT 131 DATABASE │ STATUS: LOCKED</div>
+      <button id="audioBtn">AUDIO: OFF</button>
+    </div>
+    <div id="uiStatus">STANDBY… AWAITING INPUT</div>
+  </div>
+
+  <div id="terminal"></div>
+  <input id="inputBox" autocomplete="off">
+  <div id="hintContainer"></div>
+
+  <div id="scanlines"></div>
+</div>
+
+<script>
+/* AUDIO (user-activated) */
+let audioOn = false;
+const ctx = new (window.AudioContext||window.webkitAudioContext)();
+const hum = ctx.createOscillator();
+const gain = ctx.createGain();
+hum.type = "sawtooth";
+hum.frequency.value = 60;
+gain.gain.value = 0;
+hum.connect(gain);
+gain.connect(ctx.destination);
+hum.start();
+
+function beep(){
+if(!audioOn) return;
+const o = ctx.createOscillator(), g = ctx.createGain();
+o.connect(g); g.connect(ctx.destination);
+o.frequency.value = 880;
+g.gain.value = 0.03;
+o.start();
+o.stop(ctx.currentTime + 0.03);
+}
+
+document.getElementById("audioBtn").onclick = async ()=>{
+await ctx.resume();
+audioOn = !audioOn;
+gain.gain.linearRampToValueAtTime(audioOn ? 0.02 : 0, ctx.currentTime + 0.3);
+document.getElementById("audioBtn").textContent = audioOn ? "AUDIO: ON" : "AUDIO: OFF";
+document.getElementById("audioBtn").classList.toggle("on", audioOn);
+};
+
+/* ELEMENTS */
+const uiBar = document.getElementById("uiBar");
+const uiStatus = document.getElementById("uiStatus");
+const term = document.getElementById("terminal");
+const input = document.getElementById("inputBox");
+const hints = document.getElementById("hintContainer");
+
+const cursor = document.createElement("span");
+cursor.id="cursor";
+term.appendChild(cursor);
+
+/* TYPEWRITER */
+function type(lines, speed=35, cb){
+let i=0;
+(function next(){
+if(i>=lines.length){ cb && cb(); return; }
+const d=document.createElement("div");
+term.insertBefore(d,cursor);
+let j=0;
+(function c(){
+if(j>=lines[i].length){ i++; setTimeout(next,200); return; }
+d.textContent+=lines[i][j++];
+beep();
+term.scrollTop=term.scrollHeight;
+setTimeout(c,speed);
+})();
+})();
+}
+
+/* HELPERS */
+function clear(){
+term.innerHTML="";
+term.appendChild(cursor);
+}
+function showInput(ph){
+input.style.display="block";
+input.placeholder=ph;
+input.focus();
+}
+function hideInput(){ input.style.display="none"; }
+
+/* START */
+function boot(){
+clear();
+uiBar.textContent="VAULT 131 DATABASE │ STATUS: LOCKED";
+uiStatus.textContent="STANDBY… AWAITING INPUT";
+type([
+"VAULT 131 DATABASE",
+"SECURITY: ENABLED",
+"ENTER IDENTIFICATION:",
+"> "
+],35,()=>showInput("ENTER ID"));
+}
+
+input.addEventListener("keydown",e=>{
+if(e.key!=="Enter")return;
+hideInput();
+type(["ACCESS DENIED",""],30,()=>showInput("ENTER ID"));
+});
+
+boot();
+</script>
+</body>
+</html>
