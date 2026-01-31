@@ -2,9 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <!-- IMPORTANT: keep ONE viewport line only -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
   <title>VAULT 131 DATABASE</title>
-  <link rel="stylesheet" href="styles.css?v=3">
+
+  <!-- Cache-bust. If you commit changes and iPad still shows old stuff,
+       bump v=3 -> v=4 -->
+  <link rel="stylesheet" href="./styles.css?v=3" />
 </head>
 
 <body>
@@ -18,14 +24,25 @@
     </div>
 
     <div id="terminal"></div>
-    <input id="inputBox" autocomplete="off" spellcheck="false" />
+
+    <input
+      id="inputBox"
+      type="text"
+      autocomplete="off"
+      autocapitalize="off"
+      autocorrect="off"
+      spellcheck="false"
+    />
+
     <div id="hintContainer"></div>
 
     <div id="powerDip"></div>
     <div id="scanlines"></div>
   </div>
 
-  <!-- IMPORTANT: app.js MUST exist at repo root -->
-  <script src="app.js?v=3"></script>
+  <!-- IMPORTANT:
+       - app.js must be at the repo ROOT (same level as index.html)
+       - do NOT include any other script tags (no modules/app.js, no duplicates) -->
+  <script src="./app.js?v=3"></script>
 </body>
 </html>
