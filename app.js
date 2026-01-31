@@ -59,6 +59,27 @@ const hints = document.getElementById("hintContainer");
 const dip = document.getElementById("powerDip");
 const volBtn = document.getElementById("volBtn");
 
+/* === BUTTON HOVER / FOCUS GLOW === */
+#crt button,
+#volBtn{
+  transition: box-shadow .15s ease, border-color .15s ease, color .15s ease, transform .06s ease;
+}
+
+#crt button:hover,
+#crt button:focus-visible,
+#volBtn:hover,
+#volBtn:focus-visible{
+  border-color: #4cff9a;
+  box-shadow:
+    0 0 10px rgba(76,255,154,.35),
+    0 0 22px rgba(76,255,154,.18);
+}
+
+#crt button:active,
+#volBtn:active{
+  transform: translateY(1px);
+}
+
 /* AUDIO BUTTON */
 function updateVolBtn(){
   volBtn.textContent = audioOn ? "AUDIO: ON" : "AUDIO: OFF";
