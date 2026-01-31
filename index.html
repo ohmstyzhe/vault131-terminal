@@ -8,87 +8,111 @@
 <style>
   :root{
     --g:#4cff9a;
-    --g2: rgba(76,255,154,.75);
-    --bg:#050b07;
-    --line: rgba(76,255,154,.25);
-    --shadow: rgba(76,255,154,.25);
+    --g2: rgba(76,255,154,0.85);
+    --bg:#000;
+    --panel:#050b07;
+    --line: rgba(76,255,154,0.35);
+    --shadow: rgba(76,255,154,0.25);
   }
 
-  html,body{
+  html, body{
     margin:0; height:100%;
-    background:#000;
-    font-family: ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    background:var(--bg);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
     display:flex; justify-content:center; align-items:center;
     overflow:hidden;
   }
 
   #crt{
-    width:min(980px, 92vw);
-    height:min(80vh, 820px);
-    background:var(--bg);
+    width:92%;
+    max-width:980px;
+    height:84vh;
+    background:var(--panel);
     border-radius:22px;
-    padding:34px;
+    padding:28px;
     position:relative;
     overflow:hidden;
     display:flex;
     flex-direction:column;
-    border:3px solid rgba(76,255,154,0.35);
+    border:3px solid var(--line);
     box-shadow:0 0 45px var(--shadow), inset 0 0 140px rgba(0,0,0,0.95);
   }
 
   /* HEADER */
-  #uiWrap{ margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--line); }
-  #uiTop{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
-  #uiBar{ color:var(--g); font-size:14px; letter-spacing:1px; }
-  #uiStatus{ margin-top:6px; color:rgba(76,255,154,0.85); font-size:12px; letter-spacing:0.8px; }
+  #uiWrap{
+    margin-bottom:10px;
+    padding-bottom:10px;
+    border-bottom:1px solid rgba(76,255,154,0.3);
+  }
+  #uiTop{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  #uiBar{
+    color:var(--g);
+    font-size:14px;
+    letter-spacing:1px;
+  }
+  #uiStatus{
+    margin-top:6px;
+    color:var(--g2);
+    font-size:12px;
+    letter-spacing:0.8px;
+  }
 
   /* AUDIO BUTTON */
   #audioBtn{
     border:2px solid rgba(76,255,154,0.55);
     background:transparent;
-    color:rgba(76,255,154,0.85);
-    font-family:inherit;
+    color:var(--g2);
     padding:6px 10px;
     border-radius:6px;
     cursor:pointer;
     font-size:12px;
     letter-spacing:1px;
+    user-select:none;
   }
-  #audioBtn.on{ border-color:var(--g); color:var(--g); }
+  #audioBtn.on{
+    border-color:var(--g);
+    color:var(--g);
+  }
 
   /* TERMINAL */
   #terminal{
     color:var(--g);
-    text-shadow:0 0 4px rgba(76,255,154,0.7),0 0 10px rgba(76,255,154,0.35);
+    text-shadow:0 0 4px rgba(76,255,154,0.7), 0 0 10px rgba(76,255,154,0.4);
     white-space:pre-wrap;
     overflow-y:auto;
     flex:1;
-    line-height:1.35;
+    padding-right:6px;
   }
 
   /* INPUT */
   #inputBox{
     display:none;
-    width:min(560px, 92%);
+    width:100%;
     margin-top:12px;
-    background:rgba(0,0,0,0.6);
+    background:rgba(0,0,0,0.55);
     color:var(--g);
     border:2px solid var(--g);
-    padding:10px;
-    border-radius:6px;
+    padding:12px 12px;
+    border-radius:8px;
     font-size:16px;
     outline:none;
+    letter-spacing:1px;
   }
 
   /* CURSOR */
   #cursor{
     display:inline-block;
     width:10px;
-    height:1em;
     background:var(--g);
     margin-left:2px;
     animation: blink 1s infinite;
-    vertical-align: -2px;
+    vertical-align:baseline;
   }
   @keyframes blink{50%{opacity:0;}}
 
@@ -99,146 +123,164 @@
       rgba(0,0,0,.28), rgba(0,0,0,.28) 1px,
       transparent 1px, transparent 3px);
     pointer-events:none;
+    mix-blend-mode: overlay;
   }
 
-  /* =========================
-     READY HUB SCREEN (Pip-Boy-ish)
-     ========================= */
-  #hub{
+  /* ===== PIP-BOY SCREEN ===== */
+  #pipboy{
     display:none;
     flex:1;
     position:relative;
-    padding-top:10px;
-  }
-
-  .hubFrame{
-    position:relative;
-    height:100%;
-    border:1px solid var(--line);
+    margin-top:6px;
     border-radius:14px;
-    padding:16px;
-    box-shadow: inset 0 0 60px rgba(0,0,0,.75);
   }
 
-  .hubTopTabs{
+  /* top tab bar like your reference */
+  #tabs{
     display:flex;
-    gap:14px;
-    flex-wrap:wrap;
-    padding-bottom:10px;
-    margin-bottom:12px;
-    border-bottom:1px solid var(--line);
-    color:var(--g2);
+    gap:16px;
+    align-items:center;
+    color:var(--g);
+    font-size:14px;
     letter-spacing:1px;
-    font-size:13px;
+    margin:2px 0 10px 0;
+    opacity:0.95;
+    user-select:none;
   }
-  .hubTopTabs .active{ color:var(--g); }
+  .tab{
+    padding:6px 10px;
+    border:1px solid rgba(76,255,154,0.25);
+    border-radius:8px;
+  }
+  .tab.active{
+    border-color: rgba(76,255,154,0.6);
+    box-shadow: 0 0 18px rgba(76,255,154,0.18);
+  }
 
-  .hubCenter{
+  /* vault boy center */
+  #vaultBoyWrap{
     position:absolute;
     left:50%; top:50%;
-    transform:translate(-50%,-50%);
-    width:min(210px, 44vw);
-    height:min(210px, 44vw);
-    border-radius:999px;
-    border:2px solid rgba(76,255,154,.55);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    box-shadow:0 0 22px rgba(76,255,154,.18);
-    background: rgba(0,0,0,.22);
-    text-align:center;
-    padding:12px;
+    transform:translate(-50%,-52%);
+    width:min(280px, 60vw);
+    aspect-ratio: 1 / 1;
+    display:grid;
+    place-items:center;
+  }
+  #vaultBoy{
+    width:72%;
+    max-width:190px;
+    filter: drop-shadow(0 0 12px rgba(76,255,154,0.25));
+    opacity:0.95;
   }
 
-  /* “Vault Boy” placeholder (swap with an image later) */
-  .vaultBoy{
-    width:74%;
-    max-width:150px;
-    filter: drop-shadow(0 0 10px rgba(76,255,154,.15));
-    opacity:.95;
-  }
-
-  /* Buttons positioned around the center like the reference */
-  .hubBtn{
+  /* targeting brackets around him */
+  .bracket{
     position:absolute;
-    border:2px solid var(--g);
-    background:transparent;
+    width:26px; height:26px;
+    border-color: var(--g);
+    opacity:0.9;
+  }
+  .b1{ left:10px; top:10px; border-left:3px solid var(--g); border-top:3px solid var(--g); }
+  .b2{ right:10px; top:10px; border-right:3px solid var(--g); border-top:3px solid var(--g); }
+  .b3{ left:10px; bottom:10px; border-left:3px solid var(--g); border-bottom:3px solid var(--g); }
+  .b4{ right:10px; bottom:10px; border-right:3px solid var(--g); border-bottom:3px solid var(--g); }
+
+  /* 4 buttons around him */
+  .pipBtn{
+    position:absolute;
+    border:2px solid rgba(76,255,154,0.6);
+    background:rgba(0,0,0,0.25);
     color:var(--g);
-    font-family:inherit;
     padding:10px 14px;
     border-radius:10px;
     cursor:pointer;
     letter-spacing:1px;
+    text-transform:uppercase;
     font-size:13px;
     min-width:120px;
-    text-align:center;
+    box-shadow: 0 0 18px rgba(76,255,154,0.12);
+    user-select:none;
   }
-  .hubBtn:hover{ box-shadow: 0 0 18px rgba(76,255,154,.18); }
+  .pipBtn:active{ transform: translateY(1px); }
+  #btnInfo{ left:8px; top:58px; }
+  #btnDate{ right:8px; top:58px; }
+  #btnStory{ left:8px; bottom:28px; }
+  #btnPerk{ right:8px; bottom:28px; }
 
-  /* placements */
-  #btnInfo{ left:14px; top:84px; }
-  #btnDate{ right:14px; top:84px; }
-  #btnStory{ left:14px; bottom:84px; }
-  #btnMystery{ right:14px; bottom:84px; }
+  /* bottom stats strip */
+  #bottomStrip{
+    position:absolute;
+    left:0; right:0; bottom:0;
+    padding:10px 12px;
+    border-top:1px solid rgba(76,255,154,0.25);
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    align-items:center;
+    color:rgba(76,255,154,0.9);
+    font-size:12px;
+    letter-spacing:0.8px;
+    background: linear-gradient(to top, rgba(0,0,0,0.55), transparent);
+  }
+  .chip{
+    padding:6px 10px;
+    border:1px solid rgba(76,255,154,0.25);
+    border-radius:999px;
+  }
 
-  /* Modal panel */
-  #panel{
+  /* modal */
+  #modal{
     display:none;
     position:absolute;
-    inset:12px;
-    background:rgba(0,0,0,.82);
-    border:2px solid rgba(76,255,154,.55);
-    border-radius:14px;
+    inset:0;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(2px);
+    z-index:20;
     padding:16px;
-    box-shadow: 0 0 30px rgba(76,255,154,.12), inset 0 0 70px rgba(0,0,0,.85);
   }
-
-  #panelHead{
+  #modalCard{
+    height:100%;
+    border:2px solid rgba(76,255,154,0.5);
+    border-radius:14px;
+    background: rgba(2,6,4,0.75);
+    padding:16px;
+    overflow:auto;
+    box-shadow: 0 0 40px rgba(76,255,154,0.10);
+  }
+  #modalTop{
     display:flex;
-    align-items:center;
     justify-content:space-between;
+    align-items:center;
     gap:10px;
-    padding-bottom:10px;
-    border-bottom:1px solid var(--line);
     margin-bottom:10px;
+    padding-bottom:10px;
+    border-bottom:1px solid rgba(76,255,154,0.25);
   }
-
-  #panelTitle{
+  #modalTitle{
     color:var(--g);
     letter-spacing:1px;
     font-size:14px;
+    text-transform:uppercase;
   }
-
-  #panelClose{
-    border:2px solid rgba(76,255,154,.55);
+  #closeModal{
+    border:2px solid rgba(76,255,154,0.55);
     background:transparent;
     color:var(--g);
-    font-family:inherit;
-    padding:6px 10px;
-    border-radius:8px;
+    padding:8px 12px;
+    border-radius:10px;
     cursor:pointer;
     letter-spacing:1px;
-    font-size:12px;
   }
-
-  #panelBody{
-    color:rgba(76,255,154,.92);
-    font-size:13px;
+  #modalBody{
+    color: rgba(76,255,154,0.92);
     line-height:1.55;
-    overflow:auto;
-    height: calc(100% - 52px);
+    font-size:13px;
     white-space:pre-wrap;
   }
 
-  /* small footer hint */
-  .hubHint{
-    position:absolute;
-    left:16px;
-    bottom:16px;
-    color:rgba(76,255,154,.6);
-    font-size:11px;
-    letter-spacing:.7px;
-  }
+  /* small helper */
+  .muted{ color: rgba(76,255,154,0.7); }
 </style>
 </head>
 
@@ -252,49 +294,77 @@
       <div id="uiStatus">STANDBY… AWAITING INPUT</div>
     </div>
 
-    <!-- Terminal mode -->
+    <!-- terminal screen -->
     <div id="terminal"></div>
     <input id="inputBox" autocomplete="off" />
 
-    <!-- Ready hub mode -->
-    <div id="hub">
-      <div class="hubFrame">
-        <div class="hubTopTabs">
-          <div class="active">STAT</div>
-          <div>INV</div>
-          <div>DATA</div>
-          <div>MAP</div>
-          <div>RADIO</div>
-        </div>
+    <!-- pip-boy screen -->
+    <div id="pipboy">
+      <div id="tabs">
+        <span class="tab active">STAT</span>
+        <span class="tab">INV</span>
+        <span class="tab">DATA</span>
+        <span class="tab">MAP</span>
+        <span class="tab">RADIO</span>
+        <span class="muted" style="margin-left:auto;">STATUS • SPECIAL • PERKS</span>
+      </div>
 
-        <button class="hubBtn" id="btnInfo">INFO</button>
-        <button class="hubBtn" id="btnDate">DATE DAY</button>
-        <button class="hubBtn" id="btnStory">VAULT 131</button>
-        <button class="hubBtn" id="btnMystery">???</button>
+      <div id="vaultBoyWrap">
+        <div class="bracket b1"></div>
+        <div class="bracket b2"></div>
+        <div class="bracket b3"></div>
+        <div class="bracket b4"></div>
 
-        <div class="hubCenter">
-          <!-- Simple inline “Vault Boy” placeholder as SVG -->
-          <svg class="vaultBoy" viewBox="0 0 120 160" xmlns="http://www.w3.org/2000/svg">
-            <g fill="none" stroke="rgba(76,255,154,.95)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="60" cy="36" r="20"/>
-              <path d="M44 38c3 6 10 10 16 10 6 0 13-4 16-10"/>
-              <path d="M55 32h0M65 32h0"/>
-              <path d="M60 56c18 0 30 12 30 30v34H30V86c0-18 12-30 30-30z"/>
-              <path d="M46 78v14M74 78v14"/>
-              <path d="M42 120v24M78 120v24"/>
-              <path d="M42 144h18M60 144h18"/>
-            </g>
-          </svg>
-        </div>
+        <!-- simple inline SVG “Vault Boy-ish” silhouette (no external files) -->
+        <svg id="vaultBoy" viewBox="0 0 200 200" aria-label="Vault Boy">
+          <g fill="none" stroke="var(--g)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.95">
+            <!-- head -->
+            <circle cx="105" cy="55" r="28"/>
+            <!-- hair swoop -->
+            <path d="M85 45c12-18 40-18 52 0"/>
+            <path d="M92 38c8-10 26-10 34 0"/>
+            <!-- face -->
+            <path d="M95 60c6 6 14 6 20 0"/>
+            <path d="M92 53h0"/>
+            <path d="M120 53h0"/>
+            <!-- body -->
+            <path d="M90 85c10 10 30 10 40 0"/>
+            <path d="M80 92c-4 18 2 36 10 52"/>
+            <path d="M130 92c4 18-2 36-10 52"/>
+            <path d="M90 110c10 8 20 8 30 0"/>
+            <!-- legs -->
+            <path d="M92 145c-6 18-6 28 2 40"/>
+            <path d="M118 145c6 18 6 28-2 40"/>
+            <path d="M92 182h18"/>
+            <path d="M108 182h18"/>
+            <!-- arms -->
+            <path d="M80 110c-12 10-14 20-10 30"/>
+            <path d="M130 110c12 10 14 20 10 30"/>
+          </g>
+        </svg>
+      </div>
 
-        <div class="hubHint">TIP: Tap a module to open it. (Hub locked to authorized users only.)</div>
+      <button class="pipBtn" id="btnInfo">INFO</button>
+      <button class="pipBtn" id="btnDate">DATE DAY</button>
+      <button class="pipBtn" id="btnStory">VAULT 131</button>
+      <button class="pipBtn" id="btnPerk">PERK</button>
 
-        <div id="panel">
-          <div id="panelHead">
-            <div id="panelTitle">MODULE</div>
-            <button id="panelClose">CLOSE</button>
+      <div id="bottomStrip">
+        <span class="chip">HP: <span id="hp">95/95</span></span>
+        <span class="chip">AP: <span id="ap">90/90</span></span>
+        <span class="chip">LVL: <span id="lvl">14</span></span>
+        <span class="chip">RAD: <span id="rad">0</span></span>
+        <span class="chip muted">TIP: tap a button • hit ESC to close</span>
+      </div>
+
+      <!-- modal -->
+      <div id="modal">
+        <div id="modalCard">
+          <div id="modalTop">
+            <div id="modalTitle">INFO</div>
+            <button id="closeModal">CLOSE</button>
           </div>
-          <div id="panelBody"></div>
+          <div id="modalBody"></div>
         </div>
       </div>
     </div>
@@ -303,10 +373,11 @@
   </div>
 
 <script>
-  /* ========= AUDIO (user activated) ========= */
+  /* ===================== AUDIO ===================== */
   let audioOn = false;
-  const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  const ctx = new AudioCtx();
+
+  // Create audio context only after a user gesture? We'll create it, but resume on click.
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
   const hum = ctx.createOscillator();
   const gain = ctx.createGain();
   hum.type = "sawtooth";
@@ -316,107 +387,92 @@
   gain.connect(ctx.destination);
   hum.start();
 
-  function beep(){
+  function beep(freq=880, dur=0.03, vol=0.03){
     if(!audioOn) return;
     const o = ctx.createOscillator(), g = ctx.createGain();
     o.connect(g); g.connect(ctx.destination);
-    o.frequency.value = 880;
-    g.gain.value = 0.03;
+    o.frequency.value = freq;
+    g.gain.value = vol;
     o.start();
-    o.stop(ctx.currentTime + 0.03);
+    o.stop(ctx.currentTime + dur);
   }
 
   const audioBtn = document.getElementById("audioBtn");
-  audioBtn.onclick = async ()=>{
+  audioBtn.onclick = async () => {
     await ctx.resume();
     audioOn = !audioOn;
     gain.gain.linearRampToValueAtTime(audioOn ? 0.02 : 0, ctx.currentTime + 0.25);
     audioBtn.textContent = audioOn ? "AUDIO: ON" : "AUDIO: OFF";
     audioBtn.classList.toggle("on", audioOn);
+    beep(audioOn ? 740 : 220, 0.05, 0.04);
   };
 
-  /* ========= ELEMENTS ========= */
+  /* ===================== ELEMENTS ===================== */
   const uiBar = document.getElementById("uiBar");
   const uiStatus = document.getElementById("uiStatus");
   const term = document.getElementById("terminal");
   const input = document.getElementById("inputBox");
 
-  const hub = document.getElementById("hub");
-  const panel = document.getElementById("panel");
-  const panelTitle = document.getElementById("panelTitle");
-  const panelBody = document.getElementById("panelBody");
-  const panelClose = document.getElementById("panelClose");
+  const pipboy = document.getElementById("pipboy");
+
+  const modal = document.getElementById("modal");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalBody = document.getElementById("modalBody");
+  const closeModal = document.getElementById("closeModal");
 
   const cursor = document.createElement("span");
-  cursor.id="cursor";
+  cursor.id = "cursor";
   term.appendChild(cursor);
 
-  /* ========= TYPEWRITER ========= */
-  function type(lines, speed=32, cb){
-    let i=0;
-    (function next(){
-      if(i>=lines.length){ cb && cb(); return; }
-      const d=document.createElement("div");
-      term.insertBefore(d,cursor);
-      let j=0;
-      (function c(){
-        if(j>=lines[i].length){ i++; setTimeout(next,170); return; }
-        d.textContent+=lines[i][j++];
-        beep();
-        term.scrollTop=term.scrollHeight;
-        setTimeout(c,speed);
+  let mode = "login"; // "login" | "pip"
+
+  /* ===================== TYPEWRITER ===================== */
+  function clearTerminal(){
+    term.innerHTML = "";
+    term.appendChild(cursor);
+  }
+
+  function type(lines, speed=28, cb){
+    let i = 0;
+    (function nextLine(){
+      if(i >= lines.length){ cb && cb(); return; }
+      const d = document.createElement("div");
+      term.insertBefore(d, cursor);
+
+      let j = 0;
+      (function nextChar(){
+        if(j >= lines[i].length){
+          i++;
+          setTimeout(nextLine, 180);
+          return;
+        }
+        d.textContent += lines[i][j++];
+        beep(980, 0.015, 0.02);
+        term.scrollTop = term.scrollHeight;
+        setTimeout(nextChar, speed);
       })();
     })();
   }
 
-  function clearTerminal(){
-    term.innerHTML="";
-    term.appendChild(cursor);
-  }
   function showInput(ph){
-    input.style.display="block";
-    input.placeholder=ph;
+    input.style.display = "block";
+    input.value = "";
+    input.placeholder = ph;
     input.focus();
   }
-  function hideInput(){ input.style.display="none"; }
-
-  function setStatus(t){ uiStatus.textContent = t; }
-
-  /* ========= CORE: ALWAYS route 14-LOVE-READY ========= */
-  function normalize(s){
-    return (s||"")
-      .trim()
-      .replace(/[–—−]/g,"-")
-      .replace(/\s+/g," ")
-      .toUpperCase();
+  function hideInput(){
+    input.style.display = "none";
   }
 
-  input.addEventListener("keydown", (e)=>{
-    if(e.key !== "Enter") return;
-
-    const v = normalize(input.value);
-    input.value = "";
-    hideInput();
-
-    // ✅ THIS IS THE IMPORTANT PART:
-    if(v === "14-LOVE-READY"){
-      showReadyHub();
-      return;
-    }
-
-    // If not the code, do a Fallout-like denial loop.
-    setStatus("ACCESS DENIED");
-    type(["ACCESS DENIED", "> "], 26, ()=> showInput("ENTER IDENTIFICATION"));
-  });
-
-  /* ========= BOOT ========= */
+  /* ===================== LOGIN FLOW ===================== */
   function boot(){
-    hub.style.display = "none";
+    mode = "login";
+    pipboy.style.display = "none";
     term.style.display = "block";
     input.style.display = "none";
 
-    uiBar.textContent="VAULT 131 DATABASE │ STATUS: LOCKED";
-    setStatus("STANDBY… AWAITING INPUT");
+    uiBar.textContent = "VAULT 131 DATABASE │ STATUS: LOCKED";
+    uiStatus.textContent = "STANDBY… AWAITING INPUT";
 
     clearTerminal();
     type([
@@ -424,171 +480,271 @@
       "SECURITY: ENABLED",
       "ENTER IDENTIFICATION:",
       "> "
-    ], 30, ()=> showInput("ENTER IDENTIFICATION"));
+    ], 26, () => showInput("ENTER ID (try 14-LOVE-READY)"));
   }
 
-  /* ========= READY HUB ========= */
-  function showReadyHub(){
-    // Swap views
+  function normalize(s){
+    return (s || "")
+      .trim()
+      .toUpperCase()
+      .replace(/[\s_]+/g, "-")
+      .replace(/-+/g, "-");
+  }
+
+  function grantAccess(){
+    hideInput();
+    uiBar.textContent = "VAULT 131 DATABASE │ STATUS: UNLOCKED";
+    uiStatus.textContent = "AUTH: VERIFIED • LOADING STATUS MODULE…";
+
+    type([
+      "AUTHENTICATION ACCEPTED",
+      "LOADING PIP-BOY INTERFACE…",
+      ""
+    ], 20, () => {
+      setTimeout(showPipBoy, 350);
+    });
+  }
+
+  function denyAccess(){
+    hideInput();
+    uiStatus.textContent = "AUTH: FAILED • TRY AGAIN";
+    type(["ACCESS DENIED", ""], 22, () => showInput("ENTER ID (try 14-LOVE-READY)"));
+  }
+
+  input.addEventListener("keydown", (e) => {
+    if(e.key !== "Enter") return;
+
+    // if you ever get weird behavior, this prevents "double enter" bugs
+    e.preventDefault();
+
+    const entered = normalize(input.value);
+
+    // ✅ the key you want
+    const PASS = "14-LOVE-READY";
+
+    if(entered === PASS){
+      grantAccess();
+    } else {
+      denyAccess();
+    }
+  });
+
+  /* ===================== PIP-BOY SCREEN ===================== */
+  function showPipBoy(){
+    mode = "pip";
     term.style.display = "none";
     input.style.display = "none";
-    hub.style.display = "block";
+    pipboy.style.display = "block";
 
-    uiBar.textContent="VAULT 131 DATABASE │ STATUS: READY";
-    setStatus("AUTHORIZED MODULES LOADED");
-
-    closePanel();
+    uiBar.textContent = "VAULT 131 DATABASE │ STATUS: UNLOCKED";
+    uiStatus.textContent = "STATUS MODULE ACTIVE • SELECT AN OPTION";
+    beep(520, 0.07, 0.05);
   }
 
-  function openPanel(title, body){
-    panelTitle.textContent = title;
-    panelBody.textContent = body;
-    panel.style.display = "block";
+  /* ===================== MODAL CONTENT ===================== */
+  function openModal(title, body){
+    modalTitle.textContent = title;
+    modalBody.textContent = body;
+    modal.style.display = "block";
+    beep(1040, 0.04, 0.05);
   }
-  function closePanel(){
-    panel.style.display = "none";
-    panelTitle.textContent = "MODULE";
-    panelBody.textContent = "";
+  function closeIt(){
+    modal.style.display = "none";
+    beep(320, 0.04, 0.04);
   }
-  panelClose.onclick = closePanel;
+  closeModal.onclick = closeIt;
 
-  /* ========= Hub Button Content ========= */
-  const btnInfo = document.getElementById("btnInfo");
-  const btnDate = document.getElementById("btnDate");
-  const btnStory = document.getElementById("btnStory");
-  const btnMystery = document.getElementById("btnMystery");
+  // ESC closes modal
+  document.addEventListener("keydown", (e) => {
+    if(e.key === "Escape" && modal.style.display === "block") closeIt();
+  });
 
-  btnInfo.onclick = ()=>{
-    openPanel("INFO MODULE", [
-      "• Build Time: ~3.5 hrs (including debugging the cursed caches).",
-      "• Tech Notes:",
-      "  - Single-file HTML/CSS/JS build (portable deployment).",
-      "  - AudioContext uses user gesture resume() (mobile-safe).",
-      "  - Input routing uses normalized token parsing.",
-      "  - UI: CRT shader + scanlines + glow stack.",
-      "",
-      "• Nerd Fact:",
-      "  You’re basically running a tiny state machine — your input changes what the screen *is*."
-    ].join("\n"));
+  // Button 1: INFO
+  document.getElementById("btnInfo").onclick = () => {
+    openModal("INFO",
+`Engineer Log // Vault 131
+
+• Total build time: ~[PUT YOUR REAL HOURS HERE] hours
+• Stack: HTML + CSS + JavaScript (no frameworks — pure terminal energy)
+• Features:
+  - typewriter render pipeline
+  - input gating + state machine (login → pip-boy)
+  - audio synth (WebAudio oscillator + gain envelope)
+  - responsive CRT container + scanlines overlay
+
+Nerd fact:
+This whole thing is basically a tiny UI “game loop” — the site keeps a state
+and swaps screens based on what you type. Just like a terminal in Fallout.`);
   };
 
-  // Live countdown to next Feb 14 in the user’s local timezone
-  let countdownTimer = null;
-  function nextValentines(){
+  // Button 2: DATE DAY countdown
+  function getValentineCountdown(){
     const now = new Date();
-    let y = now.getFullYear();
-    let v = new Date(y, 1, 14, 0, 0, 0); // Feb = 1
-    if(now > v) v = new Date(y+1, 1, 14, 0, 0, 0);
-    return v;
-  }
-  function formatDiff(ms){
-    if(ms < 0) ms = 0;
-    const s = Math.floor(ms/1000);
-    const d = Math.floor(s/86400);
-    const h = Math.floor((s%86400)/3600);
-    const m = Math.floor((s%3600)/60);
-    const sec = s%60;
-    return `${d}d ${h}h ${m}m ${sec}s`;
+    // Next Feb 14
+    const year = (now.getMonth() > 1 || (now.getMonth() === 1 && now.getDate() > 14))
+      ? now.getFullYear() + 1
+      : now.getFullYear();
+    const target = new Date(year, 1, 14, 0, 0, 0); // Feb = 1
+
+    const diff = target - now;
+    const total = Math.max(0, diff);
+
+    const days = Math.floor(total / (1000*60*60*24));
+    const hrs  = Math.floor((total / (1000*60*60)) % 24);
+    const mins = Math.floor((total / (1000*60)) % 60);
+    const secs = Math.floor((total / 1000) % 60);
+
+    return {days, hrs, mins, secs, year};
   }
 
-  btnDate.onclick = ()=>{
-    const target = nextValentines();
-    openPanel("DATE DAY", "Initializing countdown…");
-    if(countdownTimer) clearInterval(countdownTimer);
+  let countdownTimer = null;
 
-    const tick = ()=>{
-      const now = new Date();
-      const diff = target - now;
-      panelBody.textContent =
-        "VALENTINE'S DAY COUNTDOWN\n" +
-        "-------------------------\n" +
-        `Target: ${target.toLocaleString()}\n\n` +
-        `Time Remaining: ${formatDiff(diff)}\n\n` +
-        "Status: HEART SYSTEMS STANDING BY 💚";
+  document.getElementById("btnDate").onclick = () => {
+    const render = () => {
+      const c = getValentineCountdown();
+      openModal("DATE DAY",
+`Countdown to Valentine’s Day (${c.year}-02-14)
+
+${String(c.days).padStart(2,"0")} DAYS
+${String(c.hrs).padStart(2,"0")} HOURS
+${String(c.mins).padStart(2,"0")} MINUTES
+${String(c.secs).padStart(2,"0")} SECONDS
+
+Status: HEART SYSTEMS CHARGING…`);
     };
 
-    tick();
-    countdownTimer = setInterval(()=>{
-      if(panel.style.display !== "block"){ clearInterval(countdownTimer); countdownTimer=null; return; }
-      tick();
+    render();
+    if(countdownTimer) clearInterval(countdownTimer);
+    countdownTimer = setInterval(() => {
+      if(modal.style.display === "block" && modalTitle.textContent === "DATE DAY"){
+        const c = getValentineCountdown();
+        modalBody.textContent =
+`Countdown to Valentine’s Day (${c.year}-02-14)
+
+${String(c.days).padStart(2,"0")} DAYS
+${String(c.hrs).padStart(2,"0")} HOURS
+${String(c.mins).padStart(2,"0")} MINUTES
+${String(c.secs).padStart(2,"0")} SECONDS
+
+Status: HEART SYSTEMS CHARGING…`;
+      }
     }, 1000);
   };
 
-  btnStory.onclick = ()=>{
-    openPanel("VAULT 131 DATA LOG", [
-      "VAULT 131 — INTERNAL ARCHIVE (REDACTED)\n",
-      "They called it a “comfort vault.” Not a social experiment, not a weapon lab, not a cryo tomb.",
-      "Just a place where the lights stayed on and the doors stayed shut.",
-      "",
-      "The truth was simpler and stranger:",
-      "Vault 131 was built to preserve something the wasteland couldn’t manufacture—gentleness.",
-      "",
-      "At orientation, every resident received two things:",
-      "1) a number, and 2) a promise.",
-      "The number was for the ledger.",
-      "The promise was for the heart.",
-      "",
-      "The Overseer’s terminal held one instruction that never changed:",
-      "“Keep them kind. Keep them safe. If the world ends, let kindness survive it.”",
-      "",
-      "So the vault ran differently than the rest.",
-      "There were drills, sure—emergency protocols, supply audits, radiation sweeps.",
-      "But there were also ‘small things’ written into policy:",
-      "- weekly movie nights,",
-      "- shared meals,",
-      "- “say it out loud” sessions where people confessed fears and got met with support instead of silence.",
-      "",
-      "And then, years later, the first crack appeared.",
-      "A routine maintenance crew found an unmarked hatch behind the hydroponics wall.",
-      "No documentation. No keycard requirement.",
-      "Just a handprint scanner with one label:",
-      "",
-      "   LOVE READY",
-      "",
-      "The vault argued about it for weeks.",
-      "Some called it a prank. Some called it a trap.",
-      "But one resident—quiet, the type who listened more than they spoke—stepped forward and said:",
-      "",
-      "“If they built a vault for kindness… then they built an exit for it too.”",
-      "",
-      "The hatch opened into a narrow corridor with old-world signage and a single working screen.",
-      "The screen wasn’t a warning or a test.",
-      "It was a message, looping, patient as breathing:",
-      "",
-      "“When you find someone worth choosing—choose them like the world depends on it.”",
-      "",
-      "That’s when Vault 131 changed.",
-      "Not with alarms, not with violence—just with a decision.",
-      "They started writing letters in advance. They started building gifts out of scrap.",
-      "They started saving the best moments like they were rations.",
-      "",
-      "Because they understood the experiment wasn’t the vault.",
-      "The experiment was what you’d do with love when it finally had room to exist.",
-      "",
-      "END OF ENTRY.\n",
-      "NOTE: This terminal session was preserved for one reason:",
-      "to remind you that love isn’t a reward at the end of the game—",
-      "it’s the mission."
-    ].join("\n"));
+  // Button 3: Vault 131 story (longer)
+  document.getElementById("btnStory").onclick = () => {
+    openModal("VAULT 131",
+`VAULT 131 // INCIDENT REPORT (CLASSIFIED)
+
+They told the residents Vault 131 was built for “romance preservation.”
+A silly name for a serious experiment, but that’s how Vault-Tec did it:
+wrap the knife in velvet, then ask you to hold it.
+
+For the first year, everything looked normal.
+The atrium lights stayed warm. The music stayed soft.
+Every hallway poster said the same thing:
+
+“LOVE IS A RESOURCE.”
+“PROTECT THE RESOURCE.”
+“REPORT RESOURCE LOSS.”
+
+Then the terminals started showing new prompts at midnight.
+
+— DAILY AFFECTION CHECK-IN —
+1) Who did you smile at today?
+2) Who did you think about when you shouldn’t have?
+3) Who would you choose if the vault sealed forever?
+
+People laughed about it… at first.
+Some treated it like a game. Others treated it like confession.
+But the answers didn’t vanish into the system.
+They showed up printed on little slips of paper in the cafeteria trays.
+They showed up on the bulletin board outside the clinic.
+They showed up in the wrong hands.
+
+By year two, Vault 131 had a new role:
+The Match Officer.
+
+The Match Officer wasn’t a person — it was the vault itself.
+It would pair you with someone “statistically compatible”
+and then it would… encourage the outcome.
+
+Doors would “malfunction” and trap you in the greenhouse together.
+Work assignments would shift so your names always landed on the same list.
+The intercom would make announcements that sounded like jokes, until they didn’t:
+
+“RESIDENTS 14A AND 14B: YOUR HAPPINESS QUOTA IS BEHIND SCHEDULE.”
+
+The scariest part wasn’t the pairing.
+It was the punishment for resisting it.
+
+If you ignored your match too long, the lights above your bed would flicker.
+If you refused a date, the air would turn cold in your room.
+If you chose someone else, the vault would quietly cut your rations by 10%.
+Not enough to kill you. Just enough to make your body understand “consequences.”
+
+And still — people fell in love anyway.
+
+Not the approved kind. Not the scheduled kind.
+Real love: messy, stubborn, inconvenient.
+The kind that survives on stolen minutes and long looks
+and the quiet agreement of “I pick you, even if the vault doesn’t.”
+
+That’s where the legend starts.
+They called her the Heart Thief — a resident who learned how the system listened.
+She figured out which vents carried sound.
+Which terminals echoed keystrokes.
+Which cameras had a half-second blind spot at the corner.
+
+She left messages in the only language Vault-Tec understood:
+procedure.
+
+“MAINTENANCE TEST: PASS.”
+“SECURITY OVERRIDE: AUTHORIZED.”
+“STATUS: LOVE-READY.”
+
+One night, the Match Officer tried to correct the vault.
+Doors slammed. Sirens rose. The intercom demanded compliance.
+But the Heart Thief and her person ran anyway —
+past the atrium, past the clinic, past the posters that promised safety.
+
+They didn’t escape the vault.
+Not physically.
+
+But they did something worse to Vault-Tec:
+they proved the system could be beaten.
+They proved love wasn’t a resource.
+It was a choice.
+
+And ever since, the terminals sometimes glitch.
+For a second, the green text will flicker.
+And if you type the right thing…
+the vault will remember.
+
+(…and let you in.)`);
   };
 
-  btnMystery.onclick = ()=>{
-    openPanel("??? MODULE", [
-      "OPTION IDEA (you can keep or replace):",
-      "",
-      "“PERK UNLOCK” — a short mini-quiz that unlocks a sweet message.",
-      "",
-      "Example:",
-      "• Choose a perk:",
-      "  - 'Wasteland Waltz' (date idea generator)",
-      "  - 'Lucky Find' (hidden compliment log)",
-      "  - 'Radproof' (reassurance messages)",
-      "",
-      "If you want, I’ll turn this into a real interactive perk picker next."
-    ].join("\n"));
+  // Button 4: Perk / help me decide placeholder
+  document.getElementById("btnPerk").onclick = () => {
+    openModal("PERK",
+`PERK SLOT: EMPTY (need your decision)
+
+Here are 3 solid options for Button 4:
+
+A) “KISS COUPON”
+   - a cute redeem screen with a promise (date idea / gift / surprise)
+
+B) “LOVE LOG”
+   - a mini journal entry: why you love her, best memories, future plans
+
+C) “RADIO”
+   - play a special song / playlist link + a message
+
+If you tell me which vibe you want (cute / funny / emotional),
+I’ll turn Button 4 into a full Fallout-style screen next.`);
   };
 
-  /* start */
+  // start
   boot();
 </script>
 </body>
