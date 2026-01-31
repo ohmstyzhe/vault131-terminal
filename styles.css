@@ -72,11 +72,14 @@ html, body{
 
 /* TERMINAL */
 #terminal{
-  color:var(--g);
-  text-shadow:0 0 4px rgba(76,255,154,0.7),0 0 10px rgba(76,255,154,0.4);
-  white-space:pre-wrap;
-  overflow-y:auto;
   flex:1;
+  overflow-y:auto;
+  overflow-x:hidden;
+  color:#4cff9a;
+  text-shadow:
+    0 0 4px rgba(76,255,154,0.7),
+    0 0 10px rgba(76,255,154,0.4);
+  white-space:pre-wrap;
 }
 
 /* INPUT */
