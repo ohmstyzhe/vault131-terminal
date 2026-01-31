@@ -59,6 +59,26 @@ const hints = document.getElementById("hintContainer");
 const dip = document.getElementById("powerDip");
 const volBtn = document.getElementById("volBtn");
 
+/* ========= BUTTON HOVER SFX ========= */
+function wireButtonHoverSfx(){
+  const play = (e)=>{
+    const btn = e.target.closest("button");
+    if(!btn) return;
+    hoverBeep();
+  };
+
+  // Mouse hover (desktop)
+  crt.addEventListener("mouseover", play, true);
+
+  // Keyboard focus (tabbing)
+  crt.addEventListener("focusin", play, true);
+
+  // Touch (mobile)
+  crt.addEventListener("touchstart", play, { capture:true, passive:true });
+}
+
+wireButtonHoverSfx();
+
 /* === BUTTON HOVER / FOCUS GLOW === */
 #crt button,
 #volBtn{
