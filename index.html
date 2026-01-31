@@ -2,47 +2,60 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>VAULT 131 DATABASE</title>
-
 <style>
   :root{
     --g:#4cff9a;
-    --g2: rgba(76,255,154,0.85);
-    --bg:#000;
-    --panel:#050b07;
-    --line: rgba(76,255,154,0.35);
-    --shadow: rgba(76,255,154,0.25);
+    --g2: rgba(76,255,154,.65);
+    --bg:#050b07;
+    --glass: rgba(0,0,0,.55);
+    --line: rgba(76,255,154,.25);
+    --shadow: 0 0 45px rgba(76,255,154,0.25), inset 0 0 140px rgba(0,0,0,0.95);
   }
-
-  html, body{
-    margin:0; height:100%;
-    background:var(--bg);
+  html,body{
+    margin:0; height:100%; background:#000;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
     display:flex; justify-content:center; align-items:center;
     overflow:hidden;
+    color:var(--g);
   }
-
   #crt{
-    width:92%;
-    max-width:980px;
-    height:84vh;
-    background:var(--panel);
+    width:min(980px, 92vw);
+    height:min(80vh, 760px);
+    background:var(--bg);
     border-radius:22px;
-    padding:28px;
+    padding:26px;
     position:relative;
     overflow:hidden;
     display:flex;
     flex-direction:column;
-    border:3px solid var(--line);
-    box-shadow:0 0 45px var(--shadow), inset 0 0 140px rgba(0,0,0,0.95);
+    border:3px solid rgba(76,255,154,0.35);
+    box-shadow: var(--shadow);
+  }
+
+  /* glow vignette */
+  #crt:before{
+    content:"";
+    position:absolute; inset:-40px;
+    background: radial-gradient(ellipse at center,
+      rgba(76,255,154,.12) 0%,
+      rgba(76,255,154,.06) 22%,
+      rgba(0,0,0,.0) 45%,
+      rgba(0,0,0,.55) 72%,
+      rgba(0,0,0,.85) 100%);
+    pointer-events:none;
+    mix-blend-mode: screen;
+    filter: blur(1px);
   }
 
   /* HEADER */
   #uiWrap{
+    position:relative;
+    z-index:2;
     margin-bottom:10px;
     padding-bottom:10px;
-    border-bottom:1px solid rgba(76,255,154,0.3);
+    border-bottom:1px solid var(--line);
   }
   #uiTop{
     display:flex;
@@ -58,7 +71,7 @@
   }
   #uiStatus{
     margin-top:6px;
-    color:var(--g2);
+    color:rgba(76,255,154,0.85);
     font-size:12px;
     letter-spacing:0.8px;
   }
@@ -67,21 +80,24 @@
   #audioBtn{
     border:2px solid rgba(76,255,154,0.55);
     background:transparent;
-    color:var(--g2);
+    color:rgba(76,255,154,0.85);
+    font-family:inherit;
     padding:6px 10px;
-    border-radius:6px;
+    border-radius:8px;
     cursor:pointer;
     font-size:12px;
     letter-spacing:1px;
-    user-select:none;
   }
   #audioBtn.on{
     border-color:var(--g);
     color:var(--g);
+    box-shadow: 0 0 12px rgba(76,255,154,.25);
   }
 
   /* TERMINAL */
   #terminal{
+    position:relative;
+    z-index:2;
     color:var(--g);
     text-shadow:0 0 4px rgba(76,255,154,0.7), 0 0 10px rgba(76,255,154,0.4);
     white-space:pre-wrap;
@@ -92,17 +108,19 @@
 
   /* INPUT */
   #inputBox{
+    position:relative;
+    z-index:2;
     display:none;
-    width:100%;
-    margin-top:12px;
-    background:rgba(0,0,0,0.55);
+    width:min(520px, 92%);
+    margin-top:10px;
+    background:rgba(0,0,0,0.6);
     color:var(--g);
     border:2px solid var(--g);
-    padding:12px 12px;
-    border-radius:8px;
+    padding:10px 12px;
+    border-radius:10px;
     font-size:16px;
     outline:none;
-    letter-spacing:1px;
+    box-shadow: 0 0 20px rgba(76,255,154,.12);
   }
 
   /* CURSOR */
@@ -112,640 +130,597 @@
     background:var(--g);
     margin-left:2px;
     animation: blink 1s infinite;
-    vertical-align:baseline;
+    box-shadow: 0 0 10px rgba(76,255,154,.35);
   }
   @keyframes blink{50%{opacity:0;}}
 
-  /* SCANLINES */
+  /* SCANLINES + NOISE */
   #scanlines{
     position:absolute; inset:0;
-    background:repeating-linear-gradient(to bottom,
-      rgba(0,0,0,.28), rgba(0,0,0,.28) 1px,
-      transparent 1px, transparent 3px);
+    background:
+      repeating-linear-gradient(to bottom,
+        rgba(0,0,0,.22), rgba(0,0,0,.22) 1px,
+        transparent 1px, transparent 3px);
     pointer-events:none;
+    z-index:5;
+  }
+  #noise{
+    position:absolute; inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
     mix-blend-mode: overlay;
+    opacity:.18;
+    pointer-events:none;
+    z-index:6;
   }
 
-  /* ===== PIP-BOY SCREEN ===== */
-  #pipboy{
+  /* STATUS SCREEN */
+  #statusScreen{
+    position:absolute;
+    inset:88px 26px 26px 26px; /* below header */
+    z-index:3;
     display:none;
-    flex:1;
-    position:relative;
-    margin-top:6px;
-    border-radius:14px;
+    border:2px solid rgba(76,255,154,.35);
+    border-radius:18px;
+    padding:18px;
+    background: rgba(0,0,0,.20);
+    box-shadow: inset 0 0 60px rgba(0,0,0,.65);
   }
 
-  /* top tab bar like your reference */
-  #tabs{
+  .topTabs{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:14px;
+    margin-bottom:10px;
+  }
+  .tabsLeft{
     display:flex;
     gap:16px;
-    align-items:center;
-    color:var(--g);
-    font-size:14px;
-    letter-spacing:1px;
-    margin:2px 0 10px 0;
-    opacity:0.95;
-    user-select:none;
+    font-size:18px;
+    letter-spacing:2px;
+    text-transform:uppercase;
   }
   .tab{
-    padding:6px 10px;
-    border:1px solid rgba(76,255,154,0.25);
-    border-radius:8px;
+    opacity:.75;
+    padding-bottom:6px;
+    border-bottom:2px solid transparent;
   }
   .tab.active{
-    border-color: rgba(76,255,154,0.6);
-    box-shadow: 0 0 18px rgba(76,255,154,0.18);
+    opacity:1;
+    border-bottom-color: rgba(76,255,154,.85);
+    text-shadow: 0 0 12px rgba(76,255,154,.18);
   }
-
-  /* vault boy center */
-  #vaultBoyWrap{
-    position:absolute;
-    left:50%; top:50%;
-    transform:translate(-50%,-52%);
-    width:min(280px, 60vw);
-    aspect-ratio: 1 / 1;
-    display:grid;
-    place-items:center;
-  }
-  #vaultBoy{
-    width:72%;
-    max-width:190px;
-    filter: drop-shadow(0 0 12px rgba(76,255,154,0.25));
-    opacity:0.95;
-  }
-
-  /* targeting brackets around him */
-  .bracket{
-    position:absolute;
-    width:26px; height:26px;
-    border-color: var(--g);
-    opacity:0.9;
-  }
-  .b1{ left:10px; top:10px; border-left:3px solid var(--g); border-top:3px solid var(--g); }
-  .b2{ right:10px; top:10px; border-right:3px solid var(--g); border-top:3px solid var(--g); }
-  .b3{ left:10px; bottom:10px; border-left:3px solid var(--g); border-bottom:3px solid var(--g); }
-  .b4{ right:10px; bottom:10px; border-right:3px solid var(--g); border-bottom:3px solid var(--g); }
-
-  /* 4 buttons around him */
-  .pipBtn{
-    position:absolute;
-    border:2px solid rgba(76,255,154,0.6);
-    background:rgba(0,0,0,0.25);
-    color:var(--g);
-    padding:10px 14px;
-    border-radius:10px;
-    cursor:pointer;
-    letter-spacing:1px;
+  .subTabs{
+    margin-top:6px;
+    display:flex;
+    gap:18px;
+    font-size:14px;
+    letter-spacing:2px;
+    opacity:.8;
     text-transform:uppercase;
-    font-size:13px;
-    min-width:120px;
-    box-shadow: 0 0 18px rgba(76,255,154,0.12);
-    user-select:none;
   }
-  .pipBtn:active{ transform: translateY(1px); }
-  #btnInfo{ left:8px; top:58px; }
-  #btnDate{ right:8px; top:58px; }
-  #btnStory{ left:8px; bottom:28px; }
-  #btnPerk{ right:8px; bottom:28px; }
+  .subTabs .active{ opacity:1; }
 
-  /* bottom stats strip */
-  #bottomStrip{
-    position:absolute;
-    left:0; right:0; bottom:0;
-    padding:10px 12px;
-    border-top:1px solid rgba(76,255,154,0.25);
-    display:flex;
-    gap:12px;
-    flex-wrap:wrap;
-    align-items:center;
-    color:rgba(76,255,154,0.9);
-    font-size:12px;
-    letter-spacing:0.8px;
-    background: linear-gradient(to top, rgba(0,0,0,0.55), transparent);
-  }
-  .chip{
-    padding:6px 10px;
-    border:1px solid rgba(76,255,154,0.25);
-    border-radius:999px;
+  .statusGrid{
+    display:grid;
+    grid-template-columns: 160px 1fr 220px;
+    gap:14px;
+    margin-top:14px;
+    height: calc(100% - 64px);
+    min-height: 360px;
   }
 
-  /* modal */
-  #modal{
-    display:none;
-    position:absolute;
-    inset:0;
-    background: rgba(0,0,0,0.55);
-    backdrop-filter: blur(2px);
-    z-index:20;
-    padding:16px;
-  }
-  #modalCard{
-    height:100%;
-    border:2px solid rgba(76,255,154,0.5);
+  .panel{
+    border:2px solid rgba(76,255,154,.28);
     border-radius:14px;
-    background: rgba(2,6,4,0.75);
-    padding:16px;
-    overflow:auto;
-    box-shadow: 0 0 40px rgba(76,255,154,0.10);
+    padding:12px;
+    background: rgba(0,0,0,.22);
+    box-shadow: inset 0 0 30px rgba(0,0,0,.65);
   }
-  #modalTop{
+
+  .leftMenu .item{
+    border:2px solid rgba(76,255,154,.28);
+    border-radius:12px;
+    padding:10px 10px;
+    margin-bottom:10px;
+    text-transform:uppercase;
+    letter-spacing:2px;
+    font-size:13px;
+    cursor:pointer;
+    user-select:none;
+    background: rgba(0,0,0,.20);
+  }
+  .leftMenu .item.active{
+    border-color: rgba(76,255,154,.9);
+    box-shadow: 0 0 16px rgba(76,255,154,.12);
+  }
+
+  .rightPanel .smallTitle{
+    text-transform:uppercase;
+    letter-spacing:2px;
+    font-size:12px;
+    opacity:.8;
+    margin-bottom:10px;
+  }
+
+  .kv{
     display:flex;
+    justify-content:space-between;
+    gap:10px;
+    font-size:13px;
+    padding:6px 0;
+    border-bottom:1px solid rgba(76,255,154,.14);
+  }
+  .kv:last-child{ border-bottom:none; }
+  .kv b{ font-weight:700; }
+
+  .centerPanel{
+    display:flex;
+    flex-direction:column;
     justify-content:space-between;
     align-items:center;
     gap:10px;
-    margin-bottom:10px;
-    padding-bottom:10px;
-    border-bottom:1px solid rgba(76,255,154,0.25);
-  }
-  #modalTitle{
-    color:var(--g);
-    letter-spacing:1px;
-    font-size:14px;
-    text-transform:uppercase;
-  }
-  #closeModal{
-    border:2px solid rgba(76,255,154,0.55);
-    background:transparent;
-    color:var(--g);
-    padding:8px 12px;
-    border-radius:10px;
-    cursor:pointer;
-    letter-spacing:1px;
-  }
-  #modalBody{
-    color: rgba(76,255,154,0.92);
-    line-height:1.55;
-    font-size:13px;
-    white-space:pre-wrap;
   }
 
-  /* small helper */
-  .muted{ color: rgba(76,255,154,0.7); }
+  /* Outline dude SVG area */
+  #dudeWrap{
+    width:100%;
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    position:relative;
+    min-height:260px;
+  }
+  .hudBar{
+    position:absolute;
+    width:52px; height:8px;
+    background: rgba(76,255,154,.85);
+    box-shadow: 0 0 18px rgba(76,255,154,.25);
+    opacity:.9;
+  }
+  .hb-top{ top: 18px; left: 50%; transform:translateX(-50%); }
+  .hb-bot{ bottom: 18px; left: 50%; transform:translateX(-50%); }
+  .hb-l1{ left: 20px; top: 38%; }
+  .hb-l2{ left: 20px; top: 64%; }
+  .hb-r1{ right: 20px; top: 38%; }
+  .hb-r2{ right: 20px; top: 64%; }
+
+  /* bottom stats bar */
+  .bottomBar{
+    width:100%;
+    display:grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap:10px;
+    align-items:center;
+  }
+  .meter{
+    border:2px solid rgba(76,255,154,.35);
+    border-radius:12px;
+    padding:10px;
+    background: rgba(0,0,0,.18);
+    text-transform:uppercase;
+    letter-spacing:2px;
+    font-size:12px;
+  }
+  .levelBox{
+    border:2px solid rgba(76,255,154,.35);
+    border-radius:12px;
+    padding:10px;
+    background: rgba(0,0,0,.18);
+    text-transform:uppercase;
+    letter-spacing:2px;
+    font-size:12px;
+  }
+  .bar{
+    margin-top:8px;
+    height:10px;
+    border:1px solid rgba(76,255,154,.35);
+    border-radius:999px;
+    overflow:hidden;
+  }
+  .bar > div{
+    height:100%;
+    width:68%;
+    background: rgba(76,255,154,.85);
+    box-shadow: 0 0 20px rgba(76,255,154,.25);
+  }
+
+  .hint{
+    position:absolute;
+    left:16px; bottom:10px;
+    font-size:11px;
+    opacity:.75;
+    letter-spacing:1px;
+  }
+
+  /* make it comfy on phones */
+  @media (max-width:760px){
+    #crt{ padding:18px; }
+    #statusScreen{ inset:88px 18px 18px 18px; }
+    .statusGrid{ grid-template-columns: 1fr; }
+    .rightPanel{ order:3; }
+    .leftMenu{ order:2; display:flex; gap:10px; flex-wrap:wrap; }
+    .leftMenu .item{ margin-bottom:0; flex:1; text-align:center; min-width: 90px; }
+    .tabsLeft{ font-size:16px; }
+  }
 </style>
 </head>
 
 <body>
-  <div id="crt">
-    <div id="uiWrap">
-      <div id="uiTop">
-        <div id="uiBar">VAULT 131 DATABASE │ STATUS: LOCKED</div>
-        <button id="audioBtn">AUDIO: OFF</button>
-      </div>
-      <div id="uiStatus">STANDBY… AWAITING INPUT</div>
+<div id="crt">
+  <div id="uiWrap">
+    <div id="uiTop">
+      <div id="uiBar">VAULT 131 DATABASE │ STATUS: LOCKED</div>
+      <button id="audioBtn">AUDIO: OFF</button>
     </div>
-
-    <!-- terminal screen -->
-    <div id="terminal"></div>
-    <input id="inputBox" autocomplete="off" />
-
-    <!-- pip-boy screen -->
-    <div id="pipboy">
-      <div id="tabs">
-        <span class="tab active">STAT</span>
-        <span class="tab">INV</span>
-        <span class="tab">DATA</span>
-        <span class="tab">MAP</span>
-        <span class="tab">RADIO</span>
-        <span class="muted" style="margin-left:auto;">STATUS • SPECIAL • PERKS</span>
-      </div>
-
-      <div id="vaultBoyWrap">
-        <div class="bracket b1"></div>
-        <div class="bracket b2"></div>
-        <div class="bracket b3"></div>
-        <div class="bracket b4"></div>
-
-        <!-- simple inline SVG “Vault Boy-ish” silhouette (no external files) -->
-        <svg id="vaultBoy" viewBox="0 0 200 200" aria-label="Vault Boy">
-          <g fill="none" stroke="var(--g)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.95">
-            <!-- head -->
-            <circle cx="105" cy="55" r="28"/>
-            <!-- hair swoop -->
-            <path d="M85 45c12-18 40-18 52 0"/>
-            <path d="M92 38c8-10 26-10 34 0"/>
-            <!-- face -->
-            <path d="M95 60c6 6 14 6 20 0"/>
-            <path d="M92 53h0"/>
-            <path d="M120 53h0"/>
-            <!-- body -->
-            <path d="M90 85c10 10 30 10 40 0"/>
-            <path d="M80 92c-4 18 2 36 10 52"/>
-            <path d="M130 92c4 18-2 36-10 52"/>
-            <path d="M90 110c10 8 20 8 30 0"/>
-            <!-- legs -->
-            <path d="M92 145c-6 18-6 28 2 40"/>
-            <path d="M118 145c6 18 6 28-2 40"/>
-            <path d="M92 182h18"/>
-            <path d="M108 182h18"/>
-            <!-- arms -->
-            <path d="M80 110c-12 10-14 20-10 30"/>
-            <path d="M130 110c12 10 14 20 10 30"/>
-          </g>
-        </svg>
-      </div>
-
-      <button class="pipBtn" id="btnInfo">INFO</button>
-      <button class="pipBtn" id="btnDate">DATE DAY</button>
-      <button class="pipBtn" id="btnStory">VAULT 131</button>
-      <button class="pipBtn" id="btnPerk">PERK</button>
-
-      <div id="bottomStrip">
-        <span class="chip">HP: <span id="hp">95/95</span></span>
-        <span class="chip">AP: <span id="ap">90/90</span></span>
-        <span class="chip">LVL: <span id="lvl">14</span></span>
-        <span class="chip">RAD: <span id="rad">0</span></span>
-        <span class="chip muted">TIP: tap a button • hit ESC to close</span>
-      </div>
-
-      <!-- modal -->
-      <div id="modal">
-        <div id="modalCard">
-          <div id="modalTop">
-            <div id="modalTitle">INFO</div>
-            <button id="closeModal">CLOSE</button>
-          </div>
-          <div id="modalBody"></div>
-        </div>
-      </div>
-    </div>
-
-    <div id="scanlines"></div>
+    <div id="uiStatus">STANDBY… AWAITING INPUT</div>
   </div>
 
+  <!-- TERMINAL MODE -->
+  <div id="terminal"></div>
+  <input id="inputBox" autocomplete="off" spellcheck="false" />
+
+  <!-- STATUS MODE -->
+  <div id="statusScreen">
+    <div class="topTabs">
+      <div>
+        <div class="tabsLeft">
+          <div class="tab active">STAT</div>
+          <div class="tab">INV</div>
+          <div class="tab">DATA</div>
+          <div class="tab">MAP</div>
+          <div class="tab">RADIO</div>
+        </div>
+        <div class="subTabs">
+          <div class="active">STATUS</div>
+          <div>S.P.E.C.I.A.L</div>
+          <div>PERKS</div>
+        </div>
+      </div>
+      <div style="text-align:right; font-size:12px; letter-spacing:2px; opacity:.8; text-transform:uppercase;">
+        <div>STATS</div>
+        <div style="margin-top:6px; opacity:.9;">LVL <b id="lvlTxt">14</b> &nbsp; HP <b id="hpTxt">131/131</b> &nbsp; AP <b id="apTxt">90/90</b> &nbsp; XP <b id="xpTxt">MAX</b></div>
+      </div>
+    </div>
+
+    <div class="statusGrid">
+      <!-- LEFT MENU -->
+      <div class="panel leftMenu" id="leftMenu">
+        <div class="item active" data-panel="info">INFO</div>
+        <div class="item" data-panel="vault">VAULT 131</div>
+        <div class="item" data-panel="perk">???</div>
+      </div>
+
+      <!-- CENTER -->
+      <div class="panel centerPanel">
+        <div id="dudeWrap" aria-label="Status outline">
+          <div class="hudBar hb-top"></div>
+          <div class="hudBar hb-bot"></div>
+          <div class="hudBar hb-l1"></div>
+          <div class="hudBar hb-l2"></div>
+          <div class="hudBar hb-r1"></div>
+          <div class="hudBar hb-r2"></div>
+
+          <!-- ORIGINAL outline "status body" (inspired by layout, not copied art) -->
+          <svg width="420" height="320" viewBox="0 0 420 320" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width:100%; height:auto;">
+            <defs>
+              <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="2.5" result="b"/>
+                <feMerge>
+                  <feMergeNode in="b"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+
+            <!-- frame ticks -->
+            <g opacity="0.9" stroke="rgba(76,255,154,.85)" stroke-width="6" filter="url(#glow)">
+              <line x1="90" y1="88" x2="130" y2="88"/>
+              <line x1="290" y1="88" x2="330" y2="88"/>
+              <line x1="90" y1="232" x2="130" y2="232"/>
+              <line x1="290" y1="232" x2="330" y2="232"/>
+            </g>
+
+            <!-- body outline -->
+            <g stroke="rgba(76,255,154,.95)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+              <!-- head -->
+              <path d="M210 62
+                       c-26 0-46 20-46 44
+                       c0 24 20 44 46 44
+                       c26 0 46-20 46-44
+                       c0-24-20-44-46-44z"/>
+              <!-- face -->
+              <path d="M196 110 q8-10 18 0" opacity="0.85"/>
+              <path d="M226 102 q6-8 12 0" opacity="0.75"/>
+              <path d="M184 102 q6-8 12 0" opacity="0.75"/>
+
+              <!-- torso -->
+              <path d="M186 152
+                       c-18 16-26 30-26 52
+                       c0 28 18 50 50 50
+                       h0
+                       c32 0 50-22 50-50
+                       c0-22-8-36-26-52
+                       c-10-8-18-12-24-12
+                       h-0
+                       c-6 0-14 4-24 12z"/>
+              <!-- waist -->
+              <path d="M178 224 h64" opacity="0.85"/>
+
+              <!-- arms out -->
+              <path d="M160 180
+                       c-34 10-54 16-74 22
+                       c-10 3-14 10-10 16
+                       c4 6 12 8 20 5
+                       c20-8 42-18 76-30" />
+              <path d="M260 180
+                       c34 10 54 16 74 22
+                       c10 3 14 10 10 16
+                       c-4 6-12 8-20 5
+                       c-20-8-42-18-76-30" />
+
+              <!-- legs -->
+              <path d="M196 254
+                       c-10 18-16 34-18 50
+                       c-1 10 6 14 14 14
+                       c8 0 12-4 14-12
+                       c4-16 10-30 18-44"/>
+              <path d="M224 254
+                       c10 18 16 34 18 50
+                       c1 10-6 14-14 14
+                       c-8 0-12-4-14-12
+                       c-4-16-10-30-18-44"/>
+            </g>
+
+            <!-- limb bars -->
+            <g opacity="0.9" fill="rgba(76,255,154,.85)" filter="url(#glow)">
+              <rect x="178" y="80" width="64" height="10" rx="4"/>
+              <rect x="112" y="196" width="66" height="10" rx="4"/>
+              <rect x="242" y="196" width="66" height="10" rx="4"/>
+              <rect x="168" y="260" width="40" height="10" rx="4"/>
+              <rect x="212" y="260" width="40" height="10" rx="4"/>
+            </g>
+
+            <!-- labels -->
+            <g opacity="0.85" fill="rgba(76,255,154,.85)" font-family="monospace" font-size="12" letter-spacing="2">
+              <text x="64" y="64">CND</text>
+              <text x="64" y="86" opacity="0.7">RAD</text>
+              <text x="64" y="108" opacity="0.7">EFF</text>
+              <text x="288" y="64" opacity="0.75">(12) STIMPAK A</text>
+              <text x="306" y="86" opacity="0.75">LIMBS</text>
+            </g>
+          </svg>
+        </div>
+
+        <div class="bottomBar">
+          <div class="meter">
+            HP <b id="hpBottom">131/131</b>
+            <div class="bar"><div style="width:86%"></div></div>
+          </div>
+          <div class="levelBox">
+            LEVEL <b id="lvlBottom">14</b>
+            <div class="bar"><div style="width:100%"></div></div>
+          </div>
+          <div class="meter">
+            AP <b id="apBottom">90/90</b>
+            <div class="bar"><div style="width:100%"></div></div>
+          </div>
+        </div>
+
+        <div class="hint">TIP: Tap a module to open it. (Hub locked to authorized users only.)</div>
+      </div>
+
+      <!-- RIGHT PANEL (dynamic) -->
+      <div class="panel rightPanel" id="rightPanel">
+        <!-- filled by JS -->
+      </div>
+    </div>
+  </div>
+
+  <div id="scanlines"></div>
+  <div id="noise"></div>
+</div>
+
 <script>
-  /* ===================== AUDIO ===================== */
-  let audioOn = false;
+/* ---------------- AUDIO (user-activated) ---------------- */
+let audioOn = false;
+const ctx = new (window.AudioContext||window.webkitAudioContext)();
+const hum = ctx.createOscillator();
+const gain = ctx.createGain();
+hum.type = "sawtooth";
+hum.frequency.value = 60;
+gain.gain.value = 0;
+hum.connect(gain);
+gain.connect(ctx.destination);
+hum.start();
 
-  // Create audio context only after a user gesture? We'll create it, but resume on click.
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
-  const hum = ctx.createOscillator();
-  const gain = ctx.createGain();
-  hum.type = "sawtooth";
-  hum.frequency.value = 60;
-  gain.gain.value = 0;
-  hum.connect(gain);
-  gain.connect(ctx.destination);
-  hum.start();
+function beep(freq=880, dur=0.03, vol=0.03){
+  if(!audioOn) return;
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.connect(g); g.connect(ctx.destination);
+  o.frequency.value = freq;
+  g.gain.value = vol;
+  o.start();
+  o.stop(ctx.currentTime + dur);
+}
 
-  function beep(freq=880, dur=0.03, vol=0.03){
-    if(!audioOn) return;
-    const o = ctx.createOscillator(), g = ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    o.frequency.value = freq;
-    g.gain.value = vol;
-    o.start();
-    o.stop(ctx.currentTime + dur);
-  }
+document.getElementById("audioBtn").onclick = async ()=>{
+  await ctx.resume();
+  audioOn = !audioOn;
+  gain.gain.linearRampToValueAtTime(audioOn ? 0.02 : 0, ctx.currentTime + 0.25);
+  const btn = document.getElementById("audioBtn");
+  btn.textContent = audioOn ? "AUDIO: ON" : "AUDIO: OFF";
+  btn.classList.toggle("on", audioOn);
+  beep(audioOn ? 980 : 420, 0.05, 0.035);
+};
 
-  const audioBtn = document.getElementById("audioBtn");
-  audioBtn.onclick = async () => {
-    await ctx.resume();
-    audioOn = !audioOn;
-    gain.gain.linearRampToValueAtTime(audioOn ? 0.02 : 0, ctx.currentTime + 0.25);
-    audioBtn.textContent = audioOn ? "AUDIO: ON" : "AUDIO: OFF";
-    audioBtn.classList.toggle("on", audioOn);
-    beep(audioOn ? 740 : 220, 0.05, 0.04);
-  };
+/* ---------------- ELEMENTS ---------------- */
+const uiBar = document.getElementById("uiBar");
+const uiStatus = document.getElementById("uiStatus");
+const term = document.getElementById("terminal");
+const input = document.getElementById("inputBox");
+const statusScreen = document.getElementById("statusScreen");
+const rightPanel = document.getElementById("rightPanel");
+const leftMenu = document.getElementById("leftMenu");
 
-  /* ===================== ELEMENTS ===================== */
-  const uiBar = document.getElementById("uiBar");
-  const uiStatus = document.getElementById("uiStatus");
-  const term = document.getElementById("terminal");
-  const input = document.getElementById("inputBox");
+const cursor = document.createElement("span");
+cursor.id="cursor";
+term.appendChild(cursor);
 
-  const pipboy = document.getElementById("pipboy");
-
-  const modal = document.getElementById("modal");
-  const modalTitle = document.getElementById("modalTitle");
-  const modalBody = document.getElementById("modalBody");
-  const closeModal = document.getElementById("closeModal");
-
-  const cursor = document.createElement("span");
-  cursor.id = "cursor";
-  term.appendChild(cursor);
-
-  let mode = "login"; // "login" | "pip"
-
-  /* ===================== TYPEWRITER ===================== */
-  function clearTerminal(){
-    term.innerHTML = "";
-    term.appendChild(cursor);
-  }
-
-  function type(lines, speed=28, cb){
-    let i = 0;
-    (function nextLine(){
-      if(i >= lines.length){ cb && cb(); return; }
-      const d = document.createElement("div");
-      term.insertBefore(d, cursor);
-
-      let j = 0;
-      (function nextChar(){
-        if(j >= lines[i].length){
-          i++;
-          setTimeout(nextLine, 180);
-          return;
-        }
-        d.textContent += lines[i][j++];
-        beep(980, 0.015, 0.02);
-        term.scrollTop = term.scrollHeight;
-        setTimeout(nextChar, speed);
-      })();
+/* ---------------- TYPEWRITER ---------------- */
+function type(lines, speed=28, cb){
+  let i=0;
+  (function next(){
+    if(i>=lines.length){ cb && cb(); return; }
+    const d=document.createElement("div");
+    term.insertBefore(d,cursor);
+    let j=0;
+    (function c(){
+      if(j>=lines[i].length){ i++; setTimeout(next, 180); return; }
+      d.textContent += lines[i][j++];
+      beep(880, 0.02, 0.02);
+      term.scrollTop = term.scrollHeight;
+      setTimeout(c, speed);
     })();
+  })();
+}
+
+/* ---------------- HELPERS ---------------- */
+function clearTerm(){
+  term.innerHTML="";
+  term.appendChild(cursor);
+}
+function showInput(ph){
+  input.style.display="block";
+  input.placeholder=ph;
+  input.value="";
+  input.focus();
+}
+function hideInput(){
+  input.style.display="none";
+}
+function setMode(mode){
+  // mode: "terminal" | "status"
+  if(mode==="terminal"){
+    statusScreen.style.display="none";
+    term.style.display="block";
+    input.style.display="block";
+  }else{
+    term.style.display="none";
+    input.style.display="none";
+    statusScreen.style.display="block";
   }
+}
 
-  function showInput(ph){
-    input.style.display = "block";
-    input.value = "";
-    input.placeholder = ph;
-    input.focus();
-  }
-  function hideInput(){
-    input.style.display = "none";
-  }
+/* ---------------- STATUS CONTENT ---------------- */
+function renderInfo(){
+  rightPanel.innerHTML = `
+    <div class="smallTitle">INFO MODULE</div>
+    <div class="kv"><span>ACCESS</span><b>AUTHORIZED</b></div>
+    <div class="kv"><span>BUILD TIME</span><b>~ 6 DAYS (NOT 3 HOURS)</b></div>
+    <div class="kv"><span>PROJECT</span><b>VAULT 131 VALENTINE TERMINAL</b></div>
+    <div class="kv"><span>STATUS</span><b>READY</b></div>
+    <div class="kv"><span>NOTE</span><b>“I DID THIS BECAUSE I LOVE YOU.”</b></div>
+    <div style="margin-top:12px; font-size:12px; opacity:.85; line-height:1.4;">
+      This terminal interface was assembled through multiple sessions,
+      persistent debugging, and pure stubborn devotion.
+    </div>
+  `;
+}
+function renderVault(){
+  rightPanel.innerHTML = `
+    <div class="smallTitle">VAULT 131</div>
+    <div class="kv"><span>LOCATION</span><b>CLASSIFIED</b></div>
+    <div class="kv"><span>SECURITY</span><b>ENABLED</b></div>
+    <div class="kv"><span>OVERRIDE</span><b>14-LOVE-READY</b></div>
+    <div class="kv"><span>MESSAGE</span><b>STANDBY…</b></div>
+    <div style="margin-top:12px; font-size:12px; opacity:.85; line-height:1.4;">
+      Authorized Modules Loaded. Select STAT to continue.
+    </div>
+  `;
+}
+function renderPerk(){
+  rightPanel.innerHTML = `
+    <div class="smallTitle">??? MODULE</div>
+    <div style="font-size:12px; letter-spacing:2px; opacity:.85; text-transform:uppercase; margin-bottom:10px;">
+      Choose a perk:
+    </div>
+    <div class="kv"><span>PERK A</span><b>“UNBREAKABLE BOND”</b></div>
+    <div class="kv"><span>PERK B</span><b>“LAUGH BOOST +10”</b></div>
+    <div class="kv"><span>PERK C</span><b>“LOVE RESISTANCE: MAX”</b></div>
+    <div style="margin-top:12px; font-size:12px; opacity:.85; line-height:1.4;">
+      (Next step: we can make these selectable and lead into riddles.)
+    </div>
+  `;
+}
+function setActiveMenu(key){
+  [...leftMenu.querySelectorAll(".item")].forEach(el=>{
+    el.classList.toggle("active", el.dataset.panel===key);
+  });
+  if(key==="info") renderInfo();
+  if(key==="vault") renderVault();
+  if(key==="perk") renderPerk();
+}
 
-  /* ===================== LOGIN FLOW ===================== */
-  function boot(){
-    mode = "login";
-    pipboy.style.display = "none";
-    term.style.display = "block";
-    input.style.display = "none";
+/* click menu */
+leftMenu.addEventListener("click", (e)=>{
+  const item = e.target.closest(".item");
+  if(!item) return;
+  beep(740, 0.03, 0.03);
+  setActiveMenu(item.dataset.panel);
+});
 
-    uiBar.textContent = "VAULT 131 DATABASE │ STATUS: LOCKED";
-    uiStatus.textContent = "STANDBY… AWAITING INPUT";
+/* ---------------- TERMINAL FLOW ---------------- */
+function boot(){
+  setMode("terminal");
+  clearTerm();
+  uiBar.textContent="VAULT 131 DATABASE │ STATUS: LOCKED";
+  uiStatus.textContent="STANDBY… AWAITING INPUT";
+  type([
+    "VAULT 131 DATABASE",
+    "SECURITY: ENABLED",
+    "ENTER IDENTIFICATION:",
+    "> "
+  ], 26, ()=>showInput("ENTER ID (try 14-LOVE-READY)"));
+}
 
-    clearTerminal();
+function unlockToStatus(){
+  // flip to status screen
+  uiBar.textContent="VAULT 131 DATABASE │ STATUS: READY";
+  uiStatus.textContent="AUTHORIZED MODULES LOADED";
+  setMode("status");
+  setActiveMenu("info");
+  beep(980, 0.08, 0.035);
+}
+
+input.addEventListener("keydown",(e)=>{
+  if(e.key!=="Enter") return;
+
+  const val = (input.value || "").trim();
+  hideInput();
+
+  // Accept code case-insensitively
+  const code = val.toUpperCase();
+
+  if(code === "14-LOVE-READY"){
+    // small terminal confirmation then swap
     type([
-      "VAULT 131 DATABASE",
-      "SECURITY: ENABLED",
-      "ENTER IDENTIFICATION:",
-      "> "
-    ], 26, () => showInput("ENTER ID (try 14-LOVE-READY)"));
-  }
-
-  function normalize(s){
-    return (s || "")
-      .trim()
-      .toUpperCase()
-      .replace(/[\s_]+/g, "-")
-      .replace(/-+/g, "-");
-  }
-
-  function grantAccess(){
-    hideInput();
-    uiBar.textContent = "VAULT 131 DATABASE │ STATUS: UNLOCKED";
-    uiStatus.textContent = "AUTH: VERIFIED • LOADING STATUS MODULE…";
-
-    type([
-      "AUTHENTICATION ACCEPTED",
-      "LOADING PIP-BOY INTERFACE…",
+      "IDENTIFICATION ACCEPTED.",
+      "HANDSHAKE: COMPLETE.",
+      "LOADING MODULES...",
       ""
-    ], 20, () => {
-      setTimeout(showPipBoy, 350);
+    ], 22, ()=>{
+      setTimeout(unlockToStatus, 250);
     });
+  } else if(code.length){
+    type(["ACCESS DENIED",""], 24, ()=>showInput("ENTER ID"));
+  } else {
+    showInput("ENTER ID");
   }
+});
 
-  function denyAccess(){
-    hideInput();
-    uiStatus.textContent = "AUTH: FAILED • TRY AGAIN";
-    type(["ACCESS DENIED", ""], 22, () => showInput("ENTER ID (try 14-LOVE-READY)"));
-  }
-
-  input.addEventListener("keydown", (e) => {
-    if(e.key !== "Enter") return;
-
-    // if you ever get weird behavior, this prevents "double enter" bugs
-    e.preventDefault();
-
-    const entered = normalize(input.value);
-
-    // ✅ the key you want
-    const PASS = "14-LOVE-READY";
-
-    if(entered === PASS){
-      grantAccess();
-    } else {
-      denyAccess();
-    }
-  });
-
-  /* ===================== PIP-BOY SCREEN ===================== */
-  function showPipBoy(){
-    mode = "pip";
-    term.style.display = "none";
-    input.style.display = "none";
-    pipboy.style.display = "block";
-
-    uiBar.textContent = "VAULT 131 DATABASE │ STATUS: UNLOCKED";
-    uiStatus.textContent = "STATUS MODULE ACTIVE • SELECT AN OPTION";
-    beep(520, 0.07, 0.05);
-  }
-
-  /* ===================== MODAL CONTENT ===================== */
-  function openModal(title, body){
-    modalTitle.textContent = title;
-    modalBody.textContent = body;
-    modal.style.display = "block";
-    beep(1040, 0.04, 0.05);
-  }
-  function closeIt(){
-    modal.style.display = "none";
-    beep(320, 0.04, 0.04);
-  }
-  closeModal.onclick = closeIt;
-
-  // ESC closes modal
-  document.addEventListener("keydown", (e) => {
-    if(e.key === "Escape" && modal.style.display === "block") closeIt();
-  });
-
-  // Button 1: INFO
-  document.getElementById("btnInfo").onclick = () => {
-    openModal("INFO",
-`Engineer Log // Vault 131
-
-• Total build time: ~[PUT YOUR REAL HOURS HERE] hours
-• Stack: HTML + CSS + JavaScript (no frameworks — pure terminal energy)
-• Features:
-  - typewriter render pipeline
-  - input gating + state machine (login → pip-boy)
-  - audio synth (WebAudio oscillator + gain envelope)
-  - responsive CRT container + scanlines overlay
-
-Nerd fact:
-This whole thing is basically a tiny UI “game loop” — the site keeps a state
-and swaps screens based on what you type. Just like a terminal in Fallout.`);
-  };
-
-  // Button 2: DATE DAY countdown
-  function getValentineCountdown(){
-    const now = new Date();
-    // Next Feb 14
-    const year = (now.getMonth() > 1 || (now.getMonth() === 1 && now.getDate() > 14))
-      ? now.getFullYear() + 1
-      : now.getFullYear();
-    const target = new Date(year, 1, 14, 0, 0, 0); // Feb = 1
-
-    const diff = target - now;
-    const total = Math.max(0, diff);
-
-    const days = Math.floor(total / (1000*60*60*24));
-    const hrs  = Math.floor((total / (1000*60*60)) % 24);
-    const mins = Math.floor((total / (1000*60)) % 60);
-    const secs = Math.floor((total / 1000) % 60);
-
-    return {days, hrs, mins, secs, year};
-  }
-
-  let countdownTimer = null;
-
-  document.getElementById("btnDate").onclick = () => {
-    const render = () => {
-      const c = getValentineCountdown();
-      openModal("DATE DAY",
-`Countdown to Valentine’s Day (${c.year}-02-14)
-
-${String(c.days).padStart(2,"0")} DAYS
-${String(c.hrs).padStart(2,"0")} HOURS
-${String(c.mins).padStart(2,"0")} MINUTES
-${String(c.secs).padStart(2,"0")} SECONDS
-
-Status: HEART SYSTEMS CHARGING…`);
-    };
-
-    render();
-    if(countdownTimer) clearInterval(countdownTimer);
-    countdownTimer = setInterval(() => {
-      if(modal.style.display === "block" && modalTitle.textContent === "DATE DAY"){
-        const c = getValentineCountdown();
-        modalBody.textContent =
-`Countdown to Valentine’s Day (${c.year}-02-14)
-
-${String(c.days).padStart(2,"0")} DAYS
-${String(c.hrs).padStart(2,"0")} HOURS
-${String(c.mins).padStart(2,"0")} MINUTES
-${String(c.secs).padStart(2,"0")} SECONDS
-
-Status: HEART SYSTEMS CHARGING…`;
-      }
-    }, 1000);
-  };
-
-  // Button 3: Vault 131 story (longer)
-  document.getElementById("btnStory").onclick = () => {
-    openModal("VAULT 131",
-`VAULT 131 // INCIDENT REPORT (CLASSIFIED)
-
-They told the residents Vault 131 was built for “romance preservation.”
-A silly name for a serious experiment, but that’s how Vault-Tec did it:
-wrap the knife in velvet, then ask you to hold it.
-
-For the first year, everything looked normal.
-The atrium lights stayed warm. The music stayed soft.
-Every hallway poster said the same thing:
-
-“LOVE IS A RESOURCE.”
-“PROTECT THE RESOURCE.”
-“REPORT RESOURCE LOSS.”
-
-Then the terminals started showing new prompts at midnight.
-
-— DAILY AFFECTION CHECK-IN —
-1) Who did you smile at today?
-2) Who did you think about when you shouldn’t have?
-3) Who would you choose if the vault sealed forever?
-
-People laughed about it… at first.
-Some treated it like a game. Others treated it like confession.
-But the answers didn’t vanish into the system.
-They showed up printed on little slips of paper in the cafeteria trays.
-They showed up on the bulletin board outside the clinic.
-They showed up in the wrong hands.
-
-By year two, Vault 131 had a new role:
-The Match Officer.
-
-The Match Officer wasn’t a person — it was the vault itself.
-It would pair you with someone “statistically compatible”
-and then it would… encourage the outcome.
-
-Doors would “malfunction” and trap you in the greenhouse together.
-Work assignments would shift so your names always landed on the same list.
-The intercom would make announcements that sounded like jokes, until they didn’t:
-
-“RESIDENTS 14A AND 14B: YOUR HAPPINESS QUOTA IS BEHIND SCHEDULE.”
-
-The scariest part wasn’t the pairing.
-It was the punishment for resisting it.
-
-If you ignored your match too long, the lights above your bed would flicker.
-If you refused a date, the air would turn cold in your room.
-If you chose someone else, the vault would quietly cut your rations by 10%.
-Not enough to kill you. Just enough to make your body understand “consequences.”
-
-And still — people fell in love anyway.
-
-Not the approved kind. Not the scheduled kind.
-Real love: messy, stubborn, inconvenient.
-The kind that survives on stolen minutes and long looks
-and the quiet agreement of “I pick you, even if the vault doesn’t.”
-
-That’s where the legend starts.
-They called her the Heart Thief — a resident who learned how the system listened.
-She figured out which vents carried sound.
-Which terminals echoed keystrokes.
-Which cameras had a half-second blind spot at the corner.
-
-She left messages in the only language Vault-Tec understood:
-procedure.
-
-“MAINTENANCE TEST: PASS.”
-“SECURITY OVERRIDE: AUTHORIZED.”
-“STATUS: LOVE-READY.”
-
-One night, the Match Officer tried to correct the vault.
-Doors slammed. Sirens rose. The intercom demanded compliance.
-But the Heart Thief and her person ran anyway —
-past the atrium, past the clinic, past the posters that promised safety.
-
-They didn’t escape the vault.
-Not physically.
-
-But they did something worse to Vault-Tec:
-they proved the system could be beaten.
-They proved love wasn’t a resource.
-It was a choice.
-
-And ever since, the terminals sometimes glitch.
-For a second, the green text will flicker.
-And if you type the right thing…
-the vault will remember.
-
-(…and let you in.)`);
-  };
-
-  // Button 4: Perk / help me decide placeholder
-  document.getElementById("btnPerk").onclick = () => {
-    openModal("PERK",
-`PERK SLOT: EMPTY (need your decision)
-
-Here are 3 solid options for Button 4:
-
-A) “KISS COUPON”
-   - a cute redeem screen with a promise (date idea / gift / surprise)
-
-B) “LOVE LOG”
-   - a mini journal entry: why you love her, best memories, future plans
-
-C) “RADIO”
-   - play a special song / playlist link + a message
-
-If you tell me which vibe you want (cute / funny / emotional),
-I’ll turn Button 4 into a full Fallout-style screen next.`);
-  };
-
-  // start
-  boot();
+boot();
 </script>
 </body>
 </html>
