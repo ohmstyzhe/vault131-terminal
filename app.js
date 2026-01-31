@@ -1,3 +1,7 @@
+/* ===============================
+   VAULT 131 TERMINAL — app.js
+   =============================== */
+
 /* ========= AUDIO (DO NOT START UNTIL CLICK) ========= */
 let ctx = null, hum = null, gain = null;
 let audioOn = false;
@@ -9,7 +13,7 @@ function ensureAudio(){
   gain = ctx.createGain();
   hum.type = "sawtooth";
   hum.frequency.value = 60;
-  gain.gain.value = 0;
+  gain.gain.value = 0; // start silent
   hum.connect(gain);
   gain.connect(ctx.destination);
   hum.start();
@@ -27,24 +31,26 @@ function fadeOutHum(){
   gain.gain.linearRampToValueAtTime(0.0, ctx.currentTime + 0.15);
 }
 
+// typing beep (already in your build)
 function beep(){
   if(!ctx || !audioOn) return;
   const o = ctx.createOscillator(), g = ctx.createGain();
   o.connect(g); g.connect(ctx.destination);
+  o.type = "sine";
   o.frequency.value = 880;
   g.gain.value = 0.03;
   o.start();
   o.stop(ctx.currentTime + 0.03);
 }
 
+// softer hover/tap beep
 function hoverBeep(){
   if(!ctx || !audioOn) return;
-
   const o = ctx.createOscillator(), g = ctx.createGain();
   o.connect(g); g.connect(ctx.destination);
-
-  o.frequency.value = 640;   // softer, lower pitch
-  g.gain.value = 0.018;      // quieter than typing beep
+  o.type = "sine";
+  o.frequency.value = 640;
+  g.gain.value = 0.018;
   o.start();
   o.stop(ctx.currentTime + 0.02);
 }
@@ -59,80 +65,57 @@ const hints = document.getElementById("hintContainer");
 const dip = document.getElementById("powerDip");
 const volBtn = document.getElementById("volBtn");
 
-// --- HOVER SOUND (only when audio is ON) ---
-crt.addEventListener("mouseover", (e) => {
-  const b = e.target.closest("button");
-  if (!b) return;
-  hoverBeep();
-});
-
-// --- TOUCH DEVICES: play the same “hover” beep on touchstart ---
-crt.addEventListener("touchstart", (e) => {
-  const b = e.target.closest("button");
-  if (!b) return;
-  hoverBeep();
-}, { passive: true });
-
-/* ========= BUTTON HOVER SFX ========= */
-function wireButtonHoverSfx(){
-  const play = (e)=>{
-    const btn = e.target.closest("button");
-    if(!btn) return;
-    hoverBeep();
-  };
-
-  // Mouse hover (desktop)
-  crt.addEventListener("mouseover", play, true);
-
-  // Keyboard focus (tabbing)
-  crt.addEventListener("focusin", play, true);
-
-  // Touch (mobile)
-  crt.addEventListener("touchstart", play, { capture:true, passive:true });
-}
-
-wireButtonHoverSfx();
-
-/* === BUTTON HOVER / FOCUS GLOW === */
-#crt button,
-#volBtn{
-  transition: box-shadow .15s ease, border-color .15s ease, color .15s ease, transform .06s ease;
-}
-
-#crt button:hover,
-#crt button:focus-visible,
-#volBtn:hover,
-#volBtn:focus-visible{
-  border-color: #4cff9a;
-  box-shadow:
-    0 0 10px rgba(76,255,154,.35),
-    0 0 22px rgba(76,255,154,.18);
-}
-
-#crt button:active,
-#volBtn:active{
-  transform: translateY(1px);
-}
-
-/* AUDIO BUTTON */
+/* ========= AUDIO BUTTON ========= */
 function updateVolBtn(){
+  if(!volBtn) return;
   volBtn.textContent = audioOn ? "AUDIO: ON" : "AUDIO: OFF";
   volBtn.classList.toggle("on", audioOn);
 }
-volBtn.addEventListener("click", ()=>{
-  ensureAudio();
-  if(ctx.state === "suspended") ctx.resume();
 
-  audioOn = !audioOn;
-  updateVolBtn();
+if(volBtn){
+  volBtn.addEventListener("click", ()=>{
+    ensureAudio();
+    if(ctx.state === "suspended") ctx.resume();
 
-  if(audioOn){
-    fadeInHum();
-    uiStatus.textContent = "AUDIO ENABLED";
-  }else{
-    fadeOutHum();
-    uiStatus.textContent = "AUDIO MUTED";
-  }
+    audioOn = !audioOn;
+    updateVolBtn();
+
+    if(audioOn){
+      fadeInHum();
+      setStatus("AUDIO ENABLED");
+    }else{
+      fadeOutHum();
+      setStatus("AUDIO MUTED");
+    }
+  });
+}
+
+/* ========= BUTTON HOVER/TAP BEEP (EVENT DELEGATION) =========
+   Works for dynamically-created buttons (HINT 1/2/3 etc.)
+   - Desktop: mouseover
+   - Mobile: pointerdown (tap)
+*/
+let lastHoverSoundAt = 0;
+function rateLimitedHoverBeep(){
+  const now = Date.now();
+  if(now - lastHoverSoundAt < 80) return; // prevent spam
+  lastHoverSoundAt = now;
+  hoverBeep();
+}
+
+document.addEventListener("mouseover", (e)=>{
+  const b = e.target.closest("#crt button");
+  if(!b) return;
+  // ignore while audio still off to avoid confusion
+  if(!audioOn) return;
+  rateLimitedHoverBeep();
+});
+
+document.addEventListener("pointerdown", (e)=>{
+  const b = e.target.closest("#crt button");
+  if(!b) return;
+  if(!audioOn) return;
+  rateLimitedHoverBeep();
 });
 
 /* ========= CURSOR ========= */
@@ -145,10 +128,11 @@ function type(lines, speed=35, cb){
   let i=0;
   (function next(){
     if(i>=lines.length){ cb && cb(); return; }
+
     const d = document.createElement("div");
     term.insertBefore(d, cursor);
-    let j=0;
 
+    let j=0;
     const prePause = (Math.random()<0.18) ? (180 + Math.random()*240) : 0;
 
     setTimeout(()=>{
@@ -182,17 +166,27 @@ function setStatus(text){
 const ID = "101-317-76";
 const NEXT_ID = "14-LOVE-READY";
 const FINAL_CODE = "531";
-const ADMIN_PIN = "VT-OVERRIDE-531"; // <-- you can change this to anything
+
+// Optional “skip to end” admin PIN (change this to whatever you want)
+const ADMIN_PIN = "131-OVERRIDE";
 
 const riddles = [
-  { q:"I move without legs and follow you everywhere.", a:"shadow",
+  { q:"I move without legs and follow you everywhere.",
+    a:"shadow",
     h:["You see me when light hits you.","I copy your shape perfectly.","I disappear in darkness."] },
-  { q:"The more you take, the more you leave behind.", a:"footsteps",
+
+  { q:"The more you take, the more you leave behind.",
+    a:"footsteps",
     h:["You make me without noticing.","I mark where you’ve been.","I vanish if you stop walking."] },
-  { q:"I speak without a mouth and hear without ears.", a:"echo",
+
+  { q:"I speak without a mouth and hear without ears.",
+    a:"echo",
     h:["I repeat what you say.","I live in empty spaces.","You hear me after you call out."] },
-  { q:"I’m always coming, but I never arrive.", a:"tomorrow",
+
+  { q:"I’m always coming, but I never arrive.",
+    a:"tomorrow",
     h:["You can’t hold me in your hands.","I’m always one day away.","It becomes today… then it’s gone."] },
+
   { q:"I have keys but open no locks. I have space but no room. You can enter, but you can’t go outside. What am I?",
     a:"keyboard",
     h:["Think: terminal.","You’re using me right now.","Keys + space + enter = me."] }
@@ -205,15 +199,26 @@ const finalQ = {
 };
 
 const loadMsgs = [
-  "ACCESSING VAULT RECORDS…","DECRYPTING MEMORY SECTORS…","VERIFYING EMOTIONAL STABILITY…",
-  "CHECKING RADIATION LEVELS…","SYNCING PERSONAL DATA…","VAULT-TEC PROTOCOL ACTIVE…",
-  "AUTHORIZATION PENDING…","BUFFERING… PLEASE WAIT…"
+  "ACCESSING VAULT RECORDS…",
+  "DECRYPTING MEMORY SECTORS…",
+  "VERIFYING EMOTIONAL STABILITY…",
+  "CHECKING RADIATION LEVELS…",
+  "SYNCING PERSONAL DATA…",
+  "VAULT-TEC PROTOCOL ACTIVE…",
+  "AUTHORIZATION PENDING…",
+  "BUFFERING… PLEASE WAIT…"
 ];
 
 const loadDetails = [
-  "LINK: VAULTNET/131 :: HANDSHAKE OK","CACHE: REBUILDING INDEX TABLES","SECURITY: HASHING CREDENTIALS",
-  "I/O: CALIBRATING CONSOLE INPUT","SYS: SCANNING FOR ANOMALIES","MEM: FLUSHING TEMP BUFFERS",
-  "DATA: CHECKSUM VALIDATION PASS","COMMS: SIGNAL STRENGTH STABLE","CORE: SPINNING UP MODULES",
+  "LINK: VAULTNET/131 :: HANDSHAKE OK",
+  "CACHE: REBUILDING INDEX TABLES",
+  "SECURITY: HASHING CREDENTIALS",
+  "I/O: CALIBRATING CONSOLE INPUT",
+  "SYS: SCANNING FOR ANOMALIES",
+  "MEM: FLUSHING TEMP BUFFERS",
+  "DATA: CHECKSUM VALIDATION PASS",
+  "COMMS: SIGNAL STRENGTH STABLE",
+  "CORE: SPINNING UP MODULES",
   "VAULT-TEC: INTEGRITY 100%"
 ];
 
@@ -228,13 +233,17 @@ function clear(){
   term.innerHTML="";
   term.appendChild(cursor);
 }
+
 function showInput(ph=""){
   input.style.display="block";
   input.placeholder=ph;
   input.value="";
   input.focus();
 }
-function hideInput(){ input.style.display="none"; }
+
+function hideInput(){
+  input.style.display="none";
+}
 
 function showHints(arr){
   hints.innerHTML="";
@@ -255,7 +264,7 @@ function showHints(arr){
 /* ========= POWER DIP ========= */
 function powerDip(cb){
   dip.classList.remove("powerDipOn");
-  void dip.offsetWidth;
+  void dip.offsetWidth; // restart animation
   dip.classList.add("powerDipOn");
   setStatus("POWER FLUCTUATION… STABILIZING");
   setTimeout(()=>{
@@ -264,11 +273,12 @@ function powerDip(cb){
   }, 420);
 }
 
-/* ========= LOADING ========= */
+/* ========= LOADING BAR + RAD FLICKER ========= */
 function loading(cb){
   locked = true;
   hideInput();
   hints.innerHTML = "";
+
   setStatus("PROCESSING… PLEASE WAIT");
 
   const track = document.createElement("div");
@@ -293,8 +303,13 @@ function loading(cb){
 
   crt.classList.add("radFlicker");
 
-  const msgI = setInterval(()=>{ msg.textContent = loadMsgs[mi++ % loadMsgs.length]; }, 650);
-  const detI = setInterval(()=>{ detail.textContent = loadDetails[di++ % loadDetails.length]; }, 520);
+  const msgI = setInterval(()=>{
+    msg.textContent = loadMsgs[mi++ % loadMsgs.length];
+  }, 650);
+
+  const detI = setInterval(()=>{
+    detail.textContent = loadDetails[di++ % loadDetails.length];
+  }, 520);
 
   const t = setInterval(()=>{
     p += 2 + Math.floor(Math.random()*6);
@@ -303,7 +318,10 @@ function loading(cb){
     term.scrollTop = term.scrollHeight;
 
     if(p>=100){
-      clearInterval(t); clearInterval(msgI); clearInterval(detI);
+      clearInterval(t);
+      clearInterval(msgI);
+      clearInterval(detI);
+
       setTimeout(()=>{
         track.remove(); msg.remove(); detail.remove();
         locked = false;
@@ -337,10 +355,15 @@ function showHelp(){
 
 /* ========= SCENES ========= */
 function boot(){
-  stage="login"; r=0; hintUsed=0; locked=false;
+  stage="login";
+  r=0;
+  hintUsed=0;
+  locked=false;
+
   setLocked();
   setStatus("STANDBY… AWAITING INPUT");
   clear();
+
   type([
     "VAULT 131 DATABASE",
     "SECURITY: ENABLED",
@@ -395,7 +418,12 @@ function showReadyScene(){
 function showFinalSuccess(){
   clear();
   setStatus("AUTHORIZATION GRANTED");
-  type(["AUTHORIZATION GRANTED.","","CASE CODE:",""], 35, ()=>{
+  type([
+    "AUTHORIZATION GRANTED.",
+    "",
+    "CASE CODE:",
+    ""
+  ], 35, ()=>{
     const big = document.createElement("div");
     big.className="bigCode";
     big.textContent = FINAL_CODE;
@@ -434,33 +462,30 @@ input.addEventListener("keydown", (e)=>{
   if(e.key !== "Enter") return;
   if(locked) return;
 
-  const raw = input.value.trim();
+  const raw = (input.value || "").trim();
   const a = raw.toLowerCase();
 
   input.value = "";
   hideInput();
   hints.innerHTML = "";
 
+  // help easter egg anywhere
   if(a === "help"){ showHelp(); return; }
   if(stage === "help"){ boot(); return; }
 
   if(stage === "login"){
     setStatus("VALIDATING…");
-    
-    // ADMIN OVERRIDE: jump straight to final "531" screen
-if (a === ADMIN_PIN.toLowerCase()) {
-  setUnlocked();
-  clear();
-  setStatus("OVERRIDE ACCEPTED");
-  type([
-    "OVERRIDE ACCEPTED.",
-    "VAULT-TEC ADMIN ACCESS GRANTED.",
-    "SKIPPING TEST MODULES…"
-  ], 30, ()=>{
-    loading(()=> powerDip(()=> showFinalSuccess()));
-  });
-  return;
-}
+
+    // ADMIN PIN: jump straight to the final "531" screen (no riddles)
+    if(a === ADMIN_PIN.toLowerCase()){
+      setUnlocked();
+      setStatus("OVERRIDE ACCEPTED");
+      clear();
+      type(["OVERRIDE VERIFIED.", "Skipping test modules…"], 32, ()=>{
+        loading(()=> powerDip(()=> showFinalSuccess()));
+      });
+      return;
+    }
 
     if(a === ID.toLowerCase()){
       setUnlocked();
@@ -486,7 +511,9 @@ if (a === ADMIN_PIN.toLowerCase()) {
   if(stage === "riddle"){
     if(a === riddles[r].a.toLowerCase()){
       setStatus("ANSWER ACCEPTED");
-      type(["✔ CORRECT."], 30, ()=> loading(()=> powerDip(()=>{ r++; askRiddle(); })));
+      type(["✔ CORRECT."], 30, ()=>{
+        loading(()=> powerDip(()=>{ r++; askRiddle(); }));
+      });
     } else {
       setStatus("ANSWER REJECTED");
       type(["✖ TRY AGAIN", "> "], 30, ()=>{
@@ -501,7 +528,9 @@ if (a === ADMIN_PIN.toLowerCase()) {
   if(stage === "final"){
     if(raw === finalQ.a){
       setStatus("CODE ACCEPTED");
-      type(["✔ AUTHORIZED."], 30, ()=> loading(()=> powerDip(()=> showFinalSuccess())));
+      type(["✔ AUTHORIZED."], 30, ()=>{
+        loading(()=> powerDip(()=> showFinalSuccess()));
+      });
     } else {
       setStatus("CODE INVALID");
       type(["✖ INCORRECT CODE", "> "], 30, ()=>{
@@ -513,7 +542,10 @@ if (a === ADMIN_PIN.toLowerCase()) {
     return;
   }
 
-  if(stage === "ready"){ boot(); return; }
+  if(stage === "ready"){
+    boot();
+    return;
+  }
 });
 
 /* Start */
