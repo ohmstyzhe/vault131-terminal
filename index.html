@@ -8,8 +8,8 @@
 <style>
   :root{
     --g:#4cff9a;
-    --g2: rgba(76,255,154,0.55);
-    --g3: rgba(76,255,154,0.35);
+    --gSoft: rgba(76,255,154,0.60);
+    --gDim: rgba(76,255,154,0.25);
     --bg:#050b07;
     --blk:#000;
   }
@@ -17,41 +17,64 @@
   html, body{
     margin:0; height:100%;
     background:var(--blk);
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
     display:flex; justify-content:center; align-items:center;
     overflow:hidden;
   }
 
-  /* CRT SHELL */
+  /* CRT shell */
   #crt{
     width:min(980px, 94vw);
-    height:min(82vh, 900px);
+    height:min(82vh, 980px);
     background:var(--bg);
     border-radius:22px;
-    padding:22px;
+    padding:18px;
     position:relative;
     overflow:hidden;
     display:flex;
     flex-direction:column;
-    border:3px solid var(--g3);
-    box-shadow:0 0 45px rgba(76,255,154,0.22), inset 0 0 140px rgba(0,0,0,0.95);
+    border:3px solid rgba(76,255,154,0.30);
+    box-shadow:
+      0 0 50px rgba(76,255,154,0.18),
+      inset 0 0 160px rgba(0,0,0,0.95);
   }
 
-  /* subtle CRT curvature */
-  #crt:before{
+  #crt::before{
     content:"";
     position:absolute; inset:-2px;
     border-radius:24px;
     pointer-events:none;
-    background: radial-gradient(1200px 700px at 50% 30%, rgba(76,255,154,0.08), transparent 60%);
+    background: radial-gradient(1100px 650px at 50% 28%, rgba(76,255,154,0.09), transparent 60%);
     mix-blend-mode: screen;
   }
 
-  /* HEADER */
+  /* overlays */
+  #scanlines{
+    position:absolute; inset:0;
+    background: repeating-linear-gradient(to bottom,
+      rgba(0,0,0,.28), rgba(0,0,0,.28) 1px,
+      transparent 1px, transparent 3px);
+    opacity:0.55;
+    pointer-events:none;
+  }
+  #vignette{
+    position:absolute; inset:0;
+    background: radial-gradient(900px 520px at 50% 45%, transparent 55%, rgba(0,0,0,0.55) 100%);
+    pointer-events:none;
+  }
+  #noise{
+    position:absolute; inset:0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+    opacity:0.14;
+    pointer-events:none;
+  }
+
+  /* header */
   #uiWrap{
-    margin-bottom:12px;
-    padding-bottom:10px;
-    border-bottom:1px solid rgba(76,255,154,0.25);
+    margin-bottom:10px;
+    padding:10px 10px 12px 10px;
+    border-bottom:1px solid rgba(76,255,154,0.22);
     position:relative;
     z-index:2;
   }
@@ -66,18 +89,17 @@
     color:var(--g);
     font-size:14px;
     letter-spacing:1px;
-    text-shadow: 0 0 6px rgba(76,255,154,0.35);
+    text-shadow:0 0 8px rgba(76,255,154,0.25);
   }
   #uiStatus{
     margin-top:6px;
-    color:rgba(76,255,154,0.8);
+    color:rgba(76,255,154,0.78);
     font-size:12px;
     letter-spacing:0.8px;
   }
 
-  /* AUDIO BUTTON */
   #audioBtn{
-    border:2px solid var(--g2);
+    border:2px solid rgba(76,255,154,0.50);
     background:transparent;
     color:rgba(76,255,154,0.9);
     padding:8px 12px;
@@ -85,53 +107,37 @@
     cursor:pointer;
     font-size:12px;
     letter-spacing:1px;
-    box-shadow: 0 0 14px rgba(76,255,154,0.12);
+    box-shadow:0 0 16px rgba(76,255,154,0.10);
   }
   #audioBtn.on{
     border-color:var(--g);
     color:var(--g);
-    box-shadow: 0 0 20px rgba(76,255,154,0.18);
+    box-shadow:0 0 22px rgba(76,255,154,0.18);
   }
 
-  /* SCANLINES + VIGNETTE */
-  #scanlines{
-    position:absolute; inset:0;
-    background:
-      repeating-linear-gradient(to bottom,
-        rgba(0,0,0,.30), rgba(0,0,0,.30) 1px,
-        transparent 1px, transparent 3px);
-    pointer-events:none;
-    opacity:0.55;
-  }
-  #vignette{
-    position:absolute; inset:0;
-    background: radial-gradient(900px 500px at 50% 45%, transparent 55%, rgba(0,0,0,0.55) 100%);
-    pointer-events:none;
-  }
-  #noise{
-    position:absolute; inset:0;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
-    mix-blend-mode: overlay;
-    opacity:0.18;
-    pointer-events:none;
+  /* views */
+  #terminalView, #mainView{
+    position:relative;
+    z-index:2;
+    flex:1;
+    min-height:0;
   }
 
   /* TERMINAL */
   #terminalView{
-    position:relative;
-    z-index:2;
-    flex:1;
     display:flex;
     flex-direction:column;
     gap:10px;
+    padding:8px 10px 2px 10px;
   }
   #terminal{
     flex:1;
+    min-height:0;
     color:var(--g);
-    text-shadow:0 0 4px rgba(76,255,154,0.7), 0 0 12px rgba(76,255,154,0.25);
+    text-shadow:0 0 4px rgba(76,255,154,0.65), 0 0 12px rgba(76,255,154,0.22);
     white-space:pre-wrap;
     overflow-y:auto;
-    padding:8px 2px 2px 2px;
+    padding:4px 2px;
   }
   #cursor{
     display:inline-block;
@@ -148,7 +154,7 @@
     display:flex;
     align-items:center;
     gap:10px;
-    padding:8px 0 2px 0;
+    padding:6px 0 6px 0;
   }
   #prompt{
     color:rgba(76,255,154,0.85);
@@ -159,9 +165,9 @@
     flex:1;
     background:rgba(0,0,0,0.55);
     color:var(--g);
-    border:2px solid rgba(76,255,154,0.65);
+    border:2px solid rgba(76,255,154,0.55);
     padding:10px 12px;
-    border-radius:10px;
+    border-radius:12px;
     font-size:16px;
     outline:none;
     box-shadow: inset 0 0 18px rgba(0,0,0,0.8);
@@ -169,48 +175,43 @@
 
   /* MAIN UI */
   #mainView{
-    position:relative;
-    z-index:2;
-    flex:1;
     display:none;
     flex-direction:column;
-    gap:12px;
+    gap:10px;
+    padding:6px 10px 10px 10px;
+    min-height:0;
   }
 
-  /* tab row */
   .tabs{
     display:flex;
     gap:18px;
     align-items:flex-end;
-    padding:6px 4px 0 4px;
-    border-bottom:1px solid rgba(76,255,154,0.25);
+    padding:6px 2px 0 2px;
+    border-bottom:1px solid rgba(76,255,154,0.22);
     user-select:none;
   }
   .tab{
-    color:rgba(76,255,154,0.65);
+    color:rgba(76,255,154,0.60);
     font-size:20px;
     letter-spacing:2px;
     padding:8px 0 10px 0;
     position:relative;
     cursor:pointer;
   }
-  .tab.active{
-    color:var(--g);
-  }
-  .tab.active:after{
+  .tab.active{ color:var(--g); }
+  .tab.active::after{
     content:"";
     position:absolute;
     left:0; right:0; bottom:-1px;
     height:3px;
     background:var(--g);
-    box-shadow: 0 0 12px rgba(76,255,154,0.35);
+    box-shadow:0 0 12px rgba(76,255,154,0.30);
   }
 
-  /* subtabs */
   .subtabs{
     display:flex;
     gap:22px;
-    padding:8px 4px 4px 4px;
+    padding:6px 2px 6px 2px;
     user-select:none;
   }
   .subtab{
@@ -221,85 +222,72 @@
   }
   .subtab.active{ color:var(--g); }
 
-  /* main panel */
+  /* The big panel (CLEAN grid layout) */
   #panel{
     flex:1;
-    border:2px solid rgba(76,255,154,0.28);
-    border-radius:18px;
-    padding:14px;
-    position:relative;
-    overflow:hidden;
-    box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
-  }
-  #panelInner{
-    position:absolute; inset:14px;
+    min-height:0;
     border:2px solid rgba(76,255,154,0.22);
-    border-radius:14px;
-    padding:16px;
-    display:flex;
-    flex-direction:column;
-    gap:12px;
+    border-radius:18px;
+    padding:12px;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.82);
+    background: rgba(0,0,0,0.14);
+    overflow:hidden;
+    display:grid;
+    grid-template-rows: auto 1fr auto auto;
+    gap:10px;
   }
 
-  /* top mini buttons */
   .miniRow{
     display:flex;
     justify-content:space-between;
     align-items:center;
     gap:10px;
   }
+
   .pillBtn{
-    border:2px solid rgba(76,255,154,0.55);
+    border:2px solid rgba(76,255,154,0.50);
     background:transparent;
-    color:rgba(76,255,154,0.85);
+    color:rgba(76,255,154,0.88);
     padding:10px 14px;
     border-radius:12px;
     letter-spacing:2px;
     cursor:pointer;
-    box-shadow: 0 0 18px rgba(76,255,154,0.10);
     font-size:12px;
+    box-shadow:0 0 18px rgba(76,255,154,0.08);
   }
 
-  /* center image stage */
+  /* Stage stays centered and never overlaps HUD */
   #stage{
-    flex:1;
+    border:2px solid rgba(76,255,154,0.18);
+    border-radius:16px;
+    background: rgba(0,0,0,0.12);
     display:flex;
     align-items:center;
     justify-content:center;
-    position:relative;
-    min-height:280px;
-  }
-  #pipImg{
-    width:min(560px, 70vw);
-    max-height:42vh;
-    object-fit:contain;
-    filter:
-      drop-shadow(0 0 16px rgba(76,255,154,0.22))
-      drop-shadow(0 0 40px rgba(76,255,154,0.10));
-    opacity:0.95;
-    image-rendering: auto;
+    overflow:hidden;
+    min-height:220px;
   }
 
-  /* bottom HUD */
+  /* HUD */
   #hud{
     display:grid;
     grid-template-columns: 1fr 1.4fr 1fr;
-    gap:12px;
+    gap:10px;
     align-items:stretch;
   }
   .hudBox{
-    border:2px solid rgba(76,255,154,0.32);
+    border:2px solid rgba(76,255,154,0.25);
     border-radius:14px;
     padding:12px 14px;
     color:var(--g);
-    text-shadow:0 0 8px rgba(76,255,154,0.2);
-    box-shadow: inset 0 0 22px rgba(0,0,0,0.75);
-    background: rgba(0,0,0,0.18);
+    text-shadow:0 0 8px rgba(76,255,154,0.18);
+    box-shadow: inset 0 0 22px rgba(0,0,0,0.78);
+    background: rgba(0,0,0,0.12);
   }
   .hudLabel{
     font-size:14px;
     letter-spacing:3px;
-    opacity:0.9;
+    opacity:0.95;
   }
   .hudValue{
     margin-top:6px;
@@ -310,38 +298,38 @@
     margin-top:10px;
     height:10px;
     border-radius:999px;
-    border:2px solid rgba(76,255,154,0.28);
+    border:2px solid rgba(76,255,154,0.22);
     overflow:hidden;
   }
   .bar > div{
     height:100%;
     width:72%;
     background: var(--g);
-    box-shadow: 0 0 12px rgba(76,255,154,0.35);
+    box-shadow: 0 0 12px rgba(76,255,154,0.30);
   }
 
   #footerTip{
-    margin-top:6px;
     color:rgba(76,255,154,0.75);
     font-size:12px;
     letter-spacing:1px;
   }
 
-  /* INFO modal */
+  /* modal */
   #modal{
     position:absolute; inset:0;
     display:none;
     align-items:center;
     justify-content:center;
-    padding:20px;
+    padding:18px;
     background: rgba(0,0,0,0.45);
+    z-index:5;
   }
   #modalBox{
-    width:min(720px, 92vw);
-    border:2px solid rgba(76,255,154,0.35);
+    width:min(740px, 92vw);
+    border:2px solid rgba(76,255,154,0.30);
     border-radius:18px;
     background: rgba(5,11,7,0.98);
-    box-shadow: 0 0 55px rgba(76,255,154,0.12), inset 0 0 120px rgba(0,0,0,0.85);
+    box-shadow: 0 0 55px rgba(76,255,154,0.10), inset 0 0 120px rgba(0,0,0,0.86);
     padding:16px;
   }
   #modalHead{
@@ -350,12 +338,12 @@
     align-items:center;
     gap:10px;
     padding-bottom:10px;
-    border-bottom:1px solid rgba(76,255,154,0.22);
+    border-bottom:1px solid rgba(76,255,154,0.18);
     color:var(--g);
     letter-spacing:2px;
   }
   #closeModal{
-    border:2px solid rgba(76,255,154,0.45);
+    border:2px solid rgba(76,255,154,0.40);
     background:transparent;
     color:rgba(76,255,154,0.9);
     padding:8px 12px;
@@ -371,6 +359,13 @@
     line-height:1.6;
     white-space:pre-wrap;
   }
+
+  /* Responsive tweaks */
+  @media (max-width: 700px){
+    .tab{ font-size:18px; }
+    .subtab{ font-size:16px; }
+    #hud{ grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 
@@ -384,7 +379,7 @@
       <div id="uiStatus">STANDBY… AWAITING INPUT</div>
     </div>
 
-    <!-- TERMINAL LOGIN VIEW -->
+    <!-- TERMINAL VIEW -->
     <div id="terminalView">
       <div id="terminal"></div>
       <div id="inputRow">
@@ -393,7 +388,7 @@
       </div>
     </div>
 
-    <!-- MAIN PIP-BOY STYLE VIEW -->
+    <!-- MAIN VIEW -->
     <div id="mainView">
       <div class="tabs" id="topTabs">
         <div class="tab active" data-tab="STAT">STAT</div>
@@ -410,47 +405,134 @@
       </div>
 
       <div id="panel">
-        <div id="panelInner">
-          <div class="miniRow">
-            <button class="pillBtn" id="infoBtn">INFO</button>
-            <button class="pillBtn" id="dateBtn">DATE / DAY</button>
-          </div>
-
-          <div id="stage">
-            <!-- EMBEDDED IMAGE (your reference) -->
-            <img id="pipImg" alt="Pip-Boy style outline" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/4S...REPLACED_BY_FULL_BASE64..."/>
-          </div>
-
-          <div id="hud">
-            <div class="hudBox">
-              <div class="hudLabel">HP</div>
-              <div class="hudValue" id="hpVal">131/131</div>
-              <div class="bar"><div id="hpBar"></div></div>
-            </div>
-            <div class="hudBox">
-              <div class="hudLabel">LEVEL</div>
-              <div class="hudValue" id="lvlVal">14</div>
-              <div class="bar"><div id="lvlBar"></div></div>
-            </div>
-            <div class="hudBox">
-              <div class="hudLabel">AP</div>
-              <div class="hudValue" id="apVal">90/90</div>
-              <div class="bar"><div id="apBar"></div></div>
-            </div>
-          </div>
-
-          <div id="footerTip">TIP: Tap a module to open it. (Hub restricted to authorized users only.)</div>
+        <div class="miniRow">
+          <button class="pillBtn" id="infoBtn">INFO</button>
+          <button class="pillBtn" id="dateBtn">DATE / DAY</button>
         </div>
 
-        <!-- INFO MODAL -->
-        <div id="modal">
-          <div id="modalBox">
-            <div id="modalHead">
-              <div>VAULT 131 // INFO LOG</div>
-              <button id="closeModal">CLOSE</button>
-            </div>
-            <div id="modalBody"></div>
+        <!-- CLEAN CENTER STAGE -->
+        <div id="stage" aria-label="Pip-Boy style outline stage">
+          <!-- Inline SVG: clean outline (no broken image assets) -->
+          <svg viewBox="0 0 900 520" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" style="max-height: 100%; display:block;">
+            <defs>
+              <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+                <feGaussianBlur stdDeviation="3" result="b"/>
+                <feMerge>
+                  <feMergeNode in="b"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+              <linearGradient id="scan" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="rgba(0,0,0,0)"/>
+                <stop offset="0.5" stop-color="rgba(0,0,0,0.14)"/>
+                <stop offset="1" stop-color="rgba(0,0,0,0)"/>
+              </linearGradient>
+            </defs>
+
+            <!-- faint scan wash -->
+            <rect x="0" y="0" width="900" height="520" fill="url(#scan)" opacity="0.35"/>
+
+            <!-- top HUD text like your reference -->
+            <g fill="none" stroke="rgba(76,255,154,0.85)" stroke-width="6" filter="url(#glow)">
+              <path d="M70 62 H830" opacity="0.35"/>
+              <path d="M70 450 H830" opacity="0.35"/>
+            </g>
+
+            <g fill="rgba(76,255,154,0.85)" font-family="monospace" font-size="26" letter-spacing="3">
+              <text x="80" y="55">STATS</text>
+              <text x="220" y="55">LVL 14</text>
+              <text x="370" y="55">HP 131/131</text>
+              <text x="600" y="55">AP 90/90</text>
+            </g>
+
+            <!-- side labels -->
+            <g fill="rgba(76,255,154,0.75)" font-family="monospace" font-size="20" letter-spacing="2">
+              <text x="95"  y="190">CND</text>
+              <text x="95"  y="225">RAD</text>
+              <text x="95"  y="260">EFF</text>
+
+              <text x="650" y="190">(12) STIMPAK</text>
+              <text x="650" y="225">LIMBS</text>
+            </g>
+
+            <!-- small bars around body -->
+            <g fill="rgba(76,255,154,0.85)" opacity="0.9" filter="url(#glow)">
+              <rect x="405" y="92" width="90" height="16" rx="6"/>
+              <rect x="260" y="210" width="76" height="16" rx="6"/>
+              <rect x="570" y="210" width="76" height="16" rx="6"/>
+              <rect x="300" y="315" width="78" height="16" rx="6"/>
+              <rect x="522" y="315" width="78" height="16" rx="6"/>
+              <rect x="410" y="400" width="80" height="16" rx="6"/>
+            </g>
+
+            <!-- OUTLINE DUDE (stylized, clean, inspired by reference) -->
+            <g fill="none" stroke="rgba(76,255,154,0.92)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+              <!-- head -->
+              <circle cx="450" cy="170" r="58"/>
+              <!-- eyes + mouth -->
+              <path d="M428 165 Q438 155 448 165" />
+              <path d="M452 165 Q462 155 472 165" />
+              <path d="M430 192 Q450 206 470 192" />
+
+              <!-- body -->
+              <path d="M450 228
+                       C395 240 360 290 368 338
+                       C378 392 410 418 450 418
+                       C490 418 522 392 532 338
+                       C540 290 505 240 450 228 Z" />
+
+              <!-- arms -->
+              <path d="M380 285 C320 290 270 315 238 338" />
+              <path d="M520 285 C580 290 630 315 662 338" />
+
+              <!-- hands (little circles) -->
+              <circle cx="228" cy="344" r="16"/>
+              <circle cx="672" cy="344" r="16"/>
+
+              <!-- legs -->
+              <path d="M420 418 C400 445 392 470 395 492" />
+              <path d="M480 418 C500 445 508 470 505 492" />
+              <!-- feet -->
+              <path d="M372 492 H420" />
+              <path d="M480 492 H528" />
+            </g>
+
+            <!-- bottom label -->
+            <g fill="rgba(76,255,154,0.85)" font-family="monospace" font-size="24" letter-spacing="2">
+              <text x="310" y="510">STATUS  •  S.P.E.C.I.A.L  •  PERKS  •  GENERAL</text>
+            </g>
+          </svg>
+        </div>
+
+        <div id="hud">
+          <div class="hudBox">
+            <div class="hudLabel">HP</div>
+            <div class="hudValue" id="hpVal">131/131</div>
+            <div class="bar"><div id="hpBar"></div></div>
           </div>
+          <div class="hudBox">
+            <div class="hudLabel">LEVEL</div>
+            <div class="hudValue" id="lvlVal">14</div>
+            <div class="bar"><div id="lvlBar"></div></div>
+          </div>
+          <div class="hudBox">
+            <div class="hudLabel">AP</div>
+            <div class="hudValue" id="apVal">90/90</div>
+            <div class="bar"><div id="apBar"></div></div>
+          </div>
+        </div>
+
+        <div id="footerTip">TIP: Tap a module to open it. (Hub restricted to authorized users only.)</div>
+      </div>
+
+      <!-- MODAL -->
+      <div id="modal">
+        <div id="modalBox">
+          <div id="modalHead">
+            <div>VAULT 131 // INFO LOG</div>
+            <button id="closeModal">CLOSE</button>
+          </div>
+          <div id="modalBody"></div>
         </div>
       </div>
     </div>
@@ -461,175 +543,155 @@
   </div>
 
 <script>
-/* ---------------------------
-   Replace the placeholder base64 in <img src="...">
-   with the actual base64 below (already injected).
-   --------------------------- */
+  /* ====== AUDIO (user activated) ====== */
+  let audioOn = false;
+  let ctx, hum, gain;
 
-/* Inject the FULL base64 image into the pipImg src (no extra files needed). */
-(function(){
-  const pipImg = document.getElementById("pipImg");
-  const b64 = "REPLACE_ME";
-  // We'll overwrite the src with the real b64 (below).
-  pipImg.src = "data:image/jpeg;base64," + b64;
-})();
+  function ensureAudio(){
+    if(ctx) return;
+    ctx = new (window.AudioContext||window.webkitAudioContext)();
+    hum = ctx.createOscillator();
+    gain = ctx.createGain();
+    hum.type = "sawtooth";
+    hum.frequency.value = 60;
+    gain.gain.value = 0;
+    hum.connect(gain);
+    gain.connect(ctx.destination);
+    hum.start();
+  }
+  function beep(){
+    if(!audioOn || !ctx) return;
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.frequency.value = 880;
+    g.gain.value = 0.03;
+    o.start();
+    o.stop(ctx.currentTime + 0.03);
+  }
 
-/* ====== AUDIO (user activated) ====== */
-let audioOn = false;
-let ctx;
-let hum, gain;
+  const audioBtn = document.getElementById("audioBtn");
+  audioBtn.onclick = async ()=>{
+    ensureAudio();
+    await ctx.resume();
+    audioOn = !audioOn;
+    gain.gain.linearRampToValueAtTime(audioOn ? 0.02 : 0, ctx.currentTime + 0.25);
+    audioBtn.textContent = audioOn ? "AUDIO: ON" : "AUDIO: OFF";
+    audioBtn.classList.toggle("on", audioOn);
+  };
 
-function ensureAudio(){
-  if(ctx) return;
-  ctx = new (window.AudioContext||window.webkitAudioContext)();
-  hum = ctx.createOscillator();
-  gain = ctx.createGain();
-  hum.type = "sawtooth";
-  hum.frequency.value = 60;
-  gain.gain.value = 0;
-  hum.connect(gain);
-  gain.connect(ctx.destination);
-  hum.start();
-}
-function beep(){
-  if(!audioOn || !ctx) return;
-  const o = ctx.createOscillator(), g = ctx.createGain();
-  o.connect(g); g.connect(ctx.destination);
-  o.frequency.value = 880;
-  g.gain.value = 0.03;
-  o.start();
-  o.stop(ctx.currentTime + 0.03);
-}
+  /* ====== TERMINAL TYPEWRITER ====== */
+  const uiBar = document.getElementById("uiBar");
+  const uiStatus = document.getElementById("uiStatus");
+  const term = document.getElementById("terminal");
+  const input = document.getElementById("inputBox");
+  const terminalView = document.getElementById("terminalView");
+  const mainView = document.getElementById("mainView");
 
-const audioBtn = document.getElementById("audioBtn");
-audioBtn.onclick = async ()=>{
-  ensureAudio();
-  await ctx.resume();
-  audioOn = !audioOn;
-  gain.gain.linearRampToValueAtTime(audioOn ? 0.02 : 0, ctx.currentTime + 0.25);
-  audioBtn.textContent = audioOn ? "AUDIO: ON" : "AUDIO: OFF";
-  audioBtn.classList.toggle("on", audioOn);
-};
-
-/* ====== TERMINAL TYPEWRITER ====== */
-const uiBar = document.getElementById("uiBar");
-const uiStatus = document.getElementById("uiStatus");
-const term = document.getElementById("terminal");
-const input = document.getElementById("inputBox");
-
-const terminalView = document.getElementById("terminalView");
-const mainView = document.getElementById("mainView");
-
-const cursor = document.createElement("span");
-cursor.id="cursor";
-term.appendChild(cursor);
-
-function clearTerm(){
-  term.innerHTML="";
+  const cursor = document.createElement("span");
+  cursor.id = "cursor";
   term.appendChild(cursor);
-}
 
-function typeLines(lines, speed=26, cb){
-  let i=0;
-  (function nextLine(){
-    if(i>=lines.length){ cb && cb(); return; }
-    const d=document.createElement("div");
-    term.insertBefore(d,cursor);
-    let j=0;
-    (function nextChar(){
-      if(j>=lines[i].length){
-        i++;
-        setTimeout(nextLine, 140);
-        return;
-      }
-      d.textContent += lines[i][j++];
-      beep();
-      term.scrollTop = term.scrollHeight;
-      setTimeout(nextChar, speed);
+  function clearTerm(){
+    term.innerHTML = "";
+    term.appendChild(cursor);
+  }
+
+  function typeLines(lines, speed=24, cb){
+    let i=0;
+    (function nextLine(){
+      if(i>=lines.length){ cb && cb(); return; }
+      const d=document.createElement("div");
+      term.insertBefore(d,cursor);
+      let j=0;
+      (function nextChar(){
+        if(j>=lines[i].length){
+          i++;
+          setTimeout(nextLine, 120);
+          return;
+        }
+        d.textContent += lines[i][j++];
+        beep();
+        term.scrollTop = term.scrollHeight;
+        setTimeout(nextChar, speed);
+      })();
     })();
-  })();
-}
+  }
 
-/* ====== LOGIN FLOW ====== */
-const SECRET = "14-LOVE-READY";
+  /* ====== LOGIN FLOW ====== */
+  const SECRET = "14-LOVE-READY";
 
-function boot(){
-  uiBar.textContent = "VAULT 131 DATABASE │ STATUS: LOCKED";
-  uiStatus.textContent = "STANDBY… AWAITING INPUT";
-  clearTerm();
-  input.value = "";
-  input.placeholder = "ENTER ID";
-  input.focus();
-
-  typeLines([
-    "VAULT 131 DATABASE",
-    "SECURITY: ENABLED",
-    "ENTER IDENTIFICATION:",
-    ""
-  ], 22);
-}
-
-function deny(){
-  typeLines(["ACCESS DENIED", ""], 18, ()=>{
+  function boot(){
+    uiBar.textContent = "VAULT 131 DATABASE │ STATUS: LOCKED";
+    uiStatus.textContent = "STANDBY… AWAITING INPUT";
+    clearTerm();
     input.value = "";
+    input.placeholder = "ENTER ID";
     input.focus();
+
+    typeLines([
+      "VAULT 131 DATABASE",
+      "SECURITY: ENABLED",
+      "ENTER IDENTIFICATION:",
+      ""
+    ], 22);
+  }
+
+  function deny(){
+    typeLines(["ACCESS DENIED", ""], 18, ()=>{
+      input.value = "";
+      input.focus();
+    });
+  }
+
+  function authorize(){
+    uiBar.textContent = "VAULT 131 DATABASE │ STATUS: READY";
+    uiStatus.textContent = "AUTHORIZED MODULES LOADED";
+    terminalView.style.display = "none";
+    mainView.style.display = "flex";
+  }
+
+  input.addEventListener("keydown", (e)=>{
+    if(e.key !== "Enter") return;
+    const v = (input.value || "").trim();
+
+    typeLines(["> " + v], 12, ()=>{
+      if(v.toUpperCase() === SECRET){
+        typeLines(["", "ACCESS GRANTED", "LOADING MODULES…"], 16, ()=>{
+          setTimeout(authorize, 450);
+        });
+      } else {
+        deny();
+      }
+    });
   });
-}
 
-function authorize(){
-  // transition
-  uiBar.textContent = "VAULT 131 DATABASE │ STATUS: READY";
-  uiStatus.textContent = "AUTHORIZED MODULES LOADED";
-  terminalView.style.display = "none";
-  mainView.style.display = "flex";
-}
+  /* ====== INFO / DATE ====== */
+  const modal = document.getElementById("modal");
+  const modalBody = document.getElementById("modalBody");
+  document.getElementById("closeModal").onclick = ()=> modal.style.display="none";
+  modal.onclick = (e)=>{ if(e.target === modal) modal.style.display="none"; };
 
-/* enter key */
-input.addEventListener("keydown", (e)=>{
-  if(e.key !== "Enter") return;
-  const v = (input.value || "").trim();
-
-  // echo the user input like terminal
-  typeLines(["> " + v], 12, ()=>{
-    if(v.toUpperCase() === SECRET){
-      typeLines(["", "ACCESS GRANTED", "LOADING MODULES…"], 16, ()=>{
-        setTimeout(authorize, 450);
-      });
-    }else{
-      deny();
-    }
-  });
-});
-
-/* ====== MAIN UI: Tabs + Info ====== */
-const infoBtn = document.getElementById("infoBtn");
-const dateBtn = document.getElementById("dateBtn");
-const modal = document.getElementById("modal");
-const modalBody = document.getElementById("modalBody");
-document.getElementById("closeModal").onclick = ()=> modal.style.display="none";
-modal.onclick = (e)=>{ if(e.target === modal) modal.style.display="none"; };
-
-function openInfo(){
-  modal.style.display="flex";
-  modalBody.textContent =
+  document.getElementById("infoBtn").onclick = ()=>{
+    modal.style.display = "flex";
+    modalBody.textContent =
 `OPERATOR LOG // VAULT 131
 
 - Build time: almost a week (NOT 3.5 hours 😤)
 - Status: stable, online, and ready
 - Next upgrades queued:
-  • Replace center “model” with true Pip-Boy styled character set
+  • True Pip-Boy character polish (more authentic silhouette + pose set)
   • Perk selection under ??? menu
-  • More UI flare + authentic STAT layout polish
+  • More UI flare + accurate STAT spacing
 
 (If you’re reading this, you’re officially authorized.)`;
-}
+  };
 
-function openDate(){
-  const d = new Date();
-  const days = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
-  const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
-  modal.style.display="flex";
-  modalBody.textContent =
+  document.getElementById("dateBtn").onclick = ()=>{
+    const d = new Date();
+    const days = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
+    const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+    modal.style.display="flex";
+    modalBody.textContent =
 `DATE / DAY MODULE
 
 ${days[d.getDay()]}  ${months[d.getMonth()]} ${String(d.getDate()).padStart(2,"0")}  ${d.getFullYear()}
@@ -637,79 +699,23 @@ ${days[d.getDay()]}  ${months[d.getMonth()]} ${String(d.getDate()).padStart(2,"0
 SYSTEM CLOCK: ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}
 
 (Temporal drift acceptable.)`;
-}
-
-infoBtn.onclick = openInfo;
-dateBtn.onclick = openDate;
-
-/* Top tabs */
-document.querySelectorAll(".tab").forEach(t=>{
-  t.onclick = ()=>{
-    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-    t.classList.add("active");
-    // Optional: you can swap content later per tab
   };
-});
-document.querySelectorAll(".subtab").forEach(t=>{
-  t.onclick = ()=>{
-    document.querySelectorAll(".subtab").forEach(x=>x.classList.remove("active"));
-    t.classList.add("active");
-  };
-});
 
-/* ====== IMAGE BASE64 INJECTION (actual) ====== */
-(function(){
-  const pipImg = document.getElementById("pipImg");
-  const b64 = "<?=B64?>";
-  // Replace placeholders inserted earlier (safe overwrite)
-  pipImg.src = "data:image/jpeg;base64," + b64;
-})();
+  /* tabs (visual only for now) */
+  document.querySelectorAll(".tab").forEach(t=>{
+    t.onclick = ()=>{
+      document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+      t.classList.add("active");
+    };
+  });
+  document.querySelectorAll(".subtab").forEach(t=>{
+    t.onclick = ()=>{
+      document.querySelectorAll(".subtab").forEach(x=>x.classList.remove("active"));
+      t.classList.add("active");
+    };
+  });
 
-/* IMPORTANT:
-   The token <?=B64?> above is replaced below by the real base64 string.
-*/
+  boot();
 </script>
-
-<script>
-/* --- BASE64 PAYLOAD (auto-injected) --- */
-(function(){
-  const b64 = "<?=REAL_B64?>";
-  const pipImg = document.getElementById("pipImg");
-  pipImg.src = "data:image/jpeg;base64," + b64;
-})();
-</script>
-
-<script>
-/* Replace the two placeholder tokens with the actual base64 at runtime */
-(function(){
-  const REAL_B64 =
-"/9j/4AAQSkZJRgABAQEASABIAAD/4S" +
-"AAAP...TRUNCATED..."; // placeholder
-})();
-</script>
-
-<script>
-/* FINAL: actual base64 string (full) */
-(function(){
-  const pipImg = document.getElementById("pipImg");
-  const REAL_B64 = `<?=FULL_B64?>`;
-  pipImg.src = "data:image/jpeg;base64," + REAL_B64;
-})();
-</script>
-
-<script>
-/* ======= FULL BASE64 (REAL) ======= */
-(function(){
-  const pipImg = document.getElementById("pipImg");
-  const REAL_B64 = `REPLACE_WITH_FULL_BASE64`;
-  pipImg.src = "data:image/jpeg;base64," + REAL_B64;
-})();
-</script>
-
-<script>
-/* --- Boot --- */
-boot();
-</script>
-
 </body>
 </html>
