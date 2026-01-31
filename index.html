@@ -16,19 +16,19 @@ html, body{
 #crt{
   width:90%;
   max-width:980px;
-  height:80vh;
+  height:82vh;
   background:#050b07;
   border-radius:22px;
-  padding:34px;
+  padding:28px;
   position:relative;
   overflow:hidden;
   display:flex;
   flex-direction:column;
   border:3px solid rgba(76,255,154,0.35);
-  box-shadow:0 0 45px rgba(76,255,154,0.25), inset 0 0 140px rgba(0,0,0,0.95);
+  box-shadow:0 0 45px rgba(76,255,154,0.25), inset 0 0 120px rgba(0,0,0,0.95);
 }
 
-/* ===== HEADER ===== */
+/* HEADER */
 #uiWrap{
   margin-bottom:10px;
   padding-bottom:10px;
@@ -55,7 +55,7 @@ html, body{
   opacity:0.9;
 }
 
-/* ===== AUDIO BUTTON ===== */
+/* AUDIO BUTTON */
 #audioBtn{
   border:2px solid rgba(76,255,154,0.55);
   background:transparent;
@@ -72,7 +72,7 @@ html, body{
   color:#4cff9a;
 }
 
-/* ===== TERMINAL ===== */
+/* TERMINAL */
 #terminal{
   color:#4cff9a;
   text-shadow:0 0 4px rgba(76,255,154,0.7),0 0 10px rgba(76,255,154,0.4);
@@ -81,7 +81,7 @@ html, body{
   flex:1;
 }
 
-/* ===== INPUT ===== */
+/* INPUT */
 #inputBox{
   display:none;
   width:80%;
@@ -95,7 +95,7 @@ html, body{
   outline:none;
 }
 
-/* ===== BUTTONS / HINTS ===== */
+/* HINTS / BUTTONS */
 #hintContainer{margin-top:6px;display:flex;flex-wrap:wrap;}
 button{
   border:2px solid #4cff9a;
@@ -108,7 +108,7 @@ button{
   cursor:pointer;
 }
 
-/* ===== CURSOR ===== */
+/* CURSOR */
 #cursor{
   display:inline-block;
   width:10px;
@@ -118,7 +118,7 @@ button{
 }
 @keyframes blink{50%{opacity:0;}}
 
-/* ===== SCANLINES ===== */
+/* SCANLINES */
 #scanlines{
   position:absolute; inset:0;
   background:repeating-linear-gradient(to bottom,
@@ -129,7 +129,7 @@ button{
 }
 @keyframes scan {from{background-position:0 0;}to{background-position:0 3px;}}
 
-/* ===== POWER DIP / GLITCH OVERLAY ===== */
+/* POWER DIP */
 #powerDip{
   position:absolute;
   inset:0;
@@ -142,9 +142,7 @@ button{
   z-index:8;
   mix-blend-mode:screen;
 }
-.powerDipOn{
-  animation: dip 420ms ease-in-out 1;
-}
+.powerDipOn{ animation: dip 420ms ease-in-out 1; }
 @keyframes dip{
   0%{opacity:0; filter:brightness(1) contrast(1);}
   20%{opacity:0.9; filter:brightness(0.65) contrast(1.25);}
@@ -152,7 +150,7 @@ button{
   100%{opacity:0; filter:brightness(1) contrast(1);}
 }
 
-/* ===== RAD FLICKER DURING LOADING ===== */
+/* RAD FLICKER DURING LOADING */
 .radFlicker{ animation: rad 140ms steps(2) infinite; }
 @keyframes rad{
   0%{filter:brightness(1) contrast(1);}
@@ -160,7 +158,7 @@ button{
   100%{filter:brightness(1) contrast(1);}
 }
 
-/* ===== LOADING ===== */
+/* LOADING */
 .loadTrack{
   width:100%;
   max-width:520px;
@@ -174,7 +172,7 @@ button{
 .loadMsg{margin-top:6px;opacity:.95;}
 .loadDetail{margin-top:4px;opacity:.82;font-size:13px;letter-spacing:0.5px;}
 
-/* ===== FINAL CODE ===== */
+/* FINAL CODE */
 .bigCode{
   font-size:56px;
   letter-spacing:10px;
@@ -193,97 +191,76 @@ button{
   100%{opacity:1;}
 }
 
-/* ===========================
-   PIP-BOY READY SCREEN (14-LOVE-READY)
-   =========================== */
-#pipboy{
+/* =======================
+   READY / STATUS SCREEN
+   ======================= */
+#status{
   display:none;
   flex:1;
-  position:relative;
   color:#4cff9a;
-  text-shadow:0 0 4px rgba(76,255,154,0.6),0 0 10px rgba(76,255,154,0.25);
+  text-shadow:0 0 6px rgba(76,255,154,.6);
+  overflow:auto;
 }
 
-#pipTopBar{
+#statusTop{
   display:flex;
   align-items:center;
-  gap:12px;
-  padding:10px 12px;
-  border:1px solid rgba(76,255,154,0.35);
-  border-radius:12px;
-  background:rgba(0,0,0,0.35);
-  box-shadow: inset 0 0 60px rgba(0,0,0,0.65);
-}
-
-#pipTabs{
-  display:flex;
+  justify-content:space-between;
   gap:10px;
-  flex-wrap:wrap;
-  align-items:center;
+  border:1px solid rgba(76,255,154,.25);
+  border-radius:12px;
+  padding:10px 12px;
+  background:rgba(0,0,0,.35);
+  margin-bottom:12px;
 }
-.pipTab{
+
+#statusTabs{
+  display:flex; gap:10px; flex-wrap:wrap;
+  font-size:12px; letter-spacing:0.8px;
+}
+#statusTabs span{
+  border:1px solid rgba(76,255,154,.25);
   padding:6px 10px;
-  border:1px solid rgba(76,255,154,0.30);
   border-radius:10px;
   opacity:0.85;
 }
-.pipTab.active{
-  border-color:rgba(76,255,154,0.75);
-  box-shadow:0 0 10px rgba(76,255,154,0.15);
+#statusTabs span.active{
+  border-color:rgba(76,255,154,.8);
   opacity:1;
+  text-decoration:underline;
 }
 
-#pipSubTabs{
-  margin-left:auto;
-  display:flex;
-  gap:10px;
-  opacity:0.9;
-  font-size:12px;
-  letter-spacing:0.6px;
-}
-#pipSubTabs span{ opacity:0.85; }
-#pipSubTabs span.active{ opacity:1; text-decoration:underline; }
-
-#pipBody{
-  margin-top:12px;
-  flex:1;
-  position:relative;
-  border:1px solid rgba(76,255,154,0.25);
+#statusBody{
+  border:1px solid rgba(76,255,154,.20);
   border-radius:14px;
-  background:rgba(0,0,0,0.20);
+  background:rgba(0,0,0,.20);
   box-shadow: inset 0 0 90px rgba(0,0,0,0.75);
-  overflow:hidden;
   padding:14px;
+  position:relative;
+  overflow:hidden;
 }
 
-#pipGrid{
-  position:absolute;
-  inset:14px;
+#statusGrid{
   display:grid;
-  grid-template-columns: 1fr 320px 1fr;
-  grid-template-rows: 1fr 320px 1fr;
+  grid-template-columns: 1fr 280px 1fr;
+  grid-template-rows: 1fr 280px 1fr;
+  gap:12px;
   align-items:center;
   justify-items:center;
-  gap:14px;
+  min-height:520px;
 }
 
-#vaultBoyWrap{
-  grid-column:2;
-  grid-row:2;
-  width:280px;
-  height:280px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+#vbWrap{
+  grid-column:2; grid-row:2;
+  width:260px; height:260px;
+  display:flex; align-items:center; justify-content:center;
   position:relative;
 }
-
 .tick{
   position:absolute;
-  width:16px;
-  height:4px;
+  width:16px; height:4px;
   background:rgba(76,255,154,0.85);
-  box-shadow:0 0 10px rgba(76,255,154,0.20);
+  box-shadow:0 0 10px rgba(76,255,154,0.2);
   border-radius:2px;
 }
 .tick.t{top:18px; left:50%; transform:translateX(-50%);}
@@ -291,30 +268,24 @@ button{
 .tick.l{left:14px; top:50%; transform:translateY(-50%);}
 .tick.r{right:14px; top:50%; transform:translateY(-50%);}
 
-#vaultSvg{
-  width:240px;
-  height:240px;
+#vb{
+  font-size:130px;
+  line-height:1;
   opacity:0.95;
-  filter: drop-shadow(0 0 10px rgba(76,255,154,0.20));
+  filter: drop-shadow(0 0 10px rgba(76,255,154,0.2));
 }
 
-/* four “modules” around him */
-.pipModule{
-  width:min(260px, 92%);
+.statusBox{
+  width:min(240px, 92%);
   border:2px solid rgba(76,255,154,0.65);
   border-radius:12px;
   padding:10px 12px;
   background:rgba(0,0,0,0.35);
-  cursor:pointer;
   text-align:left;
   letter-spacing:0.6px;
   box-shadow: inset 0 0 30px rgba(0,0,0,0.65);
 }
-.pipModule:hover{
-  border-color:rgba(76,255,154,0.95);
-  box-shadow:0 0 14px rgba(76,255,154,0.10), inset 0 0 30px rgba(0,0,0,0.65);
-}
-.pipModule small{
+.statusBox small{
   display:block;
   margin-top:6px;
   opacity:0.85;
@@ -322,17 +293,16 @@ button{
   letter-spacing:0.4px;
 }
 
-#modInfo{grid-column:2; grid-row:1; align-self:end; justify-self:center;}
-#modDate{grid-column:3; grid-row:2; justify-self:start; align-self:center;}
-#modStory{grid-column:2; grid-row:3; align-self:start; justify-self:center;}
-#modMystery{grid-column:1; grid-row:2; justify-self:end; align-self:center;}
+#sb1{grid-column:2; grid-row:1; align-self:end;}
+#sb2{grid-column:3; grid-row:2; justify-self:start;}
+#sb3{grid-column:2; grid-row:3; align-self:start;}
+#sb4{grid-column:1; grid-row:2; justify-self:end;}
 
-/* bottom HUD like your pic */
-#pipHud{
-  position:absolute;
-  left:14px; right:14px; bottom:14px;
+#hud{
+  margin-top:12px;
   display:flex;
   gap:10px;
+  flex-wrap:wrap;
   align-items:center;
   justify-content:space-between;
   font-size:12px;
@@ -342,7 +312,6 @@ button{
   border-radius:12px;
   background:rgba(0,0,0,0.35);
 }
-.hudBlock{opacity:0.9;}
 .hudBar{
   height:8px;
   width:180px;
@@ -356,68 +325,16 @@ button{
   background:rgba(76,255,154,0.85);
 }
 
-/* ===== POPUP PANEL ===== */
-#pipPanel{
-  display:none;
-  position:absolute;
-  inset:0;
-  z-index:9;
-  background:rgba(0,0,0,0.65);
-  backdrop-filter: blur(2px);
-  padding:18px;
-}
-#pipPanelBox{
-  width:min(760px, 95%);
-  height:min(520px, 90%);
-  margin:0 auto;
-  border:2px solid rgba(76,255,154,0.75);
-  border-radius:14px;
-  background:rgba(0,0,0,0.55);
-  box-shadow: 0 0 25px rgba(76,255,154,0.12), inset 0 0 90px rgba(0,0,0,0.8);
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
-}
-#pipPanelHead{
-  padding:12px 14px;
-  border-bottom:1px solid rgba(76,255,154,0.25);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-}
-#pipPanelTitle{
-  font-size:14px;
-  letter-spacing:1px;
-  opacity:0.95;
-}
-#pipPanelClose{
-  border:2px solid rgba(76,255,154,0.65);
-  border-radius:10px;
-  padding:6px 10px;
-  background:transparent;
-  color:#4cff9a;
-  cursor:pointer;
-}
-#pipPanelBody{
-  padding:14px;
-  overflow:auto;
-  white-space:pre-wrap;
-  line-height:1.45;
-  font-size:14px;
-  opacity:0.95;
-}
-
 /* Mobile */
 @media (max-width:720px){
   #inputBox{width:100%;}
-  #pipGrid{
-    grid-template-columns: 1fr 260px 1fr;
-    grid-template-rows: 1fr 260px 1fr;
+  #statusGrid{
+    grid-template-columns: 1fr 240px 1fr;
+    grid-template-rows: 1fr 240px 1fr;
+    min-height:480px;
   }
-  #vaultBoyWrap{width:240px;height:240px;}
-  #vaultSvg{width:210px;height:210px;}
-  .pipModule{width:min(220px, 92%); font-size:13px;}
+  #vbWrap{width:230px;height:230px;}
+  #vb{font-size:110px;}
   .hudBar{width:130px;}
 }
 </style>
@@ -434,106 +351,58 @@ button{
     <div id="uiStatus">STANDBY… AWAITING INPUT</div>
   </div>
 
-  <!-- TERMINAL MODE -->
+  <!-- TERMINAL VIEW -->
   <div id="terminal"></div>
   <input id="inputBox" autocomplete="off">
   <div id="hintContainer"></div>
 
-  <!-- PIP-BOY READY MODE -->
-  <div id="pipboy">
-    <div id="pipTopBar">
-      <div id="pipTabs">
-        <span class="pipTab active">STAT</span>
-        <span class="pipTab">INV</span>
-        <span class="pipTab">DATA</span>
-        <span class="pipTab">MAP</span>
-        <span class="pipTab">RADIO</span>
-      </div>
-      <div id="pipSubTabs">
+  <!-- READY / STATUS VIEW (14-LOVE-READY) -->
+  <div id="status">
+    <div id="statusTop">
+      <div id="statusTabs">
         <span class="active">STATUS</span>
         <span>SPECIAL</span>
         <span>PERKS</span>
       </div>
+      <div style="opacity:.9; font-size:12px; letter-spacing:.7px;">
+        Press ENTER to return
+      </div>
     </div>
 
-    <div id="pipBody">
-      <div id="pipGrid">
-
-        <div id="modInfo" class="pipModule">
+    <div id="statusBody">
+      <div id="statusGrid">
+        <div id="sb1" class="statusBox">
           INFO
-          <small>How this terminal was built</small>
+          <small>Terminal build details</small>
         </div>
-
-        <div id="modDate" class="pipModule">
+        <div id="sb2" class="statusBox">
           DATE DAY
-          <small>Live countdown module</small>
+          <small>Valentine’s countdown</small>
         </div>
-
-        <div id="modMystery" class="pipModule">
+        <div id="sb3" class="statusBox">
+          VAULT 131 LOG
+          <small>Recovered story file</small>
+        </div>
+        <div id="sb4" class="statusBox">
           HOLOTAPE
           <small>Confidential message</small>
         </div>
 
-        <div id="modStory" class="pipModule">
-          VAULT 131 LOG
-          <small>Recovered story file</small>
-        </div>
-
-        <div id="vaultBoyWrap">
+        <div id="vbWrap">
           <div class="tick t"></div>
           <div class="tick b"></div>
           <div class="tick l"></div>
           <div class="tick r"></div>
-
-          <!-- Simple “Vault Boy-ish” SVG placeholder (works offline).
-               If you later want a real Vault Boy PNG, we can swap to <img>. -->
-          <svg id="vaultSvg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-label="Vault Boy">
-            <g fill="none" stroke="rgba(76,255,154,0.95)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
-              <!-- head -->
-              <circle cx="100" cy="62" r="28"/>
-              <!-- hair swoop -->
-              <path d="M80 52 C92 40, 118 40, 125 56"/>
-              <!-- smile -->
-              <path d="M90 70 C97 78, 110 78, 116 70"/>
-              <!-- torso -->
-              <path d="M100 90 L100 140"/>
-              <path d="M80 108 C92 102, 108 102, 120 108"/>
-              <!-- arms -->
-              <path d="M80 110 L62 128"/>
-              <path d="M120 110 L138 128"/>
-              <!-- legs -->
-              <path d="M100 140 L86 172"/>
-              <path d="M100 140 L114 172"/>
-              <!-- shoes -->
-              <path d="M78 176 L95 176"/>
-              <path d="M105 176 L122 176"/>
-            </g>
-          </svg>
-        </div>
-
-      </div>
-
-      <div id="pipHud">
-        <div class="hudBlock">STIMPAK (5)  &nbsp; RADAWAY (3)</div>
-        <div class="hudBlock">HP 42/95</div>
-        <div class="hudBlock">
-          LEVEL 1
-          <div class="hudBar"><div class="hudFill"></div></div>
-        </div>
-        <div class="hudBlock">AP 90/90</div>
-      </div>
-
-      <!-- Popup -->
-      <div id="pipPanel">
-        <div id="pipPanelBox">
-          <div id="pipPanelHead">
-            <div id="pipPanelTitle">MODULE</div>
-            <button id="pipPanelClose">CLOSE</button>
-          </div>
-          <div id="pipPanelBody"></div>
+          <div id="vb">🧍</div>
         </div>
       </div>
 
+      <div id="hud">
+        <div>STIMPAK (5) &nbsp; RADAWAY (3)</div>
+        <div>HP 42/95</div>
+        <div>LEVEL 1 <span class="hudBar"><span class="hudFill"></span></span></div>
+        <div>AP 90/90</div>
+      </div>
     </div>
   </div>
 
@@ -585,12 +454,7 @@ const term = document.getElementById("terminal");
 const input = document.getElementById("inputBox");
 const hints = document.getElementById("hintContainer");
 const dip = document.getElementById("powerDip");
-
-const pipboy = document.getElementById("pipboy");
-const pipPanel = document.getElementById("pipPanel");
-const pipPanelTitle = document.getElementById("pipPanelTitle");
-const pipPanelBody = document.getElementById("pipPanelBody");
-const pipPanelClose = document.getElementById("pipPanelClose");
+const statusView = document.getElementById("status");
 
 const cursor = document.createElement("span");
 cursor.id="cursor";
@@ -682,20 +546,34 @@ let stage = "login";
 let r = 0;
 let hintUsed = 0;
 let locked = false;
-let countdownTimer = null;
 
-/* ========= HELPERS ========= */
+/* ========= VIEW HELPERS ========= */
+function showTerminal(){
+  statusView.style.display="none";
+  term.style.display="block";
+  hints.style.display="flex";
+}
+function showReadyStatus(){
+  term.style.display="none";
+  hints.style.display="none";
+  input.style.display="none";
+  statusView.style.display="block";
+}
+
 function clearTerminal(){
   term.innerHTML="";
   term.appendChild(cursor);
 }
+
 function showInput(ph=""){
   input.style.display="block";
   input.placeholder=ph;
+  input.value="";
   input.focus();
 }
 function hideInput(){ input.style.display="none"; }
 
+/* ========= HINTS ========= */
 function showHints(arr){
   hints.innerHTML="";
   for(let i=hintUsed;i<3;i++){
@@ -710,20 +588,6 @@ function showHints(arr){
     };
     hints.appendChild(b);
   }
-}
-
-/* ========= VIEW SWITCHING ========= */
-function showTerminalView(){
-  pipboy.style.display="none";
-  term.style.display="block";
-  input.style.display="none";
-  hints.style.display="block";
-}
-function showPipboyView(){
-  term.style.display="none";
-  input.style.display="none";
-  hints.style.display="none";
-  pipboy.style.display="flex";
 }
 
 /* ========= POWER DIP ========= */
@@ -792,29 +656,9 @@ function loading(cb){
   }, 60);
 }
 
-/* ========= EASTER EGG ========= */
-function showHelp(){
-  stage = "help";
-  clearTerminal();
-  setStatus("VAULT-TEC NOTICE");
-  type([
-    "VAULT-TEC INTERNAL MEMO // DO NOT DISTRIBUTE",
-    "------------------------------------------",
-    "",
-    "If you are reading this, you are doing great.",
-    "You are safe here.",
-    "",
-    "OPERATOR TIP:",
-    "- HINT buttons are limited to 3 per question.",
-    "- Answers are NOT case sensitive.",
-    "",
-    "To continue: press ENTER to return.",
-  ], 30, ()=>{ showInput("PRESS ENTER"); });
-}
-
-/* ========= TERMINAL SCENES ========= */
+/* ========= SCENES ========= */
 function boot(){
-  showTerminalView();
+  showTerminal();
   stage="login";
   r=0;
   hintUsed=0;
@@ -899,222 +743,26 @@ function showFinalSuccess(){
   });
 }
 
-/* ========= PIP-BOY READY SCREEN ========= */
-function openPanel(title, body){
-  pipPanelTitle.textContent = title;
-  pipPanelBody.textContent = body;
-  pipPanel.style.display="block";
-}
-function closePanel(){
-  pipPanel.style.display="none";
-}
-pipPanelClose.onclick = closePanel;
-pipPanel.onclick = (e)=>{ if(e.target === pipPanel) closePanel(); };
-
-function getValentineTarget(){
-  // Next Feb 14 at 12:00 PM local time
-  const now = new Date();
-  let year = now.getFullYear();
-  const target = new Date(year, 1, 14, 12, 0, 0);
-  if(now > target) target.setFullYear(year + 1);
-  return target;
-}
-
-function formatCountdown(ms){
-  if(ms <= 0) return "00d 00h 00m 00s";
-  const s = Math.floor(ms/1000);
-  const days = Math.floor(s/86400);
-  const hrs = Math.floor((s%86400)/3600);
-  const mins = Math.floor((s%3600)/60);
-  const secs = s%60;
-  const pad = (n)=> String(n).padStart(2,"0");
-  return `${pad(days)}d ${pad(hrs)}h ${pad(mins)}m ${pad(secs)}s`;
-}
-
-function showReadyPipboy(){
+/* ========= READY STATUS CONTENT (tap boxes later if you want) ========= */
+function showReadyScene(){
   stage="ready";
   setUnlocked();
   setStatus("NEXT ADVENTURE UNLOCKED");
-  showPipboyView();
-  closePanel();
-
-  // Module text
-  const infoText =
-`VAULT 131 // SYSTEM INFO
------------------------
-Estimated build time: 3–6 hours (plus the "why is it frozen" minutes).
-
-Terminal stack (in nerd language):
-- Single-file static site (HTML/CSS/JS)
-- Event-driven state machine (login → riddles → final)
-- Typewriter renderer with jitter + cursor
-- AudioContext oscillator hum + per-keystroke beeps
-- Faux CRT: scanlines + phosphor glow + power dip
-
-Security note:
-This terminal uses a "soft lock" design.
-Meaning: it looks scary, but it’s here to guide you — not punish you.`;
-
-  const storyText =
-`VAULT 131 // RECOVERED LOG (CLASSIFIED)
---------------------------------------
-They sold it as “a happiness experiment.”
-
-Vault 131 wasn’t built to survive bombs. It was built to survive *loneliness*.
-
-On Day 1, every resident received a wrist-tag and a small list of “Objectives.”
-Not chores. Not rules.
-Objectives.
-
-“Say something kind to a stranger.”
-“Trade something you love for something you need.”
-“Write down a memory you don’t want to lose.”
-
-At first, everyone laughed. Vault-Tec always had a gimmick.
-
-But Vault 131’s real trick wasn’t the Objectives.
-It was the terminals.
-
-Each terminal had a hidden prompt that only unlocked when the user answered a sequence of riddles.
-Vault-Tec claimed it measured intelligence under stress.
-The Overseer claimed it measured *compatibility*.
-
-The truth?
-It measured honesty.
-
-Because the last question wasn’t about facts —
-it was about a date.
-
-A day you’d never forget.
-A day your brain could replay even in the dark.
-
-They wanted proof that the human heart could become a key.
-
-Weeks turned into months.
-People stopped yelling.
-Stopped hoarding.
-Stopped pretending they were fine.
-
-They started leaving notes in the terminals —
-not official messages, but little sparks:
-
-“Thanks for the radaway.”
-“Sorry for earlier.”
-“You matter here.”
-
-And then, one night, the power dipped.
-The lights flickered into that sick green glow.
-The entire vault froze in silence…
-
-…except for the terminals.
-
-Across Vault 131, screens woke up in unison.
-
-VAULT-TEC PROTOCOL: RECONNECTION
-
-Residents received a new Objective:
-“Find the person you’d choose in the wasteland.
-Tell them.”
-
-Some people panicked.
-Some people ran.
-Some people pretended it was a prank.
-
-But a handful of them did it.
-They walked up, voice shaking, and said the thing that makes time stop.
-
-And for the first time since the doors sealed,
-Vault 131 felt like it was built for the right reason.
-
-Not survival.
-
-But *belonging.*
-
-End of log.
-
-(Press CLOSE to return.)`;
-
-  const mysteryText =
-`HOLOTAPE // “GOOD LUCK, IZABELLA”
----------------------------------
-If you’re reading this, that means you made it.
-
-And I just want you to know something:
-
-Even in the worst wasteland day…
-even in the dumbest stress…
-even when the world feels loud and weird…
-
-You are my safe place.
-
-NEW QUEST OBJECTIVE:
-1) Smile. You earned it.
-2) Keep this secret.
-3) On Valentine’s Day — trust me.
-
-Reward: A day made for you.`;
-
-  // Countdown module uses live data each open
-  function openCountdown(){
-    const target = getValentineTarget();
-    const now = new Date();
-    const ms = target - now;
-
-    const prettyDate = target.toLocaleString(undefined, {
-      weekday:"long", month:"long", day:"numeric", year:"numeric",
-      hour:"numeric", minute:"2-digit"
-    });
-
-    openPanel("DATE DAY // COUNTDOWN", 
-`Target: ${prettyDate}
-
-Time remaining:
-${formatCountdown(ms)}
-
-(Keep this panel open to watch it tick.)`);
-
-    // live tick while panel open
-    if(countdownTimer) clearInterval(countdownTimer);
-    countdownTimer = setInterval(()=>{
-      if(pipPanel.style.display !== "block") { clearInterval(countdownTimer); countdownTimer=null; return; }
-      const ms2 = getValentineTarget() - new Date();
-      const lines = pipPanelBody.textContent.split("\n");
-      // update the countdown line block
-      pipPanelBody.textContent =
-`Target: ${prettyDate}
-
-Time remaining:
-${formatCountdown(ms2)}
-
-(Keep this panel open to watch it tick.)`;
-    }, 250);
-  }
-
-  document.getElementById("modInfo").onclick = ()=> openPanel("INFO // SYSTEM", infoText);
-  document.getElementById("modStory").onclick = ()=> openPanel("VAULT 131 LOG", storyText);
-  document.getElementById("modMystery").onclick = ()=> openPanel("HOLOTAPE", mysteryText);
-  document.getElementById("modDate").onclick = ()=> openCountdown();
-
-  // Quick “return” instruction in status
-  setStatus("STATUS: READY │ Tap a module. Press ENTER to return.");
+  showReadyStatus();
 }
 
-/* ========= INPUT HANDLING ========= */
+/* ========= INPUT ========= */
 input.addEventListener("keydown", (e)=>{
   if(e.key !== "Enter") return;
   if(locked) return;
 
-  // Normalize iPhone “smart punctuation” dashes into regular hyphens
-const raw = input.value.trim().replace(/[–—−]/g, "-");
-const a = raw.toLowerCase();
+  // iPhone dash-proof normalization
+  const raw = input.value.trim().replace(/[–—−]/g, "-");
+  const a = raw.toLowerCase();
 
   input.value = "";
   hideInput();
   hints.innerHTML = "";
-
-  // HELP Easter egg anywhere
-  if(a === "help"){ showHelp(); return; }
-  if(stage === "help"){ boot(); return; }
 
   if(stage === "login"){
     setStatus("VALIDATING…");
@@ -1122,14 +770,22 @@ const a = raw.toLowerCase();
     if(a === ID.toLowerCase()){
       setUnlocked();
       clearTerminal();
-      type(["ID VERIFIED.","Welcome, Izabella.","Initializing test modules…"], 35, ()=>{
+      // Option B: extra flare
+      type([
+        "ID VERIFIED.",
+        "Welcome, Izabella.",
+        "Initializing security handshake…",
+        "Mounting vault modules…",
+        "Syncing display buffers…",
+        "Running integrity check…"
+      ], 34, ()=>{
         loading(()=> powerDip(()=> { r=0; askRiddle(); }));
       });
       return;
     }
 
     if(a === NEXT_ID.toLowerCase()){
-      showReadyPipboy();
+      showReadyScene();
       return;
     }
 
@@ -1176,20 +832,12 @@ const a = raw.toLowerCase();
     }
     return;
   }
-
-  // In ready Pip-Boy screen: pressing Enter returns to boot
-  if(stage === "ready"){
-    boot();
-    return;
-  }
 });
 
-/* ALSO allow Enter while Pip-Boy is visible (no input box) */
+/* Enter key while in READY/STATUS returns to main menu */
 document.addEventListener("keydown", (e)=>{
   if(e.key !== "Enter") return;
   if(stage !== "ready") return;
-  // If a panel is open, close it first. Otherwise return to boot.
-  if(pipPanel.style.display === "block"){ closePanel(); return; }
   boot();
 });
 
