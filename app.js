@@ -9,7 +9,7 @@ function ensureAudio(){
   gain = ctx.createGain();
   hum.type = "sawtooth";
   hum.frequency.value = 60;
-  gain.gain.value = 0; // start silent
+  gain.gain.value = 0;
   hum.connect(gain);
   gain.connect(ctx.destination);
   hum.start();
@@ -112,22 +112,18 @@ function setStatus(text){
 }
 
 /* ========= DATA ========= */
-const ID = "101-317-76";         // riddle login
-const NEXT_ID = "14-LOVE-READY";  // separate screen code at end
-const FINAL_CODE = "531";         // final answer
+const ID = "101-317-76";
+const NEXT_ID = "14-LOVE-READY";
+const FINAL_CODE = "531";
 
 const riddles = [
-  { q:"I move without legs and follow you everywhere.",
-    a:"shadow",
+  { q:"I move without legs and follow you everywhere.", a:"shadow",
     h:["You see me when light hits you.","I copy your shape perfectly.","I disappear in darkness."] },
-  { q:"The more you take, the more you leave behind.",
-    a:"footsteps",
+  { q:"The more you take, the more you leave behind.", a:"footsteps",
     h:["You make me without noticing.","I mark where you’ve been.","I vanish if you stop walking."] },
-  { q:"I speak without a mouth and hear without ears.",
-    a:"echo",
+  { q:"I speak without a mouth and hear without ears.", a:"echo",
     h:["I repeat what you say.","I live in empty spaces.","You hear me after you call out."] },
-  { q:"I’m always coming, but I never arrive.",
-    a:"tomorrow",
+  { q:"I’m always coming, but I never arrive.", a:"tomorrow",
     h:["You can’t hold me in your hands.","I’m always one day away.","It becomes today… then it’s gone."] },
   { q:"I have keys but open no locks. I have space but no room. You can enter, but you can’t go outside. What am I?",
     a:"keyboard",
@@ -141,26 +137,15 @@ const finalQ = {
 };
 
 const loadMsgs = [
-  "ACCESSING VAULT RECORDS…",
-  "DECRYPTING MEMORY SECTORS…",
-  "VERIFYING EMOTIONAL STABILITY…",
-  "CHECKING RADIATION LEVELS…",
-  "SYNCING PERSONAL DATA…",
-  "VAULT-TEC PROTOCOL ACTIVE…",
-  "AUTHORIZATION PENDING…",
-  "BUFFERING… PLEASE WAIT…"
+  "ACCESSING VAULT RECORDS…","DECRYPTING MEMORY SECTORS…","VERIFYING EMOTIONAL STABILITY…",
+  "CHECKING RADIATION LEVELS…","SYNCING PERSONAL DATA…","VAULT-TEC PROTOCOL ACTIVE…",
+  "AUTHORIZATION PENDING…","BUFFERING… PLEASE WAIT…"
 ];
 
 const loadDetails = [
-  "LINK: VAULTNET/131 :: HANDSHAKE OK",
-  "CACHE: REBUILDING INDEX TABLES",
-  "SECURITY: HASHING CREDENTIALS",
-  "I/O: CALIBRATING CONSOLE INPUT",
-  "SYS: SCANNING FOR ANOMALIES",
-  "MEM: FLUSHING TEMP BUFFERS",
-  "DATA: CHECKSUM VALIDATION PASS",
-  "COMMS: SIGNAL STRENGTH STABLE",
-  "CORE: SPINNING UP MODULES",
+  "LINK: VAULTNET/131 :: HANDSHAKE OK","CACHE: REBUILDING INDEX TABLES","SECURITY: HASHING CREDENTIALS",
+  "I/O: CALIBRATING CONSOLE INPUT","SYS: SCANNING FOR ANOMALIES","MEM: FLUSHING TEMP BUFFERS",
+  "DATA: CHECKSUM VALIDATION PASS","COMMS: SIGNAL STRENGTH STABLE","CORE: SPINNING UP MODULES",
   "VAULT-TEC: INTEGRITY 100%"
 ];
 
@@ -175,17 +160,13 @@ function clear(){
   term.innerHTML="";
   term.appendChild(cursor);
 }
-
 function showInput(ph=""){
   input.style.display="block";
   input.placeholder=ph;
   input.value="";
   input.focus();
 }
-
-function hideInput(){
-  input.style.display="none";
-}
+function hideInput(){ input.style.display="none"; }
 
 function showHints(arr){
   hints.innerHTML="";
@@ -215,12 +196,11 @@ function powerDip(cb){
   }, 420);
 }
 
-/* ========= LOADING BAR + RAD FLICKER ========= */
+/* ========= LOADING ========= */
 function loading(cb){
   locked = true;
   hideInput();
   hints.innerHTML = "";
-
   setStatus("PROCESSING… PLEASE WAIT");
 
   const track = document.createElement("div");
@@ -245,13 +225,8 @@ function loading(cb){
 
   crt.classList.add("radFlicker");
 
-  const msgI = setInterval(()=>{
-    msg.textContent = loadMsgs[mi++ % loadMsgs.length];
-  }, 650);
-
-  const detI = setInterval(()=>{
-    detail.textContent = loadDetails[di++ % loadDetails.length];
-  }, 520);
+  const msgI = setInterval(()=>{ msg.textContent = loadMsgs[mi++ % loadMsgs.length]; }, 650);
+  const detI = setInterval(()=>{ detail.textContent = loadDetails[di++ % loadDetails.length]; }, 520);
 
   const t = setInterval(()=>{
     p += 2 + Math.floor(Math.random()*6);
@@ -260,10 +235,7 @@ function loading(cb){
     term.scrollTop = term.scrollHeight;
 
     if(p>=100){
-      clearInterval(t);
-      clearInterval(msgI);
-      clearInterval(detI);
-
+      clearInterval(t); clearInterval(msgI); clearInterval(detI);
       setTimeout(()=>{
         track.remove(); msg.remove(); detail.remove();
         locked = false;
@@ -297,15 +269,10 @@ function showHelp(){
 
 /* ========= SCENES ========= */
 function boot(){
-  stage="login";
-  r=0;
-  hintUsed=0;
-  locked=false;
-
+  stage="login"; r=0; hintUsed=0; locked=false;
   setLocked();
   setStatus("STANDBY… AWAITING INPUT");
   clear();
-
   type([
     "VAULT 131 DATABASE",
     "SECURITY: ENABLED",
@@ -353,19 +320,14 @@ function showReadyScene(){
     "",
     "Expect to have some fun. 🙂",
     "",
-    "Press ENTER to return to login."
+    "Press ENTER to return to main menu."
   ], 35, ()=> showInput("PRESS ENTER"));
 }
 
 function showFinalSuccess(){
   clear();
   setStatus("AUTHORIZATION GRANTED");
-  type([
-    "AUTHORIZATION GRANTED.",
-    "",
-    "CASE CODE:",
-    ""
-  ], 35, ()=>{
+  type(["AUTHORIZATION GRANTED.","","CASE CODE:",""], 35, ()=>{
     const big = document.createElement("div");
     big.className="bigCode";
     big.textContent = FINAL_CODE;
@@ -389,7 +351,7 @@ function showFinalSuccess(){
         "I love you so much — I hope you enjoy today.",
       ], 32, ()=>{
         const btn = document.createElement("button");
-        btn.textContent = "RETURN TO LOGIN";
+        btn.textContent = "RETURN TO MAIN MENU";
         btn.onclick = boot;
         term.insertBefore(btn, cursor);
         term.scrollTop = term.scrollHeight;
@@ -411,15 +373,8 @@ input.addEventListener("keydown", (e)=>{
   hideInput();
   hints.innerHTML = "";
 
-  if(a === "help"){
-    showHelp();
-    return;
-  }
-
-  if(stage === "help"){
-    boot();
-    return;
-  }
+  if(a === "help"){ showHelp(); return; }
+  if(stage === "help"){ boot(); return; }
 
   if(stage === "login"){
     setStatus("VALIDATING…");
@@ -448,12 +403,7 @@ input.addEventListener("keydown", (e)=>{
   if(stage === "riddle"){
     if(a === riddles[r].a.toLowerCase()){
       setStatus("ANSWER ACCEPTED");
-      type(["✔ CORRECT."], 30, ()=>{
-        loading(()=> powerDip(()=>{
-          r++;
-          askRiddle();
-        }));
-      });
+      type(["✔ CORRECT."], 30, ()=> loading(()=> powerDip(()=>{ r++; askRiddle(); })));
     } else {
       setStatus("ANSWER REJECTED");
       type(["✖ TRY AGAIN", "> "], 30, ()=>{
@@ -468,9 +418,7 @@ input.addEventListener("keydown", (e)=>{
   if(stage === "final"){
     if(raw === finalQ.a){
       setStatus("CODE ACCEPTED");
-      type(["✔ AUTHORIZED."], 30, ()=>{
-        loading(()=> powerDip(()=> showFinalSuccess()));
-      });
+      type(["✔ AUTHORIZED."], 30, ()=> loading(()=> powerDip(()=> showFinalSuccess())));
     } else {
       setStatus("CODE INVALID");
       type(["✖ INCORRECT CODE", "> "], 30, ()=>{
@@ -482,10 +430,7 @@ input.addEventListener("keydown", (e)=>{
     return;
   }
 
-  if(stage === "ready"){
-    boot();
-    return;
-  }
+  if(stage === "ready"){ boot(); return; }
 });
 
 /* Start */
