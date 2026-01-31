@@ -2,60 +2,58 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>VAULT 131 DATABASE</title>
+
 <style>
   :root{
     --g:#4cff9a;
-    --g2: rgba(76,255,154,.65);
+    --g2: rgba(76,255,154,0.55);
+    --g3: rgba(76,255,154,0.35);
     --bg:#050b07;
-    --glass: rgba(0,0,0,.55);
-    --line: rgba(76,255,154,.25);
-    --shadow: 0 0 45px rgba(76,255,154,0.25), inset 0 0 140px rgba(0,0,0,0.95);
+    --blk:#000;
   }
-  html,body{
-    margin:0; height:100%; background:#000;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
+  html, body{
+    margin:0; height:100%;
+    background:var(--blk);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     display:flex; justify-content:center; align-items:center;
     overflow:hidden;
-    color:var(--g);
   }
+
+  /* CRT SHELL */
   #crt{
-    width:min(980px, 92vw);
-    height:min(80vh, 760px);
+    width:min(980px, 94vw);
+    height:min(82vh, 900px);
     background:var(--bg);
     border-radius:22px;
-    padding:26px;
+    padding:22px;
     position:relative;
     overflow:hidden;
     display:flex;
     flex-direction:column;
-    border:3px solid rgba(76,255,154,0.35);
-    box-shadow: var(--shadow);
+    border:3px solid var(--g3);
+    box-shadow:0 0 45px rgba(76,255,154,0.22), inset 0 0 140px rgba(0,0,0,0.95);
   }
 
-  /* glow vignette */
+  /* subtle CRT curvature */
   #crt:before{
     content:"";
-    position:absolute; inset:-40px;
-    background: radial-gradient(ellipse at center,
-      rgba(76,255,154,.12) 0%,
-      rgba(76,255,154,.06) 22%,
-      rgba(0,0,0,.0) 45%,
-      rgba(0,0,0,.55) 72%,
-      rgba(0,0,0,.85) 100%);
+    position:absolute; inset:-2px;
+    border-radius:24px;
     pointer-events:none;
+    background: radial-gradient(1200px 700px at 50% 30%, rgba(76,255,154,0.08), transparent 60%);
     mix-blend-mode: screen;
-    filter: blur(1px);
   }
 
   /* HEADER */
   #uiWrap{
+    margin-bottom:12px;
+    padding-bottom:10px;
+    border-bottom:1px solid rgba(76,255,154,0.25);
     position:relative;
     z-index:2;
-    margin-bottom:10px;
-    padding-bottom:10px;
-    border-bottom:1px solid var(--line);
   }
   #uiTop{
     display:flex;
@@ -68,659 +66,650 @@
     color:var(--g);
     font-size:14px;
     letter-spacing:1px;
+    text-shadow: 0 0 6px rgba(76,255,154,0.35);
   }
   #uiStatus{
     margin-top:6px;
-    color:rgba(76,255,154,0.85);
+    color:rgba(76,255,154,0.8);
     font-size:12px;
     letter-spacing:0.8px;
   }
 
   /* AUDIO BUTTON */
   #audioBtn{
-    border:2px solid rgba(76,255,154,0.55);
+    border:2px solid var(--g2);
     background:transparent;
-    color:rgba(76,255,154,0.85);
-    font-family:inherit;
-    padding:6px 10px;
-    border-radius:8px;
+    color:rgba(76,255,154,0.9);
+    padding:8px 12px;
+    border-radius:10px;
     cursor:pointer;
     font-size:12px;
     letter-spacing:1px;
+    box-shadow: 0 0 14px rgba(76,255,154,0.12);
   }
   #audioBtn.on{
     border-color:var(--g);
     color:var(--g);
-    box-shadow: 0 0 12px rgba(76,255,154,.25);
+    box-shadow: 0 0 20px rgba(76,255,154,0.18);
   }
 
-  /* TERMINAL */
-  #terminal{
-    position:relative;
-    z-index:2;
-    color:var(--g);
-    text-shadow:0 0 4px rgba(76,255,154,0.7), 0 0 10px rgba(76,255,154,0.4);
-    white-space:pre-wrap;
-    overflow-y:auto;
-    flex:1;
-    padding-right:6px;
-  }
-
-  /* INPUT */
-  #inputBox{
-    position:relative;
-    z-index:2;
-    display:none;
-    width:min(520px, 92%);
-    margin-top:10px;
-    background:rgba(0,0,0,0.6);
-    color:var(--g);
-    border:2px solid var(--g);
-    padding:10px 12px;
-    border-radius:10px;
-    font-size:16px;
-    outline:none;
-    box-shadow: 0 0 20px rgba(76,255,154,.12);
-  }
-
-  /* CURSOR */
-  #cursor{
-    display:inline-block;
-    width:10px;
-    background:var(--g);
-    margin-left:2px;
-    animation: blink 1s infinite;
-    box-shadow: 0 0 10px rgba(76,255,154,.35);
-  }
-  @keyframes blink{50%{opacity:0;}}
-
-  /* SCANLINES + NOISE */
+  /* SCANLINES + VIGNETTE */
   #scanlines{
     position:absolute; inset:0;
     background:
       repeating-linear-gradient(to bottom,
-        rgba(0,0,0,.22), rgba(0,0,0,.22) 1px,
+        rgba(0,0,0,.30), rgba(0,0,0,.30) 1px,
         transparent 1px, transparent 3px);
     pointer-events:none;
-    z-index:5;
+    opacity:0.55;
+  }
+  #vignette{
+    position:absolute; inset:0;
+    background: radial-gradient(900px 500px at 50% 45%, transparent 55%, rgba(0,0,0,0.55) 100%);
+    pointer-events:none;
   }
   #noise{
     position:absolute; inset:0;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
     mix-blend-mode: overlay;
-    opacity:.18;
+    opacity:0.18;
     pointer-events:none;
-    z-index:6;
   }
 
-  /* STATUS SCREEN */
-  #statusScreen{
-    position:absolute;
-    inset:88px 26px 26px 26px; /* below header */
-    z-index:3;
-    display:none;
-    border:2px solid rgba(76,255,154,.35);
-    border-radius:18px;
-    padding:18px;
-    background: rgba(0,0,0,.20);
-    box-shadow: inset 0 0 60px rgba(0,0,0,.65);
-  }
-
-  .topTabs{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-end;
-    gap:14px;
-    margin-bottom:10px;
-  }
-  .tabsLeft{
-    display:flex;
-    gap:16px;
-    font-size:18px;
-    letter-spacing:2px;
-    text-transform:uppercase;
-  }
-  .tab{
-    opacity:.75;
-    padding-bottom:6px;
-    border-bottom:2px solid transparent;
-  }
-  .tab.active{
-    opacity:1;
-    border-bottom-color: rgba(76,255,154,.85);
-    text-shadow: 0 0 12px rgba(76,255,154,.18);
-  }
-  .subTabs{
-    margin-top:6px;
-    display:flex;
-    gap:18px;
-    font-size:14px;
-    letter-spacing:2px;
-    opacity:.8;
-    text-transform:uppercase;
-  }
-  .subTabs .active{ opacity:1; }
-
-  .statusGrid{
-    display:grid;
-    grid-template-columns: 160px 1fr 220px;
-    gap:14px;
-    margin-top:14px;
-    height: calc(100% - 64px);
-    min-height: 360px;
-  }
-
-  .panel{
-    border:2px solid rgba(76,255,154,.28);
-    border-radius:14px;
-    padding:12px;
-    background: rgba(0,0,0,.22);
-    box-shadow: inset 0 0 30px rgba(0,0,0,.65);
-  }
-
-  .leftMenu .item{
-    border:2px solid rgba(76,255,154,.28);
-    border-radius:12px;
-    padding:10px 10px;
-    margin-bottom:10px;
-    text-transform:uppercase;
-    letter-spacing:2px;
-    font-size:13px;
-    cursor:pointer;
-    user-select:none;
-    background: rgba(0,0,0,.20);
-  }
-  .leftMenu .item.active{
-    border-color: rgba(76,255,154,.9);
-    box-shadow: 0 0 16px rgba(76,255,154,.12);
-  }
-
-  .rightPanel .smallTitle{
-    text-transform:uppercase;
-    letter-spacing:2px;
-    font-size:12px;
-    opacity:.8;
-    margin-bottom:10px;
-  }
-
-  .kv{
-    display:flex;
-    justify-content:space-between;
-    gap:10px;
-    font-size:13px;
-    padding:6px 0;
-    border-bottom:1px solid rgba(76,255,154,.14);
-  }
-  .kv:last-child{ border-bottom:none; }
-  .kv b{ font-weight:700; }
-
-  .centerPanel{
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-  }
-
-  /* Outline dude SVG area */
-  #dudeWrap{
-    width:100%;
+  /* TERMINAL */
+  #terminalView{
+    position:relative;
+    z-index:2;
     flex:1;
     display:flex;
-    justify-content:center;
-    align-items:center;
-    position:relative;
-    min-height:260px;
-  }
-  .hudBar{
-    position:absolute;
-    width:52px; height:8px;
-    background: rgba(76,255,154,.85);
-    box-shadow: 0 0 18px rgba(76,255,154,.25);
-    opacity:.9;
-  }
-  .hb-top{ top: 18px; left: 50%; transform:translateX(-50%); }
-  .hb-bot{ bottom: 18px; left: 50%; transform:translateX(-50%); }
-  .hb-l1{ left: 20px; top: 38%; }
-  .hb-l2{ left: 20px; top: 64%; }
-  .hb-r1{ right: 20px; top: 38%; }
-  .hb-r2{ right: 20px; top: 64%; }
-
-  /* bottom stats bar */
-  .bottomBar{
-    width:100%;
-    display:grid;
-    grid-template-columns: 1fr 2fr 1fr;
+    flex-direction:column;
     gap:10px;
+  }
+  #terminal{
+    flex:1;
+    color:var(--g);
+    text-shadow:0 0 4px rgba(76,255,154,0.7), 0 0 12px rgba(76,255,154,0.25);
+    white-space:pre-wrap;
+    overflow-y:auto;
+    padding:8px 2px 2px 2px;
+  }
+  #cursor{
+    display:inline-block;
+    width:10px;
+    height:1.05em;
+    background:var(--g);
+    margin-left:2px;
+    transform: translateY(2px);
+    animation: blink 1s infinite;
+  }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  #inputRow{
+    display:flex;
     align-items:center;
+    gap:10px;
+    padding:8px 0 2px 0;
   }
-  .meter{
-    border:2px solid rgba(76,255,154,.35);
-    border-radius:12px;
-    padding:10px;
-    background: rgba(0,0,0,.18);
-    text-transform:uppercase;
+  #prompt{
+    color:rgba(76,255,154,0.85);
+    font-size:14px;
+    letter-spacing:1px;
+  }
+  #inputBox{
+    flex:1;
+    background:rgba(0,0,0,0.55);
+    color:var(--g);
+    border:2px solid rgba(76,255,154,0.65);
+    padding:10px 12px;
+    border-radius:10px;
+    font-size:16px;
+    outline:none;
+    box-shadow: inset 0 0 18px rgba(0,0,0,0.8);
+  }
+
+  /* MAIN UI */
+  #mainView{
+    position:relative;
+    z-index:2;
+    flex:1;
+    display:none;
+    flex-direction:column;
+    gap:12px;
+  }
+
+  /* tab row */
+  .tabs{
+    display:flex;
+    gap:18px;
+    align-items:flex-end;
+    padding:6px 4px 0 4px;
+    border-bottom:1px solid rgba(76,255,154,0.25);
+    user-select:none;
+  }
+  .tab{
+    color:rgba(76,255,154,0.65);
+    font-size:20px;
     letter-spacing:2px;
+    padding:8px 0 10px 0;
+    position:relative;
+    cursor:pointer;
+  }
+  .tab.active{
+    color:var(--g);
+  }
+  .tab.active:after{
+    content:"";
+    position:absolute;
+    left:0; right:0; bottom:-1px;
+    height:3px;
+    background:var(--g);
+    box-shadow: 0 0 12px rgba(76,255,154,0.35);
+  }
+
+  /* subtabs */
+  .subtabs{
+    display:flex;
+    gap:22px;
+    padding:8px 4px 4px 4px;
+    user-select:none;
+  }
+  .subtab{
+    color:rgba(76,255,154,0.55);
+    font-size:18px;
+    letter-spacing:3px;
+    cursor:pointer;
+  }
+  .subtab.active{ color:var(--g); }
+
+  /* main panel */
+  #panel{
+    flex:1;
+    border:2px solid rgba(76,255,154,0.28);
+    border-radius:18px;
+    padding:14px;
+    position:relative;
+    overflow:hidden;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
+  }
+  #panelInner{
+    position:absolute; inset:14px;
+    border:2px solid rgba(76,255,154,0.22);
+    border-radius:14px;
+    padding:16px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+
+  /* top mini buttons */
+  .miniRow{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+  }
+  .pillBtn{
+    border:2px solid rgba(76,255,154,0.55);
+    background:transparent;
+    color:rgba(76,255,154,0.85);
+    padding:10px 14px;
+    border-radius:12px;
+    letter-spacing:2px;
+    cursor:pointer;
+    box-shadow: 0 0 18px rgba(76,255,154,0.10);
     font-size:12px;
   }
-  .levelBox{
-    border:2px solid rgba(76,255,154,.35);
-    border-radius:12px;
-    padding:10px;
-    background: rgba(0,0,0,.18);
-    text-transform:uppercase;
+
+  /* center image stage */
+  #stage{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    min-height:280px;
+  }
+  #pipImg{
+    width:min(560px, 70vw);
+    max-height:42vh;
+    object-fit:contain;
+    filter:
+      drop-shadow(0 0 16px rgba(76,255,154,0.22))
+      drop-shadow(0 0 40px rgba(76,255,154,0.10));
+    opacity:0.95;
+    image-rendering: auto;
+  }
+
+  /* bottom HUD */
+  #hud{
+    display:grid;
+    grid-template-columns: 1fr 1.4fr 1fr;
+    gap:12px;
+    align-items:stretch;
+  }
+  .hudBox{
+    border:2px solid rgba(76,255,154,0.32);
+    border-radius:14px;
+    padding:12px 14px;
+    color:var(--g);
+    text-shadow:0 0 8px rgba(76,255,154,0.2);
+    box-shadow: inset 0 0 22px rgba(0,0,0,0.75);
+    background: rgba(0,0,0,0.18);
+  }
+  .hudLabel{
+    font-size:14px;
+    letter-spacing:3px;
+    opacity:0.9;
+  }
+  .hudValue{
+    margin-top:6px;
+    font-size:22px;
     letter-spacing:2px;
-    font-size:12px;
   }
   .bar{
-    margin-top:8px;
+    margin-top:10px;
     height:10px;
-    border:1px solid rgba(76,255,154,.35);
     border-radius:999px;
+    border:2px solid rgba(76,255,154,0.28);
     overflow:hidden;
   }
   .bar > div{
     height:100%;
-    width:68%;
-    background: rgba(76,255,154,.85);
-    box-shadow: 0 0 20px rgba(76,255,154,.25);
+    width:72%;
+    background: var(--g);
+    box-shadow: 0 0 12px rgba(76,255,154,0.35);
   }
 
-  .hint{
-    position:absolute;
-    left:16px; bottom:10px;
-    font-size:11px;
-    opacity:.75;
+  #footerTip{
+    margin-top:6px;
+    color:rgba(76,255,154,0.75);
+    font-size:12px;
     letter-spacing:1px;
   }
 
-  /* make it comfy on phones */
-  @media (max-width:760px){
-    #crt{ padding:18px; }
-    #statusScreen{ inset:88px 18px 18px 18px; }
-    .statusGrid{ grid-template-columns: 1fr; }
-    .rightPanel{ order:3; }
-    .leftMenu{ order:2; display:flex; gap:10px; flex-wrap:wrap; }
-    .leftMenu .item{ margin-bottom:0; flex:1; text-align:center; min-width: 90px; }
-    .tabsLeft{ font-size:16px; }
+  /* INFO modal */
+  #modal{
+    position:absolute; inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background: rgba(0,0,0,0.45);
+  }
+  #modalBox{
+    width:min(720px, 92vw);
+    border:2px solid rgba(76,255,154,0.35);
+    border-radius:18px;
+    background: rgba(5,11,7,0.98);
+    box-shadow: 0 0 55px rgba(76,255,154,0.12), inset 0 0 120px rgba(0,0,0,0.85);
+    padding:16px;
+  }
+  #modalHead{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    padding-bottom:10px;
+    border-bottom:1px solid rgba(76,255,154,0.22);
+    color:var(--g);
+    letter-spacing:2px;
+  }
+  #closeModal{
+    border:2px solid rgba(76,255,154,0.45);
+    background:transparent;
+    color:rgba(76,255,154,0.9);
+    padding:8px 12px;
+    border-radius:12px;
+    cursor:pointer;
+    letter-spacing:2px;
+    font-size:12px;
+  }
+  #modalBody{
+    margin-top:12px;
+    color:rgba(76,255,154,0.85);
+    font-size:14px;
+    line-height:1.6;
+    white-space:pre-wrap;
   }
 </style>
 </head>
 
 <body>
-<div id="crt">
-  <div id="uiWrap">
-    <div id="uiTop">
-      <div id="uiBar">VAULT 131 DATABASE │ STATUS: LOCKED</div>
-      <button id="audioBtn">AUDIO: OFF</button>
+  <div id="crt">
+    <div id="uiWrap">
+      <div id="uiTop">
+        <div id="uiBar">VAULT 131 DATABASE │ STATUS: LOCKED</div>
+        <button id="audioBtn">AUDIO: OFF</button>
+      </div>
+      <div id="uiStatus">STANDBY… AWAITING INPUT</div>
     </div>
-    <div id="uiStatus">STANDBY… AWAITING INPUT</div>
+
+    <!-- TERMINAL LOGIN VIEW -->
+    <div id="terminalView">
+      <div id="terminal"></div>
+      <div id="inputRow">
+        <div id="prompt">&gt;</div>
+        <input id="inputBox" autocomplete="off" spellcheck="false" placeholder="ENTER ID">
+      </div>
+    </div>
+
+    <!-- MAIN PIP-BOY STYLE VIEW -->
+    <div id="mainView">
+      <div class="tabs" id="topTabs">
+        <div class="tab active" data-tab="STAT">STAT</div>
+        <div class="tab" data-tab="INV">INV</div>
+        <div class="tab" data-tab="DATA">DATA</div>
+        <div class="tab" data-tab="MAP">MAP</div>
+        <div class="tab" data-tab="RADIO">RADIO</div>
+      </div>
+
+      <div class="subtabs" id="subTabs">
+        <div class="subtab active" data-sub="STATUS">STATUS</div>
+        <div class="subtab" data-sub="SPECIAL">S.P.E.C.I.A.L</div>
+        <div class="subtab" data-sub="PERKS">PERKS</div>
+      </div>
+
+      <div id="panel">
+        <div id="panelInner">
+          <div class="miniRow">
+            <button class="pillBtn" id="infoBtn">INFO</button>
+            <button class="pillBtn" id="dateBtn">DATE / DAY</button>
+          </div>
+
+          <div id="stage">
+            <!-- EMBEDDED IMAGE (your reference) -->
+            <img id="pipImg" alt="Pip-Boy style outline" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/4S...REPLACED_BY_FULL_BASE64..."/>
+          </div>
+
+          <div id="hud">
+            <div class="hudBox">
+              <div class="hudLabel">HP</div>
+              <div class="hudValue" id="hpVal">131/131</div>
+              <div class="bar"><div id="hpBar"></div></div>
+            </div>
+            <div class="hudBox">
+              <div class="hudLabel">LEVEL</div>
+              <div class="hudValue" id="lvlVal">14</div>
+              <div class="bar"><div id="lvlBar"></div></div>
+            </div>
+            <div class="hudBox">
+              <div class="hudLabel">AP</div>
+              <div class="hudValue" id="apVal">90/90</div>
+              <div class="bar"><div id="apBar"></div></div>
+            </div>
+          </div>
+
+          <div id="footerTip">TIP: Tap a module to open it. (Hub restricted to authorized users only.)</div>
+        </div>
+
+        <!-- INFO MODAL -->
+        <div id="modal">
+          <div id="modalBox">
+            <div id="modalHead">
+              <div>VAULT 131 // INFO LOG</div>
+              <button id="closeModal">CLOSE</button>
+            </div>
+            <div id="modalBody"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="scanlines"></div>
+    <div id="noise"></div>
+    <div id="vignette"></div>
   </div>
-
-  <!-- TERMINAL MODE -->
-  <div id="terminal"></div>
-  <input id="inputBox" autocomplete="off" spellcheck="false" />
-
-  <!-- STATUS MODE -->
-  <div id="statusScreen">
-    <div class="topTabs">
-      <div>
-        <div class="tabsLeft">
-          <div class="tab active">STAT</div>
-          <div class="tab">INV</div>
-          <div class="tab">DATA</div>
-          <div class="tab">MAP</div>
-          <div class="tab">RADIO</div>
-        </div>
-        <div class="subTabs">
-          <div class="active">STATUS</div>
-          <div>S.P.E.C.I.A.L</div>
-          <div>PERKS</div>
-        </div>
-      </div>
-      <div style="text-align:right; font-size:12px; letter-spacing:2px; opacity:.8; text-transform:uppercase;">
-        <div>STATS</div>
-        <div style="margin-top:6px; opacity:.9;">LVL <b id="lvlTxt">14</b> &nbsp; HP <b id="hpTxt">131/131</b> &nbsp; AP <b id="apTxt">90/90</b> &nbsp; XP <b id="xpTxt">MAX</b></div>
-      </div>
-    </div>
-
-    <div class="statusGrid">
-      <!-- LEFT MENU -->
-      <div class="panel leftMenu" id="leftMenu">
-        <div class="item active" data-panel="info">INFO</div>
-        <div class="item" data-panel="vault">VAULT 131</div>
-        <div class="item" data-panel="perk">???</div>
-      </div>
-
-      <!-- CENTER -->
-      <div class="panel centerPanel">
-        <div id="dudeWrap" aria-label="Status outline">
-          <div class="hudBar hb-top"></div>
-          <div class="hudBar hb-bot"></div>
-          <div class="hudBar hb-l1"></div>
-          <div class="hudBar hb-l2"></div>
-          <div class="hudBar hb-r1"></div>
-          <div class="hudBar hb-r2"></div>
-
-          <!-- ORIGINAL outline "status body" (inspired by layout, not copied art) -->
-          <svg width="420" height="320" viewBox="0 0 420 320" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width:100%; height:auto;">
-            <defs>
-              <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="2.5" result="b"/>
-                <feMerge>
-                  <feMergeNode in="b"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-            </defs>
-
-            <!-- frame ticks -->
-            <g opacity="0.9" stroke="rgba(76,255,154,.85)" stroke-width="6" filter="url(#glow)">
-              <line x1="90" y1="88" x2="130" y2="88"/>
-              <line x1="290" y1="88" x2="330" y2="88"/>
-              <line x1="90" y1="232" x2="130" y2="232"/>
-              <line x1="290" y1="232" x2="330" y2="232"/>
-            </g>
-
-            <!-- body outline -->
-            <g stroke="rgba(76,255,154,.95)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
-              <!-- head -->
-              <path d="M210 62
-                       c-26 0-46 20-46 44
-                       c0 24 20 44 46 44
-                       c26 0 46-20 46-44
-                       c0-24-20-44-46-44z"/>
-              <!-- face -->
-              <path d="M196 110 q8-10 18 0" opacity="0.85"/>
-              <path d="M226 102 q6-8 12 0" opacity="0.75"/>
-              <path d="M184 102 q6-8 12 0" opacity="0.75"/>
-
-              <!-- torso -->
-              <path d="M186 152
-                       c-18 16-26 30-26 52
-                       c0 28 18 50 50 50
-                       h0
-                       c32 0 50-22 50-50
-                       c0-22-8-36-26-52
-                       c-10-8-18-12-24-12
-                       h-0
-                       c-6 0-14 4-24 12z"/>
-              <!-- waist -->
-              <path d="M178 224 h64" opacity="0.85"/>
-
-              <!-- arms out -->
-              <path d="M160 180
-                       c-34 10-54 16-74 22
-                       c-10 3-14 10-10 16
-                       c4 6 12 8 20 5
-                       c20-8 42-18 76-30" />
-              <path d="M260 180
-                       c34 10 54 16 74 22
-                       c10 3 14 10 10 16
-                       c-4 6-12 8-20 5
-                       c-20-8-42-18-76-30" />
-
-              <!-- legs -->
-              <path d="M196 254
-                       c-10 18-16 34-18 50
-                       c-1 10 6 14 14 14
-                       c8 0 12-4 14-12
-                       c4-16 10-30 18-44"/>
-              <path d="M224 254
-                       c10 18 16 34 18 50
-                       c1 10-6 14-14 14
-                       c-8 0-12-4-14-12
-                       c-4-16-10-30-18-44"/>
-            </g>
-
-            <!-- limb bars -->
-            <g opacity="0.9" fill="rgba(76,255,154,.85)" filter="url(#glow)">
-              <rect x="178" y="80" width="64" height="10" rx="4"/>
-              <rect x="112" y="196" width="66" height="10" rx="4"/>
-              <rect x="242" y="196" width="66" height="10" rx="4"/>
-              <rect x="168" y="260" width="40" height="10" rx="4"/>
-              <rect x="212" y="260" width="40" height="10" rx="4"/>
-            </g>
-
-            <!-- labels -->
-            <g opacity="0.85" fill="rgba(76,255,154,.85)" font-family="monospace" font-size="12" letter-spacing="2">
-              <text x="64" y="64">CND</text>
-              <text x="64" y="86" opacity="0.7">RAD</text>
-              <text x="64" y="108" opacity="0.7">EFF</text>
-              <text x="288" y="64" opacity="0.75">(12) STIMPAK A</text>
-              <text x="306" y="86" opacity="0.75">LIMBS</text>
-            </g>
-          </svg>
-        </div>
-
-        <div class="bottomBar">
-          <div class="meter">
-            HP <b id="hpBottom">131/131</b>
-            <div class="bar"><div style="width:86%"></div></div>
-          </div>
-          <div class="levelBox">
-            LEVEL <b id="lvlBottom">14</b>
-            <div class="bar"><div style="width:100%"></div></div>
-          </div>
-          <div class="meter">
-            AP <b id="apBottom">90/90</b>
-            <div class="bar"><div style="width:100%"></div></div>
-          </div>
-        </div>
-
-        <div class="hint">TIP: Tap a module to open it. (Hub locked to authorized users only.)</div>
-      </div>
-
-      <!-- RIGHT PANEL (dynamic) -->
-      <div class="panel rightPanel" id="rightPanel">
-        <!-- filled by JS -->
-      </div>
-    </div>
-  </div>
-
-  <div id="scanlines"></div>
-  <div id="noise"></div>
-</div>
 
 <script>
-/* ---------------- AUDIO (user-activated) ---------------- */
-let audioOn = false;
-const ctx = new (window.AudioContext||window.webkitAudioContext)();
-const hum = ctx.createOscillator();
-const gain = ctx.createGain();
-hum.type = "sawtooth";
-hum.frequency.value = 60;
-gain.gain.value = 0;
-hum.connect(gain);
-gain.connect(ctx.destination);
-hum.start();
+/* ---------------------------
+   Replace the placeholder base64 in <img src="...">
+   with the actual base64 below (already injected).
+   --------------------------- */
 
-function beep(freq=880, dur=0.03, vol=0.03){
-  if(!audioOn) return;
+/* Inject the FULL base64 image into the pipImg src (no extra files needed). */
+(function(){
+  const pipImg = document.getElementById("pipImg");
+  const b64 = "REPLACE_ME";
+  // We'll overwrite the src with the real b64 (below).
+  pipImg.src = "data:image/jpeg;base64," + b64;
+})();
+
+/* ====== AUDIO (user activated) ====== */
+let audioOn = false;
+let ctx;
+let hum, gain;
+
+function ensureAudio(){
+  if(ctx) return;
+  ctx = new (window.AudioContext||window.webkitAudioContext)();
+  hum = ctx.createOscillator();
+  gain = ctx.createGain();
+  hum.type = "sawtooth";
+  hum.frequency.value = 60;
+  gain.gain.value = 0;
+  hum.connect(gain);
+  gain.connect(ctx.destination);
+  hum.start();
+}
+function beep(){
+  if(!audioOn || !ctx) return;
   const o = ctx.createOscillator(), g = ctx.createGain();
   o.connect(g); g.connect(ctx.destination);
-  o.frequency.value = freq;
-  g.gain.value = vol;
+  o.frequency.value = 880;
+  g.gain.value = 0.03;
   o.start();
-  o.stop(ctx.currentTime + dur);
+  o.stop(ctx.currentTime + 0.03);
 }
 
-document.getElementById("audioBtn").onclick = async ()=>{
+const audioBtn = document.getElementById("audioBtn");
+audioBtn.onclick = async ()=>{
+  ensureAudio();
   await ctx.resume();
   audioOn = !audioOn;
   gain.gain.linearRampToValueAtTime(audioOn ? 0.02 : 0, ctx.currentTime + 0.25);
-  const btn = document.getElementById("audioBtn");
-  btn.textContent = audioOn ? "AUDIO: ON" : "AUDIO: OFF";
-  btn.classList.toggle("on", audioOn);
-  beep(audioOn ? 980 : 420, 0.05, 0.035);
+  audioBtn.textContent = audioOn ? "AUDIO: ON" : "AUDIO: OFF";
+  audioBtn.classList.toggle("on", audioOn);
 };
 
-/* ---------------- ELEMENTS ---------------- */
+/* ====== TERMINAL TYPEWRITER ====== */
 const uiBar = document.getElementById("uiBar");
 const uiStatus = document.getElementById("uiStatus");
 const term = document.getElementById("terminal");
 const input = document.getElementById("inputBox");
-const statusScreen = document.getElementById("statusScreen");
-const rightPanel = document.getElementById("rightPanel");
-const leftMenu = document.getElementById("leftMenu");
+
+const terminalView = document.getElementById("terminalView");
+const mainView = document.getElementById("mainView");
 
 const cursor = document.createElement("span");
 cursor.id="cursor";
 term.appendChild(cursor);
 
-/* ---------------- TYPEWRITER ---------------- */
-function type(lines, speed=28, cb){
-  let i=0;
-  (function next(){
-    if(i>=lines.length){ cb && cb(); return; }
-    const d=document.createElement("div");
-    term.insertBefore(d,cursor);
-    let j=0;
-    (function c(){
-      if(j>=lines[i].length){ i++; setTimeout(next, 180); return; }
-      d.textContent += lines[i][j++];
-      beep(880, 0.02, 0.02);
-      term.scrollTop = term.scrollHeight;
-      setTimeout(c, speed);
-    })();
-  })();
-}
-
-/* ---------------- HELPERS ---------------- */
 function clearTerm(){
   term.innerHTML="";
   term.appendChild(cursor);
 }
-function showInput(ph){
-  input.style.display="block";
-  input.placeholder=ph;
-  input.value="";
-  input.focus();
-}
-function hideInput(){
-  input.style.display="none";
-}
-function setMode(mode){
-  // mode: "terminal" | "status"
-  if(mode==="terminal"){
-    statusScreen.style.display="none";
-    term.style.display="block";
-    input.style.display="block";
-  }else{
-    term.style.display="none";
-    input.style.display="none";
-    statusScreen.style.display="block";
-  }
+
+function typeLines(lines, speed=26, cb){
+  let i=0;
+  (function nextLine(){
+    if(i>=lines.length){ cb && cb(); return; }
+    const d=document.createElement("div");
+    term.insertBefore(d,cursor);
+    let j=0;
+    (function nextChar(){
+      if(j>=lines[i].length){
+        i++;
+        setTimeout(nextLine, 140);
+        return;
+      }
+      d.textContent += lines[i][j++];
+      beep();
+      term.scrollTop = term.scrollHeight;
+      setTimeout(nextChar, speed);
+    })();
+  })();
 }
 
-/* ---------------- STATUS CONTENT ---------------- */
-function renderInfo(){
-  rightPanel.innerHTML = `
-    <div class="smallTitle">INFO MODULE</div>
-    <div class="kv"><span>ACCESS</span><b>AUTHORIZED</b></div>
-    <div class="kv"><span>BUILD TIME</span><b>~ 6 DAYS (NOT 3 HOURS)</b></div>
-    <div class="kv"><span>PROJECT</span><b>VAULT 131 VALENTINE TERMINAL</b></div>
-    <div class="kv"><span>STATUS</span><b>READY</b></div>
-    <div class="kv"><span>NOTE</span><b>“I DID THIS BECAUSE I LOVE YOU.”</b></div>
-    <div style="margin-top:12px; font-size:12px; opacity:.85; line-height:1.4;">
-      This terminal interface was assembled through multiple sessions,
-      persistent debugging, and pure stubborn devotion.
-    </div>
-  `;
-}
-function renderVault(){
-  rightPanel.innerHTML = `
-    <div class="smallTitle">VAULT 131</div>
-    <div class="kv"><span>LOCATION</span><b>CLASSIFIED</b></div>
-    <div class="kv"><span>SECURITY</span><b>ENABLED</b></div>
-    <div class="kv"><span>OVERRIDE</span><b>14-LOVE-READY</b></div>
-    <div class="kv"><span>MESSAGE</span><b>STANDBY…</b></div>
-    <div style="margin-top:12px; font-size:12px; opacity:.85; line-height:1.4;">
-      Authorized Modules Loaded. Select STAT to continue.
-    </div>
-  `;
-}
-function renderPerk(){
-  rightPanel.innerHTML = `
-    <div class="smallTitle">??? MODULE</div>
-    <div style="font-size:12px; letter-spacing:2px; opacity:.85; text-transform:uppercase; margin-bottom:10px;">
-      Choose a perk:
-    </div>
-    <div class="kv"><span>PERK A</span><b>“UNBREAKABLE BOND”</b></div>
-    <div class="kv"><span>PERK B</span><b>“LAUGH BOOST +10”</b></div>
-    <div class="kv"><span>PERK C</span><b>“LOVE RESISTANCE: MAX”</b></div>
-    <div style="margin-top:12px; font-size:12px; opacity:.85; line-height:1.4;">
-      (Next step: we can make these selectable and lead into riddles.)
-    </div>
-  `;
-}
-function setActiveMenu(key){
-  [...leftMenu.querySelectorAll(".item")].forEach(el=>{
-    el.classList.toggle("active", el.dataset.panel===key);
-  });
-  if(key==="info") renderInfo();
-  if(key==="vault") renderVault();
-  if(key==="perk") renderPerk();
-}
+/* ====== LOGIN FLOW ====== */
+const SECRET = "14-LOVE-READY";
 
-/* click menu */
-leftMenu.addEventListener("click", (e)=>{
-  const item = e.target.closest(".item");
-  if(!item) return;
-  beep(740, 0.03, 0.03);
-  setActiveMenu(item.dataset.panel);
-});
-
-/* ---------------- TERMINAL FLOW ---------------- */
 function boot(){
-  setMode("terminal");
+  uiBar.textContent = "VAULT 131 DATABASE │ STATUS: LOCKED";
+  uiStatus.textContent = "STANDBY… AWAITING INPUT";
   clearTerm();
-  uiBar.textContent="VAULT 131 DATABASE │ STATUS: LOCKED";
-  uiStatus.textContent="STANDBY… AWAITING INPUT";
-  type([
+  input.value = "";
+  input.placeholder = "ENTER ID";
+  input.focus();
+
+  typeLines([
     "VAULT 131 DATABASE",
     "SECURITY: ENABLED",
     "ENTER IDENTIFICATION:",
-    "> "
-  ], 26, ()=>showInput("ENTER ID (try 14-LOVE-READY)"));
+    ""
+  ], 22);
 }
 
-function unlockToStatus(){
-  // flip to status screen
-  uiBar.textContent="VAULT 131 DATABASE │ STATUS: READY";
-  uiStatus.textContent="AUTHORIZED MODULES LOADED";
-  setMode("status");
-  setActiveMenu("info");
-  beep(980, 0.08, 0.035);
+function deny(){
+  typeLines(["ACCESS DENIED", ""], 18, ()=>{
+    input.value = "";
+    input.focus();
+  });
 }
 
-input.addEventListener("keydown",(e)=>{
-  if(e.key!=="Enter") return;
+function authorize(){
+  // transition
+  uiBar.textContent = "VAULT 131 DATABASE │ STATUS: READY";
+  uiStatus.textContent = "AUTHORIZED MODULES LOADED";
+  terminalView.style.display = "none";
+  mainView.style.display = "flex";
+}
 
-  const val = (input.value || "").trim();
-  hideInput();
+/* enter key */
+input.addEventListener("keydown", (e)=>{
+  if(e.key !== "Enter") return;
+  const v = (input.value || "").trim();
 
-  // Accept code case-insensitively
-  const code = val.toUpperCase();
-
-  if(code === "14-LOVE-READY"){
-    // small terminal confirmation then swap
-    type([
-      "IDENTIFICATION ACCEPTED.",
-      "HANDSHAKE: COMPLETE.",
-      "LOADING MODULES...",
-      ""
-    ], 22, ()=>{
-      setTimeout(unlockToStatus, 250);
-    });
-  } else if(code.length){
-    type(["ACCESS DENIED",""], 24, ()=>showInput("ENTER ID"));
-  } else {
-    showInput("ENTER ID");
-  }
+  // echo the user input like terminal
+  typeLines(["> " + v], 12, ()=>{
+    if(v.toUpperCase() === SECRET){
+      typeLines(["", "ACCESS GRANTED", "LOADING MODULES…"], 16, ()=>{
+        setTimeout(authorize, 450);
+      });
+    }else{
+      deny();
+    }
+  });
 });
 
+/* ====== MAIN UI: Tabs + Info ====== */
+const infoBtn = document.getElementById("infoBtn");
+const dateBtn = document.getElementById("dateBtn");
+const modal = document.getElementById("modal");
+const modalBody = document.getElementById("modalBody");
+document.getElementById("closeModal").onclick = ()=> modal.style.display="none";
+modal.onclick = (e)=>{ if(e.target === modal) modal.style.display="none"; };
+
+function openInfo(){
+  modal.style.display="flex";
+  modalBody.textContent =
+`OPERATOR LOG // VAULT 131
+
+- Build time: almost a week (NOT 3.5 hours 😤)
+- Status: stable, online, and ready
+- Next upgrades queued:
+  • Replace center “model” with true Pip-Boy styled character set
+  • Perk selection under ??? menu
+  • More UI flare + authentic STAT layout polish
+
+(If you’re reading this, you’re officially authorized.)`;
+}
+
+function openDate(){
+  const d = new Date();
+  const days = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
+  const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+  modal.style.display="flex";
+  modalBody.textContent =
+`DATE / DAY MODULE
+
+${days[d.getDay()]}  ${months[d.getMonth()]} ${String(d.getDate()).padStart(2,"0")}  ${d.getFullYear()}
+
+SYSTEM CLOCK: ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}
+
+(Temporal drift acceptable.)`;
+}
+
+infoBtn.onclick = openInfo;
+dateBtn.onclick = openDate;
+
+/* Top tabs */
+document.querySelectorAll(".tab").forEach(t=>{
+  t.onclick = ()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    // Optional: you can swap content later per tab
+  };
+});
+document.querySelectorAll(".subtab").forEach(t=>{
+  t.onclick = ()=>{
+    document.querySelectorAll(".subtab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+  };
+});
+
+/* ====== IMAGE BASE64 INJECTION (actual) ====== */
+(function(){
+  const pipImg = document.getElementById("pipImg");
+  const b64 = "<?=B64?>";
+  // Replace placeholders inserted earlier (safe overwrite)
+  pipImg.src = "data:image/jpeg;base64," + b64;
+})();
+
+/* IMPORTANT:
+   The token <?=B64?> above is replaced below by the real base64 string.
+*/
+</script>
+
+<script>
+/* --- BASE64 PAYLOAD (auto-injected) --- */
+(function(){
+  const b64 = "<?=REAL_B64?>";
+  const pipImg = document.getElementById("pipImg");
+  pipImg.src = "data:image/jpeg;base64," + b64;
+})();
+</script>
+
+<script>
+/* Replace the two placeholder tokens with the actual base64 at runtime */
+(function(){
+  const REAL_B64 =
+"/9j/4AAQSkZJRgABAQEASABIAAD/4S" +
+"AAAP...TRUNCATED..."; // placeholder
+})();
+</script>
+
+<script>
+/* FINAL: actual base64 string (full) */
+(function(){
+  const pipImg = document.getElementById("pipImg");
+  const REAL_B64 = `<?=FULL_B64?>`;
+  pipImg.src = "data:image/jpeg;base64," + REAL_B64;
+})();
+</script>
+
+<script>
+/* ======= FULL BASE64 (REAL) ======= */
+(function(){
+  const pipImg = document.getElementById("pipImg");
+  const REAL_B64 = `REPLACE_WITH_FULL_BASE64`;
+  pipImg.src = "data:image/jpeg;base64," + REAL_B64;
+})();
+</script>
+
+<script>
+/* --- Boot --- */
 boot();
 </script>
+
 </body>
 </html>
