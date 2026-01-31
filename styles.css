@@ -194,3 +194,30 @@ html, body{
 @media (max-width:720px){
   #inputBox{width:100%;}
 }
+
+/* === FORCE HUD BUTTON STYLE (fixes iOS beige pill) === */
+#crt button {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  color: #4cff9a;
+  border: 2px solid rgba(76,255,154,0.55);
+  border-radius: 6px;
+  padding: 6px 12px;
+  margin: 6px 6px 0 0;
+  cursor: pointer;
+  font-family: monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  box-shadow: 0 0 12px rgba(76,255,154,0.12);
+}
+
+#crt button:active {
+  transform: translateY(1px);
+  box-shadow: 0 0 18px rgba(76,255,154,0.18);
+}
+
+#crt button:focus {
+  outline: none;
+}
