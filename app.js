@@ -37,6 +37,18 @@ function beep(){
   o.stop(ctx.currentTime + 0.03);
 }
 
+function hoverBeep(){
+  if(!ctx || !audioOn) return;
+
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.connect(g); g.connect(ctx.destination);
+
+  o.frequency.value = 640;   // softer, lower pitch
+  g.gain.value = 0.018;      // quieter than typing beep
+  o.start();
+  o.stop(ctx.currentTime + 0.02);
+}
+
 /* ========= ELEMENTS ========= */
 const crt = document.getElementById("crt");
 const uiBar = document.getElementById("uiBar");
