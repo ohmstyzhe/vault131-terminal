@@ -27,7 +27,6 @@ border:3px solid rgba(76,255,154,0.35);
 box-shadow:0 0 45px rgba(76,255,154,0.25), inset 0 0 140px rgba(0,0,0,0.95);
 }
 
-/* HEADER */
 #uiWrap{
 margin-bottom:10px;
 padding-bottom:10px;
@@ -52,7 +51,6 @@ font-size:12px;
 letter-spacing:0.8px;
 }
 
-/* AUDIO BUTTON */
 #audioBtn{
 border:2px solid rgba(76,255,154,0.55);
 background:transparent;
@@ -69,7 +67,6 @@ border-color:#4cff9a;
 color:#4cff9a;
 }
 
-/* TERMINAL */
 #terminal{
 color:#4cff9a;
 text-shadow:0 0 4px rgba(76,255,154,0.7),0 0 10px rgba(76,255,154,0.4);
@@ -78,7 +75,6 @@ overflow-y:auto;
 flex:1;
 }
 
-/* INPUT */
 #inputBox{
 display:none;
 width:80%;
@@ -92,7 +88,6 @@ font-size:16px;
 outline:none;
 }
 
-/* BUTTONS */
 button.menu{
 border:2px solid #4cff9a;
 background:transparent;
@@ -105,7 +100,6 @@ cursor:pointer;
 font-size:14px;
 }
 
-/* CURSOR */
 #cursor{
 display:inline-block;
 width:10px;
@@ -115,7 +109,6 @@ animation: blink 1s infinite;
 }
 @keyframes blink{50%{opacity:0;}}
 
-/* SCANLINES */
 #scanlines{
 position:absolute; inset:0;
 background:repeating-linear-gradient(to bottom,
@@ -138,61 +131,57 @@ pointer-events:none;
 
   <div id="terminal"></div>
   <input id="inputBox" autocomplete="off">
-
   <div id="scanlines"></div>
 </div>
 
 <script>
 /* AUDIO */
-let audioOn = false;
-const ctx = new (window.AudioContext||window.webkitAudioContext)();
-const hum = ctx.createOscillator();
-const gain = ctx.createGain();
-hum.type = "sawtooth";
-hum.frequency.value = 60;
-gain.gain.value = 0;
-hum.connect(gain);
-gain.connect(ctx.destination);
+let audioOn=false;
+const ctx=new(window.AudioContext||window.webkitAudioContext)();
+const hum=ctx.createOscillator();
+const gain=ctx.createGain();
+hum.type="sawtooth";
+hum.frequency.value=60;
+gain.gain.value=0;
+hum.connect(gain); gain.connect(ctx.destination);
 hum.start();
 
 function beep(){
 if(!audioOn) return;
-const o = ctx.createOscillator(), g = ctx.createGain();
+const o=ctx.createOscillator(), g=ctx.createGain();
 o.connect(g); g.connect(ctx.destination);
-o.frequency.value = 880;
-g.gain.value = 0.03;
-o.start();
-o.stop(ctx.currentTime + 0.03);
+o.frequency.value=880;
+g.gain.value=0.03;
+o.start(); o.stop(ctx.currentTime+0.03);
 }
 
-document.getElementById("audioBtn").onclick = async ()=>{
+audioBtn.onclick=async()=>{
 await ctx.resume();
-audioOn = !audioOn;
-gain.gain.linearRampToValueAtTime(audioOn ? 0.02 : 0, ctx.currentTime + 0.3);
-document.getElementById("audioBtn").textContent = audioOn ? "AUDIO: ON" : "AUDIO: OFF";
-document.getElementById("audioBtn").classList.toggle("on", audioOn);
+audioOn=!audioOn;
+gain.gain.linearRampToValueAtTime(audioOn?0.02:0,ctx.currentTime+0.3);
+audioBtn.textContent=audioOn?"AUDIO: ON":"AUDIO: OFF";
+audioBtn.classList.toggle("on",audioOn);
 };
 
 /* ELEMENTS */
-const uiBar = document.getElementById("uiBar");
-const uiStatus = document.getElementById("uiStatus");
-const term = document.getElementById("terminal");
-const input = document.getElementById("inputBox");
-
-const cursor = document.createElement("span");
+const uiBar=document.getElementById("uiBar");
+const uiStatus=document.getElementById("uiStatus");
+const term=document.getElementById("terminal");
+const input=document.getElementById("inputBox");
+const cursor=document.createElement("span");
 cursor.id="cursor";
 term.appendChild(cursor);
 
-/* TYPEWRITER */
-function type(lines, speed=35, cb){
+/* TYPE */
+function type(lines,speed=35,cb){
 let i=0;
 (function next(){
-if(i>=lines.length){ cb && cb(); return; }
+if(i>=lines.length){cb&&cb();return;}
 const d=document.createElement("div");
 term.insertBefore(d,cursor);
 let j=0;
 (function c(){
-if(j>=lines[i].length){ i++; setTimeout(next,200); return; }
+if(j>=lines[i].length){i++;setTimeout(next,200);return;}
 d.textContent+=lines[i][j++];
 beep();
 term.scrollTop=term.scrollHeight;
@@ -211,9 +200,9 @@ input.placeholder=ph;
 input.value="";
 input.focus();
 }
-function hideInput(){ input.style.display="none"; }
+function hideInput(){input.style.display="none";}
 
-/* LOGIN */
+/* BOOT */
 function boot(){
 clear();
 uiBar.textContent="VAULT 131 DATABASE │ STATUS: LOCKED";
@@ -226,19 +215,28 @@ type([
 ],35,()=>showInput("ENTER ID"));
 }
 
+/* LOGIN (FIXED) */
 input.addEventListener("keydown",e=>{
-if(e.key!=="Enter")return;
-const val = input.value.trim().toUpperCase();
+if(e.key!=="Enter") return;
+
+const val=input.value
+.trim()
+.toUpperCase()
+.replace(/[–—−]/g,"-")
+.replace(/\s+/g,"");
+
 hideInput();
 
-if(val === "14-LOVE-READY"){
+const okCodes=["14-LOVE-READY"];
+
+if(okCodes.includes(val)){
 accessGranted();
 }else{
 type(["ACCESS DENIED",""],30,()=>showInput("ENTER ID"));
 }
 });
 
-/* ACCESS GRANTED */
+/* ACCESS */
 function accessGranted(){
 clear();
 uiBar.textContent="VAULT 131 DATABASE │ STATUS: UNLOCKED";
@@ -248,10 +246,10 @@ type([
 "ACCESS GRANTED",
 "",
 "LOADING VAULT INTERFACE…"
-],30,()=>setTimeout(showHub,800));
+],30,()=>setTimeout(showHub,700));
 }
 
-/* HUB SCREEN */
+/* HUB */
 function showHub(){
 clear();
 type([
@@ -261,26 +259,25 @@ type([
 "",
 "SELECT MODULE:"
 ],30,()=>{
-addButton("SYSTEM LOG", ()=>showPanel("SYSTEM LOG","All systems nominal.\nVault integrity stable."));
-addButton("DATE DAY", ()=>showPanel("DATE DAY","TODAY'S OBJECTIVE:\nHave an amazing time together ❤️"));
-addButton("OVERSEER MESSAGE", ()=>showPanel("OVERSEER MESSAGE","You made it this far.\nThat means everything."));
-addButton("LOCK TERMINAL", boot);
+addBtn("SYSTEM LOG",()=>panel("SYSTEM LOG","All systems nominal.\nVault integrity stable."));
+addBtn("DATE DAY",()=>panel("DATE DAY","Prepare for an amazing day ❤️"));
+addBtn("OVERSEER MESSAGE",()=>panel("OVERSEER MESSAGE","You made it.\nThat’s what matters."));
+addBtn("LOCK TERMINAL",boot);
 });
 }
 
-function addButton(label, action){
+function addBtn(t,fn){
 const b=document.createElement("button");
 b.className="menu";
-b.textContent=label;
-b.onclick=()=>{ beep(); action(); };
+b.textContent=t;
+b.onclick=()=>{beep();fn();};
 term.insertBefore(b,cursor);
 }
 
-/* PANEL */
-function showPanel(title, text){
+function panel(title,text){
 clear();
-type([title,"",""+text,"","[ PRESS ENTER TO RETURN ]"],30,()=>{
-document.onkeydown = e=>{
+type([title,"",text,"","[ PRESS ENTER TO RETURN ]"],30,()=>{
+document.onkeydown=e=>{
 if(e.key==="Enter"){
 document.onkeydown=null;
 showHub();
@@ -292,4 +289,4 @@ showHub();
 boot();
 </script>
 </body>
-</html>
+</html> 
