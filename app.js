@@ -115,6 +115,7 @@ function setStatus(text){
 const ID = "101-317-76";
 const NEXT_ID = "14-LOVE-READY";
 const FINAL_CODE = "531";
+const ADMIN_PIN = "VT-OVERRIDE-531"; // <-- you can change this to anything
 
 const riddles = [
   { q:"I move without legs and follow you everywhere.", a:"shadow",
@@ -378,6 +379,21 @@ input.addEventListener("keydown", (e)=>{
 
   if(stage === "login"){
     setStatus("VALIDATING…");
+    
+    // ADMIN OVERRIDE: jump straight to final "531" screen
+if (a === ADMIN_PIN.toLowerCase()) {
+  setUnlocked();
+  clear();
+  setStatus("OVERRIDE ACCEPTED");
+  type([
+    "OVERRIDE ACCEPTED.",
+    "VAULT-TEC ADMIN ACCESS GRANTED.",
+    "SKIPPING TEST MODULES…"
+  ], 30, ()=>{
+    loading(()=> powerDip(()=> showFinalSuccess()));
+  });
+  return;
+}
 
     if(a === ID.toLowerCase()){
       setUnlocked();
