@@ -59,6 +59,20 @@ const hints = document.getElementById("hintContainer");
 const dip = document.getElementById("powerDip");
 const volBtn = document.getElementById("volBtn");
 
+// --- HOVER SOUND (only when audio is ON) ---
+crt.addEventListener("mouseover", (e) => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  hoverBeep();
+});
+
+// --- TOUCH DEVICES: play the same “hover” beep on touchstart ---
+crt.addEventListener("touchstart", (e) => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  hoverBeep();
+}, { passive: true });
+
 /* ========= BUTTON HOVER SFX ========= */
 function wireButtonHoverSfx(){
   const play = (e)=>{
