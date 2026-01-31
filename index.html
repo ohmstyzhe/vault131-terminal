@@ -1104,8 +1104,9 @@ input.addEventListener("keydown", (e)=>{
   if(e.key !== "Enter") return;
   if(locked) return;
 
-  const raw = input.value.trim();
-  const a = raw.toLowerCase();
+  // Normalize iPhone “smart punctuation” dashes into regular hyphens
+const raw = input.value.trim().replace(/[–—−]/g, "-");
+const a = raw.toLowerCase();
 
   input.value = "";
   hideInput();
