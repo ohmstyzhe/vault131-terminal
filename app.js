@@ -43,6 +43,27 @@ function beep(){
   o.stop(ctx.currentTime + 0.03);
 }
 
+// soft keypress sound while typing
+function keyBeep(type = "normal"){
+  if(!ctx || !audioOn) return;
+
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.connect(g);
+  g.connect(ctx.destination);
+
+  o.type = "square";
+
+  if(type === "enter") o.frequency.value = 520;
+  else if(type === "backspace") o.frequency.value = 420;
+  else o.frequency.value = 720;
+
+  g.gain.value = 0.015;
+
+  o.start();
+  o.stop(ctx.currentTime + 0.02);
+}
+
 // softer hover/tap beep
 function hoverBeep(){
   if(!ctx || !audioOn) return;
