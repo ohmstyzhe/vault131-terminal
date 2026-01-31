@@ -10,9 +10,8 @@ html, body{
 }
 
 #crt{
-  width:90%;
-  max-width:980px;
-  height:80vh;
+  width: min(1100px, 96vw);   /* 👈 wider than before */
+  height: min(82vh, 760px);   /* 👈 stable height */
   background:#050b07;
   border-radius:22px;
   padding:34px;
@@ -21,7 +20,9 @@ html, body{
   display:flex;
   flex-direction:column;
   border:3px solid rgba(76,255,154,0.35);
-  box-shadow:0 0 45px rgba(76,255,154,0.25), inset 0 0 140px rgba(0,0,0,0.95);
+  box-shadow:
+    0 0 45px rgba(76,255,154,0.25),
+    inset 0 0 140px rgba(0,0,0,0.95);
 }
 
 /* HEADER */
