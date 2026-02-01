@@ -1,15 +1,15 @@
-export class Game{
+export class Game {
   constructor(ui, audio){
     this.ui = ui;
     this.audio = audio;
 
-    /* ===== CONFIG ===== */
+    // ====== CONFIG ======
     this.ID = "101-317-76";
     this.NEXT_ID = "14-LOVE-READY";
     this.FINAL_CODE = "531";
 
-    // Admin shortcut: type this at the ID prompt to jump straight to the 531 screen
-    this.OVERRIDE_ID = "OVERRIDE-531";
+    // ✅ CHANGE THIS to whatever you want (this is YOUR admin skip)
+    this.OVERRIDE_ID = "ADMIN-531";
 
     this.riddles = [
       { q:"I move without legs and follow you everywhere.", a:"shadow",
@@ -27,7 +27,7 @@ export class Game{
 
     this.finalQ = {
       q:"FINAL AUTHORIZATION REQUIRED.\n\nThis number marks the day everything changed.\nWhat is the code?",
-      a:this.FINAL_CODE,
+      a: this.FINAL_CODE,
       h:["There were flowers.","You went to the beach.","Someone was running late… for a good reason."]
     };
 
@@ -55,71 +55,26 @@ export class Game{
       "VAULT-TEC: INTEGRITY 100%"
     ];
 
-    /* ===== STATE ===== */
+    // ====== STATE ======
     this.stage = "login";
-    this.rIndex = 0;
+    this.r = 0;
     this.hintUsed = 0;
   }
 
   start(){
-    this._wireInput();
     this.boot();
-  }
-
-  _wireInput(){
-    this.ui.input.addEventListener("keydown", async (e)=>{
-      if(e.key !== "Enter") return;
-      if(this.ui.locked) return;
-
-      const raw = this.ui.input.value.trim();
-      const a = raw.toLowerCase();
-
-      this.ui.input.value = "";
-      this.ui.hideInput();
-      this.ui.clearHints();
-
-      // Easter egg help
-      if(a === "help"){
-        await this.showHelp();
-        return;
-      }
-      if(this.stage === "help"){
-        this.boot();
-        return;
-      }
-
-      if(this.stage === "login"){
-        await this.handleLogin(raw, a);
-        return;
-      }
-
-      if(this.stage === "riddle"){
-        await this.handleRiddle(raw, a);
-        return;
-      }
-
-      if(this.stage === "final"){
-        await this.handleFinal(raw, a);
-        return;
-      }
-
-      if(this.stage === "ready"){
-        this.boot();
-        return;
-      }
-    });
   }
 
   async boot(){
     this.stage = "login";
-    this.rIndex = 0;
+    this.r = 0;
     this.hintUsed = 0;
 
-    this.ui.setLockedHeader();
+    this.ui.setHeaderLocked();
     this.ui.setStatus("STANDBY… AWAITING INPUT");
     this.ui.clear();
 
-    await this.ui.typeLines([
+    await this.ui.type([
       "VAULT 131 DATABASE",
       "SECURITY: ENABLED",
       "ENTER IDENTIFICATION:",
@@ -129,133 +84,82 @@ export class Game{
     this.ui.showInput("ENTER ID");
   }
 
-  async handleLogin(raw, a){
-    this.ui.setStatus("VALIDATING…");
+  async showHelp(){
+    this.stage = "help";
+    this.ui.clear();
+    this.ui.setStatus("VAULT-TEC NOTICE");
 
-    if(a === this.OVERRIDE_ID.toLowerCase()){
-      this.ui.setUnlockedHeader("IZABELLA");
-      await this.ui.loading(this.loadMsgs, this.loadDetails);
-      await this.ui.powerDip();
-      await this.showFinalSuccess(); // jump straight to 531 screen
-      return;
-    }
+    await this.ui.type([
+      "VAULT-TEC INTERNAL MEMO // DO NOT DISTRIBUTE",
+      "------------------------------------------",
+      "",
+      "If you are reading this, you are doing great.",
+      "You are safe here.",
+      "",
+      "OPERATOR TIP:",
+      "- HINT buttons are limited to 3 per question.",
+      "- Answers are NOT case sensitive.",
+      "",
+      "To continue: press ENTER to return."
+    ], 30);
 
-    if(a === this.ID.toLowerCase()){
-      this.ui.setUnlockedHeader("IZABELLA");
-      this.ui.clear();
-      await this.ui.typeLines(["ID VERIFIED.","Welcome, Izabella.","Initializing test modules…"], 35);
-      await this.ui.loading(this.loadMsgs, this.loadDetails);
-      await this.ui.powerDip();
-      this.rIndex = 0;
-      await this.askRiddle();
-      return;
-    }
-
-    if(a === this.NEXT_ID.toLowerCase()){
-      await this.showReadyScene();
-      return;
-    }
-
-    await this.ui.typeLines(["✖ INVALID ID", "> "], 35);
-    this.ui.setStatus("ACCESS DENIED");
-    this.ui.showInput("ENTER ID");
+    this.ui.showInput("PRESS ENTER");
   }
 
   async askRiddle(){
-    if(this.rIndex >= this.riddles.length){
-      this.stage = "final";
-      this.hintUsed = 0;
-      this.ui.clear();
-      this.ui.setStatus("FINAL AUTHORIZATION");
-      await this.ui.typeLines([this.finalQ.q, "", "> "], 35);
-      this._showHintButtons(this.finalQ.h);
-      this.ui.showInput("ENTER CODE");
-      this.ui.setStatus("AWAITING FINAL INPUT…");
-      return;
+    if (this.r >= this.riddles.length){
+      return this.askFinal();
     }
 
     this.stage = "riddle";
     this.hintUsed = 0;
-    const r = this.riddles[this.rIndex];
-
     this.ui.clear();
-    this.ui.setStatus(`TEST MODULE ${this.rIndex + 1}/5 LOADED`);
-    await this.ui.typeLines([`RIDDLE ${this.rIndex + 1}: ${r.q}`, "", "> "], 35);
+    this.ui.setStatus(`TEST MODULE ${this.r+1}/5 LOADED`);
 
-    this._showHintButtons(r.h);
+    const current = this.riddles[this.r];
+
+    await this.ui.type([`RIDDLE ${this.r+1}: ${current.q}`, "", "> "], 35);
+
     this.ui.showInput("TYPE ANSWER");
+    this._renderHints(current.h);
     this.ui.setStatus("AWAITING INPUT…");
   }
 
-  _showHintButtons(hintsArr){
-    const buildButtons = () => {
-      this.ui.clearHints();
+  async askFinal(){
+    this.stage = "final";
+    this.hintUsed = 0;
+    this.ui.clear();
+    this.ui.setStatus("FINAL AUTHORIZATION");
 
-      const remaining = hintsArr.slice(this.hintUsed, 3);
-      remaining.forEach((_, idx)=>{
-        const label = `HINT ${this.hintUsed + idx + 1}`;
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.textContent = label;
-        btn.onclick = async ()=>{
-          if(this.ui.locked) return;
-          this.ui.setStatus("HINT MODULE: ACTIVE");
-          await this.ui.typeLines([`HINT: ${hintsArr[this.hintUsed]}`], 30);
-          this.ui.setStatus("AWAITING INPUT…");
-          this.hintUsed++;
-          buildButtons();
-        };
-        this.ui.hints.appendChild(btn);
-      });
-    };
+    await this.ui.type([this.finalQ.q, "", "> "], 35);
 
-    buildButtons();
-  }
-
-  async handleRiddle(raw, a){
-    const r = this.riddles[this.rIndex];
-
-    if(a === r.a.toLowerCase()){
-      this.ui.setStatus("ANSWER ACCEPTED");
-      await this.ui.typeLines(["✔ CORRECT."], 30);
-      await this.ui.loading(this.loadMsgs, this.loadDetails);
-      await this.ui.powerDip();
-      this.rIndex++;
-      await this.askRiddle();
-      return;
-    }
-
-    this.ui.setStatus("ANSWER REJECTED");
-    await this.ui.typeLines(["✖ TRY AGAIN", "> "], 30);
-    this.ui.showInput("TYPE ANSWER");
-    this._showHintButtons(r.h);
-    this.ui.setStatus("AWAITING INPUT…");
-  }
-
-  async handleFinal(raw, a){
-    if(raw === this.finalQ.a){
-      this.ui.setStatus("CODE ACCEPTED");
-      await this.ui.typeLines(["✔ AUTHORIZED."], 30);
-      await this.ui.loading(this.loadMsgs, this.loadDetails);
-      await this.ui.powerDip();
-      await this.showFinalSuccess();
-      return;
-    }
-
-    this.ui.setStatus("CODE INVALID");
-    await this.ui.typeLines(["✖ INCORRECT CODE", "> "], 30);
     this.ui.showInput("ENTER CODE");
-    this._showHintButtons(this.finalQ.h);
+    this._renderHints(this.finalQ.h);
     this.ui.setStatus("AWAITING FINAL INPUT…");
+  }
+
+  _renderHints(hArr){
+    const remaining = hArr.slice(this.hintUsed, this.hintUsed + (3 - this.hintUsed));
+    this.ui.showHintButtons(remaining, async (idx) => {
+      const realIndex = this.hintUsed + idx;
+      const hint = hArr[realIndex];
+
+      this.ui.setStatus("HINT MODULE: ACTIVE");
+      await this.ui.type([`HINT: ${hint}`], 30);
+      this.ui.setStatus("AWAITING INPUT…");
+
+      this.hintUsed++;
+      this._renderHints(hArr);
+    });
   }
 
   async showReadyScene(){
     this.stage = "ready";
-    this.ui.setUnlockedHeader("IZABELLA");
+    this.ui.setHeaderUnlocked("IZABELLA");
     this.ui.setStatus("NEXT ADVENTURE UNLOCKED");
     this.ui.clear();
 
-    await this.ui.typeLines([
+    await this.ui.type([
       "ACCESS ACCEPTED.",
       "",
       "Izabella — on the 14th, be ready to go out.",
@@ -271,23 +175,22 @@ export class Game{
   }
 
   async showFinalSuccess(){
-    this.stage = "done";
     this.ui.clear();
     this.ui.setStatus("AUTHORIZATION GRANTED");
 
-    await this.ui.typeLines([
+    await this.ui.type([
       "AUTHORIZATION GRANTED.",
       "",
       "CASE CODE:",
       ""
     ], 35);
 
-    this.ui.addBigCode(this.FINAL_CODE);
+    this.ui.showBigCode(this.FINAL_CODE);
 
     await new Promise(r => setTimeout(r, 520));
 
     this.ui.setStatus("POST-AUTH SEQUENCE");
-    await this.ui.typeLines([
+    await this.ui.type([
       "",
       "Use it to open the briefcase on the bed.",
       "",
@@ -302,29 +205,87 @@ export class Game{
       "I love you so much — I hope you enjoy today."
     ], 32);
 
-    this.ui.addButton("RETURN TO MAIN MENU", ()=> this.boot());
+    this.ui.addButton("RETURN TO MAIN MENU", () => this.boot());
     this.ui.setStatus("SESSION COMPLETE");
   }
 
-  async showHelp(){
-    this.stage = "help";
-    this.ui.clear();
-    this.ui.setStatus("VAULT-TEC NOTICE");
+  async handleInput(raw){
+    const a = (raw || "").trim().toLowerCase();
 
-    await this.ui.typeLines([
-      "VAULT-TEC INTERNAL MEMO // DO NOT DISTRIBUTE",
-      "------------------------------------------",
-      "",
-      "If you are reading this, you are doing great.",
-      "You are safe here.",
-      "",
-      "OPERATOR TIP:",
-      "- HINT buttons are limited to 3 per question.",
-      "- Answers are NOT case sensitive.",
-      "",
-      "To continue: press ENTER to return."
-    ], 30);
+    // easter egg
+    if (a === "help") return this.showHelp();
+    if (this.stage === "help") return this.boot();
 
-    this.ui.showInput("PRESS ENTER");
+    if (this.stage === "login"){
+      this.ui.setStatus("VALIDATING…");
+
+      // ✅ override skip (admin)
+      if (a === this.OVERRIDE_ID.toLowerCase()){
+        this.ui.setHeaderUnlocked("IZABELLA");
+        await this.ui.loading(this.loadMsgs, this.loadDetails);
+        await this.ui.powerDip();
+        return this.showFinalSuccess();
+      }
+
+      if (a === this.ID.toLowerCase()){
+        this.ui.setHeaderUnlocked("IZABELLA");
+        this.ui.clear();
+        await this.ui.type(["ID VERIFIED.","Welcome, Izabella.","Initializing test modules…"], 35);
+        await this.ui.loading(this.loadMsgs, this.loadDetails);
+        await this.ui.powerDip();
+        this.r = 0;
+        return this.askRiddle();
+      }
+
+      if (a === this.NEXT_ID.toLowerCase()){
+        return this.showReadyScene(); // (you said later this should become the Pip-Boy screen)
+      }
+
+      await this.ui.type(["✖ INVALID ID", "> "], 35);
+      this.ui.setStatus("ACCESS DENIED");
+      this.ui.showInput("ENTER ID");
+      return;
+    }
+
+    if (this.stage === "riddle"){
+      const current = this.riddles[this.r];
+      if (a === current.a.toLowerCase()){
+        this.ui.setStatus("ANSWER ACCEPTED");
+        await this.ui.type(["✔ CORRECT."], 30);
+        await this.ui.loading(this.loadMsgs, this.loadDetails);
+        await this.ui.powerDip();
+        this.r++;
+        return this.askRiddle();
+      } else {
+        this.ui.setStatus("ANSWER REJECTED");
+        await this.ui.type(["✖ TRY AGAIN", "> "], 30);
+        this.ui.showInput("TYPE ANSWER");
+        this._renderHints(current.h);
+        this.ui.setStatus("AWAITING INPUT…");
+        return;
+      }
+    }
+
+    if (this.stage === "final"){
+      if (raw === this.finalQ.a){
+        this.ui.setStatus("CODE ACCEPTED");
+        await this.ui.type(["✔ AUTHORIZED."], 30);
+        await this.ui.loading(this.loadMsgs, this.loadDetails);
+        await this.ui.powerDip();
+        return this.showFinalSuccess();
+      } else {
+        this.ui.setStatus("CODE INVALID");
+        await this.ui.type(["✖ INCORRECT CODE", "> "], 30);
+        this.ui.showInput("ENTER CODE");
+        this._renderHints(this.finalQ.h);
+        this.ui.setStatus("AWAITING FINAL INPUT…");
+        return;
+      }
+    }
+
+    if (this.stage === "ready"){
+      // back to menu
+      return this.boot();
+    }
   }
 }
