@@ -400,3 +400,35 @@ html, body{
   position: fixed;
   width: 100%;
 }
+
+/* =========================
+   VALENTINE HUB — COMPACT BOXES
+   ========================= */
+
+/* shrink all blocks inside the Valentine hub */
+.valHub .block{
+  padding: 10px 12px;          /* was way larger */
+  margin: 6px 0;               /* tighten vertical spacing */
+  border-radius: 10px;
+}
+
+/* tighten the two side-by-side boxes */
+.valHub .valRow{
+  gap: 10px;                   /* less space between boxes */
+}
+
+/* countdown box text spacing */
+.valHub .valBig{
+  font-size: 30px;             /* was visually too large */
+  margin-bottom: 4px;
+}
+
+.valHub .valSmall{
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+/* remove unnecessary vertical stretch */
+.valHub{
+  padding-top: 6px;
+}
