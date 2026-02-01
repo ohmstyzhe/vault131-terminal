@@ -212,3 +212,199 @@ html, body{
   #inputBox{width:100%;}
   #crt{ padding:22px; }
 }
+
+/* ===============================
+   PIP-BOY / VAULT-TEC VALENTINE HUB
+   =============================== */
+
+.pipWrap{
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border: 2px solid rgba(76,255,154,0.35);
+  border-radius: 16px;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.pipWrap::before{
+  /* faint CRT tint / glow */
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 50% 35%,
+      rgba(76,255,154,0.10),
+      rgba(0,0,0,0.92) 65%,
+      rgba(0,0,0,0.98) 100%);
+  pointer-events:none;
+  opacity: 0.9;
+}
+
+.pipTopBar{
+  position: relative;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+  border-bottom: 2px solid rgba(76,255,154,0.35);
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+}
+
+.pipStats{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: rgba(76,255,154,0.95);
+}
+
+.pipStatBox{
+  border: 2px solid rgba(76,255,154,0.45);
+  border-radius: 10px;
+  padding: 6px 10px;
+  display:flex;
+  align-items:center;
+  gap: 8px;
+}
+
+.pipLabel{
+  opacity: .85;
+}
+
+.pipValue{
+  font-weight: 700;
+}
+
+.pipMain{
+  position: relative;
+  display:flex;
+  gap: 16px;
+  height: calc(100% - 112px);
+  min-height: 280px;
+}
+
+.pipLeft{
+  flex: 1;
+  min-width: 220px;
+  border: 2px solid rgba(76,255,154,0.25);
+  border-radius: 14px;
+  padding: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+.pipLeft::before{
+  /* “Vault-Tec” watermark feel */
+  content:"VAULT-TEC";
+  position:absolute;
+  inset: 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size: 68px;
+  font-weight: 900;
+  letter-spacing: 8px;
+  color: rgba(76,255,154,0.08);
+  transform: rotate(-10deg);
+  pointer-events:none;
+}
+
+.vaultSeal{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+}
+
+.vaultSeal svg{
+  width: 62%;
+  max-width: 420px;
+  opacity: 0.18;
+  filter: drop-shadow(0 0 10px rgba(76,255,154,0.18));
+}
+
+.pipTitle{
+  position: relative;
+  font-size: 14px;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  color: rgba(76,255,154,0.95);
+}
+
+.pipCountdown{
+  position: relative;
+  margin-top: 6px;
+  font-size: 18px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  color: rgba(76,255,154,1);
+  text-shadow:
+    0 0 6px rgba(76,255,154,0.55),
+    0 0 16px rgba(76,255,154,0.25);
+}
+
+.pipSub{
+  position: relative;
+  margin-top: 6px;
+  font-size: 12px;
+  opacity: 0.85;
+  letter-spacing: 1px;
+}
+
+.pipRight{
+  width: 320px;
+  max-width: 38%;
+  border: 2px solid rgba(76,255,154,0.25);
+  border-radius: 14px;
+  padding: 14px;
+  display:flex;
+  flex-direction:column;
+  gap: 10px;
+}
+
+@media (max-width: 860px){
+  .pipMain{ flex-direction: column; }
+  .pipRight{ width: 100%; max-width: 100%; }
+}
+
+.pipPanelTitle{
+  font-size: 12px;
+  letter-spacing: 1px;
+  opacity: .9;
+  border-bottom: 1px solid rgba(76,255,154,0.25);
+  padding-bottom: 8px;
+  margin-bottom: 6px;
+}
+
+.pipBadge{
+  display:inline-block;
+  border: 2px solid rgba(76,255,154,0.35);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  opacity: 0.9;
+}
+
+.pipTabs{
+  position: relative;
+  display:flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  border-top: 2px solid rgba(76,255,154,0.35);
+  padding-top: 12px;
+  margin-top: 12px;
+}
+
+.pipTabs button[disabled]{
+  opacity: 0.45;
+  cursor: default;
+  filter: none !important;
+  box-shadow: none !important;
+}
