@@ -1,177 +1,434 @@
-/* ==============================
-   GLOBAL TERMINAL BASE (UNCHANGED)
-================================ */
-
-*{
-  box-sizing: border-box;
+:root{
+  --g:#4cff9a;
 }
 
-body{
-  margin: 0;
-  background: #000;
-  color: #4cffb0;
-  font-family: "Courier New", monospace;
+*{ box-sizing:border-box; }
+
+html, body{
+  margin:0;
+  height:100%;
+  background:#000;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow:hidden;
 }
 
 #crt{
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  width: min(1220px, 96vw);
+  height: min(82vh, 760px);
+  min-height: 520px;
+  background:#050b07;
+  border-radius:22px;
+  padding:34px;
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  border:3px solid rgba(76,255,154,0.35);
+  box-shadow:
+    0 0 45px rgba(76,255,154,0.25),
+    inset 0 0 140px rgba(0,0,0,0.95);
 }
 
+/* HEADER */
 #uiWrap{
-  width: 92vw;
-  max-width: 420px;
-  border: 2px solid rgba(0,255,160,.45);
-  border-radius: 20px;
-  padding: 14px;
-  box-shadow: 0 0 40px rgba(0,255,160,.25);
+  margin-bottom:10px;
+  padding-bottom:10px;
+  border-bottom:1px solid rgba(76,255,154,0.3);
+  position:relative;
+  z-index:2;
 }
-
-/* ==============================
-   HEADER / STATUS (UNCHANGED)
-================================ */
-
 #uiTop{
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
 }
-
 #uiBar{
-  font-size: 14px;
-  line-height: 1.4;
+  color:var(--g);
+  font-size:14px;
+  letter-spacing:1px;
+  opacity:0.92;
 }
-
 #uiStatus{
-  margin-top: 6px;
-  font-size: 12px;
-  opacity: .85;
+  margin-top:6px;
+  color:rgba(76,255,154,0.85);
+  font-size:12px;
+  letter-spacing:0.8px;
+  opacity:0.9;
 }
 
-button{
-  background: none;
-  border: 1px solid rgba(0,255,160,.5);
-  color: #4cffb0;
-  padding: 8px 12px;
-  border-radius: 10px;
-  font-family: inherit;
-  cursor: pointer;
-}
-
-/* ==============================
-   TERMINAL CONTENT
-================================ */
-
+/* TERMINAL */
 #terminal{
-  margin-top: 10px;
+  flex:1;
+  overflow-y:auto;
+  overflow-x:hidden;
+  color:var(--g);
+  text-shadow:
+    0 0 4px rgba(76,255,154,0.7),
+    0 0 10px rgba(76,255,154,0.4);
+  white-space:pre-wrap;
+  position:relative;
+  z-index:2;
 }
 
-/* Default block — slightly tighter */
+/* INPUT */
+#inputBox{
+  display:none;
+  width:80%;
+  margin-top:10px;
+  background:rgba(0,0,0,0.6);
+  color:var(--g);
+  border:2px solid var(--g);
+  padding:10px;
+  border-radius:10px;
+  font-size:16px;
+  outline:none;
+  position:relative;
+  z-index:2;
+}
+
+/* HINTS */
+#hintContainer{
+  margin-top:6px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  position:relative;
+  z-index:2;
+}
+
+/* CURSOR */
+#cursor{
+  display:inline-block;
+  width:10px;
+  background:var(--g);
+  margin-left:2px;
+  animation: blink 1s infinite;
+}
+@keyframes blink{50%{opacity:0;}}
+
+/* SCANLINES */
+#scanlines{
+  position:absolute;
+  inset:0;
+  background:repeating-linear-gradient(to bottom,
+    rgba(0,0,0,.28), rgba(0,0,0,.28) 1px,
+    transparent 1px, transparent 3px);
+  pointer-events:none;
+  animation: scan 2s linear infinite;
+  z-index:6;
+}
+@keyframes scan {from{background-position:0 0;}to{background-position:0 3px;}}
+
+/* POWER DIP */
+#powerDip{
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at 50% 45%,
+    rgba(76,255,154,0.10),
+    rgba(0,0,0,0.92) 60%,
+    rgba(0,0,0,0.98) 100%);
+  opacity:0;
+  pointer-events:none;
+  z-index:8;
+  mix-blend-mode:screen;
+}
+.powerDipOn{ animation: dip 420ms ease-in-out 1; }
+@keyframes dip{
+  0%{opacity:0; filter:brightness(1) contrast(1);}
+  20%{opacity:0.9; filter:brightness(0.65) contrast(1.25);}
+  55%{opacity:0.35; filter:brightness(0.85) contrast(1.15);}
+  100%{opacity:0; filter:brightness(1) contrast(1);}
+}
+
+/* LOADING */
+.loadTrack{
+  width:100%;
+  max-width:520px;
+  height:12px;
+  border:2px solid rgba(76,255,154,0.65);
+  border-radius:6px;
+  overflow:hidden;
+  margin-top:8px;
+}
+.loadFill{height:100%; width:0%; background:rgba(76,255,154,0.95);}
+.loadMsg{margin-top:6px;opacity:.95;}
+.loadDetail{margin-top:4px;opacity:.82;font-size:13px;letter-spacing:0.5px;}
+
+/* FINAL CODE */
+.bigCode{
+  font-size:56px;
+  letter-spacing:10px;
+  font-weight:700;
+  text-align:center;
+  margin-top:14px;
+  text-shadow:
+    0 0 6px rgba(76,255,154,0.9),
+    0 0 18px rgba(76,255,154,0.6),
+    0 0 32px rgba(76,255,154,0.35);
+  animation: codeFlash 1.1s steps(2) infinite;
+}
+@keyframes codeFlash{
+  0%{opacity:1;}
+  50%{opacity:.35;}
+  100%{opacity:1;}
+}
+
+.radFlicker{ animation: rad 140ms steps(2) infinite; }
+@keyframes rad{
+  0%{filter:brightness(1) contrast(1);}
+  50%{filter:brightness(0.92) contrast(1.18);}
+  100%{filter:brightness(1) contrast(1);}
+}
+
+/* BUTTONS (fixes iOS beige pill + adds glow) */
+#crt button{
+  -webkit-appearance:none;
+  appearance:none;
+  background:transparent;
+  color:var(--g);
+  border:2px solid rgba(76,255,154,0.55);
+  border-radius:10px;
+  padding:10px 14px;
+  cursor:pointer;
+  font:inherit;
+  font-size:12px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  box-shadow:0 0 12px rgba(76,255,154,0.12);
+  transition: box-shadow .15s ease, border-color .15s ease, transform .08s ease, filter .15s ease;
+}
+
+#crt button:hover,
+#crt button:focus-visible{
+  border-color: rgba(76,255,154,0.95);
+  box-shadow:
+    0 0 10px rgba(76,255,154,0.30),
+    0 0 18px rgba(76,255,154,0.20),
+    inset 0 0 10px rgba(76,255,154,0.12);
+  filter: brightness(1.12);
+}
+
+#crt button:active{
+  transform: translateY(1px);
+  box-shadow:
+    0 0 14px rgba(76,255,154,0.28),
+    inset 0 0 14px rgba(76,255,154,0.16);
+}
+
+#crt button:disabled{
+  opacity:0.45;
+  cursor:default;
+  filter:none;
+  box-shadow:none;
+}
+
+#crt button:focus{ outline:none; }
+
+/* ====== COMMON UI BLOCKS (used by your menus/screens) ====== */
 .block{
-  border: 1px solid rgba(0,255,160,.35);
-  border-radius: 12px;
-  padding: 10px;
-  margin-bottom: 10px;
+  margin: 10px 0;
+  padding: 12px 14px;
+  border:2px solid rgba(76,255,154,0.30);
+  border-radius:12px;
+  background:rgba(0,0,0,0.35);
 }
 
-/* ==============================
-   VALENTINE HUB — COMPACT FIX
-   (THIS IS THE ONLY REAL CHANGE)
-================================ */
+.hr{
+  height:1px;
+  background: rgba(76,255,154,0.30);
+  margin:10px 0;
+}
+
+.smallHdr{
+  font-size:12px;
+  letter-spacing:1px;
+  opacity:0.9;
+  text-transform:uppercase;
+}
+
+.lockTitle{
+  font-size:16px;
+  letter-spacing:1px;
+  font-weight:700;
+}
+
+.lockLines{
+  white-space:pre-wrap;
+  line-height:1.35;
+  font-size:16px;
+  letter-spacing:0.6px;
+}
+
+.menuWrap{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.menuWrap button{
+  width:100%;
+  text-align:left;
+}
+
+/* =========================
+   VALENTINE HUB (ONLY HERE)
+   - watermark behind HUD
+   - bigger + glow + slow pulse
+   - cleaner spacing
+   ========================= */
 
 .valHub{
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  position:relative;
+  padding: 6px 0 0;
 }
 
-/* ONE compact container instead of tall boxes */
-.valPanel{
-  display: flex;
-  gap: 8px;
-  border: 1px solid rgba(0,255,160,.35);
-  border-radius: 12px;
-  padding: 8px;
+/* The watermark image ONLY exists inside Valentine Hub */
+.valHub .valBg{
+  position:absolute;
+  inset:0;
+  background-image:url("assets/vault-tec-logo.png"); /* MUST MATCH FILE NAME */
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:min(860px, 92%);
+  opacity:0.12;
+  filter:
+    blur(0.15px)
+    brightness(1.12)
+    contrast(1.05)
+    drop-shadow(0 0 16px rgba(76,255,154,0.22))
+    drop-shadow(0 0 32px rgba(76,255,154,0.10));
+  pointer-events:none;
+  z-index:0;
+  animation: valPulse 6.5s ease-in-out infinite;
+  mix-blend-mode: screen;
 }
 
-/* Each side (Countdown / Target) */
-.valCol{
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+@keyframes valPulse{
+  0%,100%{
+    opacity:0.10;
+    transform: scale(1);
+    filter:
+      blur(0.18px)
+      brightness(1.05)
+      contrast(1.03)
+      drop-shadow(0 0 14px rgba(76,255,154,0.18))
+      drop-shadow(0 0 26px rgba(76,255,154,0.08));
+  }
+  50%{
+    opacity:0.18;
+    transform: scale(1.01);
+    filter:
+      blur(0.12px)
+      brightness(1.28)
+      contrast(1.08)
+      drop-shadow(0 0 22px rgba(76,255,154,0.26))
+      drop-shadow(0 0 46px rgba(76,255,154,0.14));
+  }
 }
 
-/* Labels */
-.valLabel{
-  font-size: 11px;
-  letter-spacing: 1px;
-  opacity: .8;
+/* Keep all Valentine Hub content above the watermark */
+.valHub > *{
+  position:relative;
+  z-index:2;
 }
 
-/* Big number — NO extra height */
-.valDays{
-  font-size: 30px;
-  line-height: 1;
-  font-weight: bold;
+/* Slightly tighten the hub layout (fix “wonky spacing”) */
+.valHub .block{
+  margin: 8px 0;
 }
 
-/* Time rows */
-.valTime{
-  font-size: 14px;
-  opacity: .85;
+.valRow{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  align-items:stretch;
 }
 
-.valDate{
-  font-size: 15px;
+.valBig{
+  font-size:34px;
+  letter-spacing:3px;
+  font-weight:700;
+  text-shadow:
+    0 0 6px rgba(76,255,154,0.65),
+    0 0 18px rgba(76,255,154,0.30);
 }
 
-.valSub{
-  font-size: 11px;
-  opacity: .6;
+.valSmall{
+  font-size:14px;
+  letter-spacing:1px;
+  opacity:0.92;
+  line-height:1.35;
 }
 
-/* Small text note box */
-.valNote{
-  border: 1px solid rgba(0,255,160,.25);
-  border-radius: 10px;
-  padding: 8px;
-  font-size: 13px;
-  line-height: 1.35;
+/* Responsive */
+@media (max-width:720px){
+  #inputBox{width:100%;}
+  #crt{ padding:22px; }
+  .valHub{ padding-top:4px; }
+  .valBig{ font-size:32px; }
 }
 
-/* ==============================
-   INPUT
-================================ */
+/* =========================
+   FIX: “WONKY / SPACED OUT” VALENTINE SCREEN
+   ========================= */
 
-#inputBox{
-  width: 100%;
-  margin-top: 8px;
-  background: transparent;
-  border: 1px solid rgba(0,255,160,.5);
-  color: #4cffb0;
-  padding: 8px;
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 14px;
+/* tighten terminal text spacing */
+#terminal{
+  line-height: 1.18;          /* was effectively huge because of blank lines */
+  letter-spacing: 0.6px;
+  padding-bottom: 6px;
 }
 
-/* ==============================
-   SCANLINES / FX (UNCHANGED)
-================================ */
+/* collapse extra vertical gaps between printed lines (where possible) */
+#terminal br{
+  display: none;              /* if your UI uses <br>, this will tighten a LOT */
+}
 
-#scanlines{
-  pointer-events: none;
+/* iOS scrolling fixes: makes scroll feel stable, not “loading weird” */
+#terminal{
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scroll-behavior: auto;
+}
+
+/* stop iOS from “rubber banding” the whole screen */
+html, body{
   position: fixed;
-  inset: 0;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(0,0,0,.05),
-    rgba(0,0,0,.05) 1px,
-    rgba(0,0,0,.15) 2px
-  );
-  mix-blend-mode: overlay;
+  width: 100%;
+}
+
+/* =========================
+   VALENTINE HUB — COMPACT BOXES
+   ========================= */
+
+/* shrink all blocks inside the Valentine hub */
+.valHub .block{
+  padding: 10px 12px;          /* was way larger */
+  margin: 6px 0;               /* tighten vertical spacing */
+  border-radius: 10px;
+}
+
+/* tighten the two side-by-side boxes */
+.valHub .valRow{
+  gap: 10px;                   /* less space between boxes */
+}
+
+/* countdown box text spacing */
+.valHub .valBig{
+  font-size: 30px;             /* was visually too large */
+  margin-bottom: 4px;
+}
+
+.valHub .valSmall{
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+/* remove unnecessary vertical stretch */
+.valHub{
+  padding-top: 6px;
 }
