@@ -320,3 +320,29 @@ html, body{
   width:100%;
   text-align:left;
 }
+
+@keyframes vaultPulse {
+  0% {
+    opacity: 0.14;
+    filter:
+      blur(0.4px)
+      drop-shadow(0 0 14px rgba(76,255,154,0.25))
+      drop-shadow(0 0 36px rgba(76,255,154,0.15));
+  }
+
+  50% {
+    opacity: 0.19;
+    filter:
+      blur(0.6px)
+      drop-shadow(0 0 28px rgba(76,255,154,0.45))
+      drop-shadow(0 0 68px rgba(76,255,154,0.25));
+  }
+
+  100% {
+    opacity: 0.14;
+    filter:
+      blur(0.4px)
+      drop-shadow(0 0 14px rgba(76,255,154,0.25))
+      drop-shadow(0 0 36px rgba(76,255,154,0.15));
+  }
+}
