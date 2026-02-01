@@ -5,13 +5,13 @@ export class AudioSystem {
     this.gain = null;
     this.audioOn = false;
 
-    // iOS-friendly: first user gesture unlocks audio context
     const unlock = () => {
       this.ensure();
       if (this.ctx && this.ctx.state === "suspended") this.ctx.resume();
       window.removeEventListener("pointerdown", unlock);
       window.removeEventListener("touchstart", unlock);
     };
+
     window.addEventListener("pointerdown", unlock, { once:false });
     window.addEventListener("touchstart", unlock, { once:false });
   }
@@ -60,6 +60,11 @@ export class AudioSystem {
     o.stop(this.ctx.currentTime + dur);
   }
 
-  hoverBeep(){ this.beep(640, 0.02, 0.018); }
-  typeBeep(){ this.beep(920, 0.015, 0.016); }
+  hoverBeep(){
+    this.beep(640, 0.02, 0.018);
+  }
+
+  typeBeep(){
+    this.beep(920, 0.015, 0.016);
+  }
 }
