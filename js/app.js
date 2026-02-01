@@ -7,8 +7,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const ui = new UI(audio);
   const game = new Game(ui, audio);
 
-  ui.onSubmit = (value) => game.handleSubmit(value);
-  ui.onClick = (action) => game.handleClick(action);
+  ui.onSubmit = (value) => game.handleInput(value);
 
-  game.start(); // starts at ENTER ID
+  game.start(); // ALWAYS starts at the ID prompt
 });
