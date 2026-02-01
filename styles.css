@@ -278,38 +278,42 @@ html, body{
    VALENTINE HUB (ONLY HERE)
    - watermark behind HUD
    - bigger + glow + slow pulse
-   - cleaner spacing
+   - compact boxes + less scrolling
    ========================= */
 
 .valHub{
-  position:relative;
+  position: relative;
   padding: 6px 0 0;
 }
 
-/* The watermark image ONLY exists inside Valentine Hub */
+/* Watermark ONLY inside Valentine Hub */
 .valHub .valBg{
-  position:absolute;
-  inset:0;
-  background-image:url("assets/vault-tec-logo.png"); /* MUST MATCH FILE NAME */
-  background-repeat:no-repeat;
-  background-position:center;
-  background-size:min(860px, 92%);
-  opacity:0.12;
+  position: absolute;
+  inset: 0;
+  background-image: url("assets/vault-tec-logo.png"); /* MUST MATCH FILE NAME */
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: min(860px, 92%);
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: screen;
+
+  /* glow */
   filter:
     blur(0.15px)
     brightness(1.12)
     contrast(1.05)
     drop-shadow(0 0 16px rgba(76,255,154,0.22))
     drop-shadow(0 0 32px rgba(76,255,154,0.10));
-  pointer-events:none;
-  z-index:0;
+
+  /* slow pulse */
   animation: valPulse 6.5s ease-in-out infinite;
-  mix-blend-mode: screen;
 }
 
 @keyframes valPulse{
-  0%,100%{
-    opacity:0.10;
+  0%, 100%{
+    opacity: 0.10;
     transform: scale(1);
     filter:
       blur(0.18px)
@@ -319,7 +323,7 @@ html, body{
       drop-shadow(0 0 26px rgba(76,255,154,0.08));
   }
   50%{
-    opacity:0.18;
+    opacity: 0.18;
     transform: scale(1.01);
     filter:
       blur(0.12px)
@@ -330,181 +334,69 @@ html, body{
   }
 }
 
-/* Keep all Valentine Hub content above the watermark */
+/* Keep hub content above watermark */
 .valHub > *{
-  position:relative;
-  z-index:2;
+  position: relative;
+  z-index: 2;
 }
 
-/* Slightly tighten the hub layout (fix “wonky spacing”) */
+/* Compact blocks ONLY inside the hub */
 .valHub .block{
-  margin: 8px 0;
+  margin: 6px 0;
+  padding: 10px 12px;
+  border-radius: 10px;
 }
 
-.valRow{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-  align-items:stretch;
+/* If your Valentine hub uses <br> and it adds too much space,
+   tighten them ONLY in the hub (NOT globally) */
+.valHub br{
+  line-height: 0;
 }
 
-.valBig{
-  font-size:34px;
-  letter-spacing:3px;
-  font-weight:700;
+/* Row that holds countdown + target */
+.valHub .valRow{
+  display: flex;
+  gap: 10px;              /* closer gap between boxes */
+  flex-wrap: wrap;
+  align-items: flex-start; /* prevents tall empty stretching */
+  margin: 6px 0 0;
+}
+
+/* Make the two boxes wider so you scroll less */
+.valHub .valRow > .block{
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Text sizing (less “giant tall box” feel) */
+.valHub .valBig{
+  font-size: 30px;
+  line-height: 1.05;
+  letter-spacing: 3px;
+  font-weight: 700;
+  margin: 2px 0 4px;
   text-shadow:
     0 0 6px rgba(76,255,154,0.65),
     0 0 18px rgba(76,255,154,0.30);
 }
 
-.valSmall{
-  font-size:14px;
-  letter-spacing:1px;
-  opacity:0.92;
-  line-height:1.35;
-}
-
-/* Responsive */
-@media (max-width:720px){
-  #inputBox{width:100%;}
-  #crt{ padding:22px; }
-  .valHub{ padding-top:4px; }
-  .valBig{ font-size:32px; }
-}
-
-/* =========================
-   FIX: “WONKY / SPACED OUT” VALENTINE SCREEN
-   ========================= */
-
-/* tighten terminal text spacing */
-#terminal{
-  line-height: 1.18;          /* was effectively huge because of blank lines */
-  letter-spacing: 0.6px;
-  padding-bottom: 6px;
-}
-
-/* collapse extra vertical gaps between printed lines (where possible) */
-#terminal br{
-  display: none;              /* if your UI uses <br>, this will tighten a LOT */
-}
-
-/* iOS scrolling fixes: makes scroll feel stable, not “loading weird” */
-#terminal{
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-  scroll-behavior: auto;
-}
-
-/* stop iOS from “rubber banding” the whole screen */
-html, body{
-  position: fixed;
-  width: 100%;
-}
-
-/* =========================
-   VALENTINE HUB — COMPACT BOXES
-   ========================= */
-
-/* shrink all blocks inside the Valentine hub */
-.valHub .block{
-  padding: 10px 12px;          /* was way larger */
-  margin: 6px 0;               /* tighten vertical spacing */
-  border-radius: 10px;
-}
-
-/* tighten the two side-by-side boxes */
-.valHub .valRow{
-  gap: 10px;                   /* less space between boxes */
-}
-
-/* countdown box text spacing */
-.valHub .valBig{
-  font-size: 30px;             /* was visually too large */
-  margin-bottom: 4px;
-}
-
 .valHub .valSmall{
   font-size: 13px;
-  opacity: 0.85;
+  line-height: 1.25;
+  letter-spacing: 1px;
+  opacity: 0.88;
 }
 
-/* remove unnecessary vertical stretch */
-.valHub{
-  padding-top: 6px;
-}
-
-/* =========================================
-   VALENTINE HUB — tighter layout (ONLY)
-   Paste at BOTTOM of styles.css
-   ========================================= */
-
-/* make the hub use space efficiently */
-.valHub{
-  padding: 6px 0 0 !important;
-}
-
-/* tighten any generic blocks used inside the hub */
-.valHub .block{
-  margin: 8px 0 !important;
-  padding: 10px 12px !important;
-}
-
-/* reduce big empty “box feel” */
-.valHub .hr{
-  margin: 8px 0 !important;
-  opacity: 0.55;
-}
-
-/* the row that holds Countdown + Target */
-.valHub .valRow,
-.valHub .valTopRow{
-  gap: 10px !important;          /* closes the gap between the two boxes */
-  margin-bottom: 8px !important; /* removes the “random space” under header */
-}
-
-/* force both boxes to be wider so you scroll less */
-.valHub .valRow > .block,
-.valHub .valTopRow > .valBlock,
-.valHub .valTopRow > .block{
-  flex: 1 1 0 !important;
-  min-width: 0 !important;
-}
-
-/* make the boxes feel smaller (less dead space inside) */
-.valHub .valBlock{
-  padding: 8px 10px !important;
-  min-width: 0 !important;
-}
-
-/* scale the countdown so it doesn’t create giant tall panels */
-.valHub .valBig{
-  font-size: 30px !important;
-  line-height: 1.05 !important;
-  margin-top: 2px !important;
-}
-
-.valHub .valSmall{
-  font-size: 13px !important;
-  line-height: 1.25 !important;
-}
-
-/* tighten the note panel */
+/* If you have a note box, keep it tight */
 .valHub .valNote{
-  margin: 8px 0 10px !important;
-  padding: 10px 12px !important;
+  margin: 6px 0 8px;
+  padding: 10px 12px;
+  line-height: 1.28;
 }
 
-/* tighten menu buttons spacing (if your hub has them) */
-.valHub .valMenu{
-  gap: 8px !important;
-}
-
-.valHub .valMenu button{
-  padding: 10px 12px !important;
-}
-
-/* mobile tuning: reduce padding + prevent tall “boxy” feel */
-@media (max-width:720px){
-  .valHub .block{ padding: 10px 10px !important; }
-  .valHub .valBig{ font-size: 28px !important; }
+/* Mobile tune */
+@media (max-width: 720px){
+  .valHub{ padding-top: 4px; }
+  .valHub .block{ padding: 10px 10px; }
+  .valHub .valBig{ font-size: 28px; }
 }
