@@ -8,17 +8,10 @@ export class Game {
     this.NEXT_ID = "14-LOVE-READY";
     this.FINAL_CODE = "531";
 
-    // Admin skip to final success screen
+    // admin skip (change anytime)
     this.OVERRIDE_ID = "ADMIN-531";
 
-    // ====== STATE ======
-    this.stage = "login";
-    this.r = 0;
-    this.hintUsed = 0;
-
-    // Step 1 countdown updater
-    this._countdownTimer = null;
-
+    // ====== CONTENT ======
     this.riddles = [
       { q:"I move without legs and follow you everywhere.", a:"shadow",
         h:["You see me when light hits you.","I copy your shape perfectly.","I disappear in darkness."] },
@@ -62,12 +55,23 @@ export class Game {
       "CORE: SPINNING UP MODULES",
       "VAULT-TEC: INTEGRITY 100%"
     ];
+
+    // ====== STATE ======
+    this.stage = "login";
+    this.r = 0;
+    this.hintUsed = 0;
+
+    // live countdown updater
+    this._countdownTimer = null;
   }
 
-  start(){ this.boot(); }
+  start(){
+    this.boot();
+  }
 
   async boot(){
     this._stopCountdown();
+
     this.stage = "login";
     this.r = 0;
     this.hintUsed = 0;
@@ -109,7 +113,9 @@ export class Game {
   }
 
   async askRiddle(){
-    if (this.r >= this.riddles.length) return this.askFinal();
+    if (this.r >= this.riddles.length){
+      return this.askFinal();
+    }
 
     this.stage = "riddle";
     this.hintUsed = 0;
@@ -153,233 +159,9 @@ export class Game {
     });
   }
 
-  /* =========================
-     STEP 1: Valentine HUB
-     Unlocks when entering NEXT_ID
-     ========================= */
-  async showValentineHub(){
-    this._stopCountdown();
-    this.stage = "hub";
-
-    this.ui.setHeaderUnlocked("IZABELLA");
-    this.ui.setStatus("VALENTINE MODULE: LOCKED UNTIL 02/14");
-    this.ui.clear();
-    this.ui.hideInput();
-    this.ui.clearHints();
-
-    // Build hub panel
-    const hub = document.createElement("div");
-    hub.className = "hub";
-
-    const top = document.createElement("div");
-    top.className = "hubTop";
-
-    const title = document.createElement("div");
-    title.className = "hubTitle";
-    title.textContent = "VAULT-TEC STATUS │ VALENTINE ACCESS";
-
-    const cd = document.createElement("div");
-    cd.className = "hubCountdown";
-    cd.innerHTML = `
-      <div>LIVE COUNTDOWN</div>
-      <div class="big" id="vdayClock">--:--:--</div>
-      <div id="vdaySub">Calculating…</div>
-    `;
-
-    top.appendChild(title);
-    top.appendChild(cd);
-
-    const body = document.createElement("div");
-    body.className = "hubBody";
-
-    const note = document.createElement("div");
-    note.className = "smallNote";
-    note.textContent =
-      "This module remains undiscovered until Valentine’s Day. Explore sub-menus at your own risk.";
-
-    const btns = document.createElement("div");
-    btns.className = "hubButtons";
-
-    const b1 = document.createElement("button");
-    b1.textContent = "1) COMPLETED";
-    b1.disabled = true;
-
-    const b2 = document.createElement("button");
-    b2.textContent = "2) VAULT STATS";
-
-    const b3 = document.createElement("button");
-    b3.textContent = "3) REWARD QUIZ";
-
-    const b4 = document.createElement("button");
-    b4.textContent = "4) MINI GAMES";
-
-    const b5 = document.createElement("button");
-    b5.className = "span2";
-    b5.textContent = "5) MISSION LOG";
-
-    btns.appendChild(b1);
-    btns.appendChild(b2);
-    btns.appendChild(b3);
-    btns.appendChild(b4);
-    btns.appendChild(b5);
-
-    body.appendChild(note);
-    body.appendChild(btns);
-
-    hub.appendChild(top);
-    hub.appendChild(body);
-
-    this.ui.mount(hub);
-
-    // Wire buttons
-    b2.onclick = () => this.showVaultStats();
-    b3.onclick = () => this.showRewardQuiz();
-    b4.onclick = () => this.showMiniGames();
-    b5.onclick = () => this.showMissionLog();
-
-    // Start countdown
-    this._startCountdown();
-    this.ui.setStatus("VALENTINE HUB ONLINE");
-  }
-
-  _startCountdown(){
-    const clock = document.getElementById("vdayClock");
-    const sub = document.getElementById("vdaySub");
-    if (!clock || !sub) return;
-
-    const getTarget = () => {
-      const now = new Date();
-      const year = now.getFullYear();
-      // Feb is month 1 (0-based)
-      let target = new Date(year, 1, 14, 0, 0, 0, 0);
-      if (now > target) target = new Date(year + 1, 1, 14, 0, 0, 0, 0);
-      return target;
-    };
-
-    const pad = (n) => String(n).padStart(2, "0");
-
-    const tick = () => {
-      const now = new Date();
-      const target = getTarget();
-      let ms = target - now;
-      if (ms < 0) ms = 0;
-
-      const s = Math.floor(ms / 1000);
-      const days = Math.floor(s / 86400);
-      const hrs = Math.floor((s % 86400) / 3600);
-      const mins = Math.floor((s % 3600) / 60);
-      const secs = Math.floor(s % 60);
-
-      clock.textContent = `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
-      sub.textContent = `${days} DAYS REMAINING`;
-
-      // Optional: when hits 0, you can unlock extra stuff later
-      // if (ms === 0) this.ui.setStatus("VALENTINE DAY: ACTIVE");
-    };
-
-    tick();
-    this._countdownTimer = setInterval(tick, 1000);
-  }
-
-  _stopCountdown(){
-    if (this._countdownTimer){
-      clearInterval(this._countdownTimer);
-      this._countdownTimer = null;
-    }
-  }
-
-  // HUB SUBSCREENS
-  async showVaultStats(){
-    this._stopCountdown();
-    this.stage = "hub_stats";
-    this.ui.clear();
-    this.ui.setStatus("VAULT STATS");
-
-    await this.ui.type([
-      "== VAULT-TEC DIAGNOSTICS ==",
-      "",
-      "BUILD TIME: 3 DAYS",
-      "RIDDLE MODULES: 5",
-      "FINAL AUTH: ENABLED",
-      "AUDIO SYSTEM: ACTIVE (USER CONTROLLED)",
-      "HOVER FX: ENABLED",
-      "TYPING FX: ENABLED",
-      "",
-      "NOTE: Operator Shaun refuses to stop being extra.",
-      "",
-      "> Press ENTER to return."
-    ], 30);
-
-    this.ui.showInput("PRESS ENTER");
-  }
-
-  async showRewardQuiz(){
-    this._stopCountdown();
-    this.stage = "hub_quiz";
-    this.ui.clear();
-    this.ui.setStatus("REWARD QUIZ");
-
-    await this.ui.type([
-      "REWARD QUIZ INITIALIZING…",
-      "",
-      "Coming next:",
-      "- 3 quick questions",
-      "- each correct answer = 1 reward token",
-      "",
-      "I’ll wire the full quiz after you pick the rewards list.",
-      "",
-      "> Press ENTER to return."
-    ], 30);
-
-    this.ui.showInput("PRESS ENTER");
-  }
-
-  async showMiniGames(){
-    this._stopCountdown();
-    this.stage = "hub_games";
-    this.ui.clear();
-    this.ui.setStatus("MINI GAMES");
-
-    await this.ui.type([
-      "MINI GAMES: OFFLINE (FOR NOW)",
-      "",
-      "Ideas we can add fast:",
-      "- 'Hacking' word match (Fallout style)",
-      "- Memory sequence (beeps + flashes)",
-      "- Tiny riddle sprint for bonus rewards",
-      "",
-      "> Press ENTER to return."
-    ], 30);
-
-    this.ui.showInput("PRESS ENTER");
-  }
-
-  async showMissionLog(){
-    this._stopCountdown();
-    this.stage = "hub_log";
-    this.ui.clear();
-    this.ui.setStatus("MISSION LOG");
-
-    await this.ui.type([
-      "MISSION LOG // VAULT 131",
-      "------------------------",
-      "",
-      "[✓] Secure Access Credentials",
-      "[✓] Initialize Test Modules",
-      "[✓] Retrieve Case Code",
-      "[ ] Activate Valentine Hub",
-      "[ ] Complete Mission Objectives",
-      "",
-      "OPERATOR NOTE:",
-      "When you see this, you’ve unlocked something special.",
-      "",
-      "> Press ENTER to return."
-    ], 30);
-
-    this.ui.showInput("PRESS ENTER");
-  }
-
   async showFinalSuccess(){
+    this._stopCountdown();
+
     this.ui.clear();
     this.ui.setStatus("AUTHORIZATION GRANTED");
 
@@ -414,25 +196,172 @@ export class Game {
     this.ui.setStatus("SESSION COMPLETE");
   }
 
+  /* ===== Step 1 hub ===== */
+  _nextValentinesDate(){
+    // Next Feb 14 (local time)
+    const now = new Date();
+    const year = now.getFullYear();
+    let target = new Date(year, 1, 14, 0, 0, 0); // Feb = 1
+    if (now > target) target = new Date(year + 1, 1, 14, 0, 0, 0);
+    return target;
+  }
+
+  _format2(n){ return String(n).padStart(2, "0"); }
+
+  _countdownModel(){
+    const now = new Date();
+    const target = this._nextValentinesDate();
+    let diff = Math.max(0, target.getTime() - now.getTime());
+
+    const days = Math.floor(diff / (1000*60*60*24));
+    diff -= days * (1000*60*60*24);
+
+    const hrs = Math.floor(diff / (1000*60*60));
+    diff -= hrs * (1000*60*60);
+
+    const mins = Math.floor(diff / (1000*60));
+    diff -= mins * (1000*60);
+
+    const secs = Math.floor(diff / 1000);
+
+    return {
+      days,
+      timeText: `${this._format2(hrs)}:${this._format2(mins)}:${this._format2(secs)}`,
+      targetText: `FEB 14, ${target.getFullYear()} (LOCAL TIME)`
+    };
+  }
+
+  _startCountdownRerender(){
+    this._stopCountdown();
+    this._countdownTimer = setInterval(() => {
+      if (this.stage !== "valentine") return;
+      const model = this._countdownModel();
+      // Re-render hub so the numbers tick live
+      this.ui.showValentineHub(model, this._hubHandlers());
+    }, 1000);
+  }
+
+  _stopCountdown(){
+    if (this._countdownTimer){
+      clearInterval(this._countdownTimer);
+      this._countdownTimer = null;
+    }
+  }
+
+  _hubHandlers(){
+    return {
+      onStats: () => this.showVaultStats(),
+      onQuiz: () => this.showRewardQuiz(),
+      onMiniGames: () => this.showMiniGames(),
+      onMissionLog: () => this.showMissionLog(),
+    };
+  }
+
+  async showValentineHub(){
+    this.stage = "valentine";
+    this.ui.setHeaderUnlocked("IZABELLA");
+    this.ui.setStatus("VALENTINE ACCESS: ACTIVE");
+
+    const model = this._countdownModel();
+    this.ui.showValentineHub(model, this._hubHandlers());
+    this._startCountdownRerender();
+  }
+
+  async showVaultStats(){
+    this._stopCountdown();
+    this.stage = "subpage";
+    this.ui.clear();
+    this.ui.setStatus("VAULT STATS");
+
+    await this.ui.type([
+      "VAULT-TEC DIAGNOSTICS REPORT",
+      "----------------------------",
+      "",
+      "BUILD TIME: 3 DAYS",
+      "LINES OF ROMANCE: HIGH",
+      "SYSTEM INTEGRITY: 100%",
+      "RISK LEVEL: ACCEPTABLE (PROBABLY)",
+      "",
+      "NOTE:",
+      "This system was built to ask one very important question.",
+      "",
+    ], 28);
+
+    this.ui.addButton("BACK", () => this.showValentineHub());
+  }
+
+  async showRewardQuiz(){
+    this._stopCountdown();
+    this.stage = "subpage";
+    this.ui.clear();
+    this.ui.setStatus("REWARD QUIZ");
+
+    await this.ui.type([
+      "REWARD QUIZ LOADED.",
+      "",
+      "This section can be expanded next:",
+      "- 3 questions",
+      "- each correct answer grants a reward",
+      "",
+      "(We can build this right after the hub is stable.)",
+      ""
+    ], 28);
+
+    this.ui.addButton("BACK", () => this.showValentineHub());
+  }
+
+  async showMiniGames(){
+    this._stopCountdown();
+    this.stage = "subpage";
+    this.ui.clear();
+    this.ui.setStatus("MINI GAMES");
+
+    await this.ui.type([
+      "MINI GAMES MODULE",
+      "-----------------",
+      "",
+      "Ideas we can add:",
+      "- 'Hack the Terminal' (guess the word)",
+      "- 'Memory Match' (tiny sequence game)",
+      "- 'Vault Lottery' (random cute reward)",
+      ""
+    ], 28);
+
+    this.ui.addButton("BACK", () => this.showValentineHub());
+  }
+
+  async showMissionLog(){
+    this._stopCountdown();
+    this.stage = "subpage";
+    this.ui.clear();
+    this.ui.setStatus("MISSION LOG");
+
+    await this.ui.type([
+      "MISSION LOG // VAULT 131",
+      "------------------------",
+      "",
+      "• OBJECTIVE: Secure Valentine (Primary)",
+      "• METHOD: Excessive effort (Approved)",
+      "• STATUS: In progress…",
+      "",
+      "We can make this a multi-page 'terminal' log next.",
+      ""
+    ], 28);
+
+    this.ui.addButton("BACK", () => this.showValentineHub());
+  }
+
+  /* ===== Input router ===== */
   async handleInput(raw){
     const a = (raw || "").trim().toLowerCase();
 
     if (a === "help") return this.showHelp();
     if (this.stage === "help") return this.boot();
 
-    // Any hub sub-screen returns to hub on ENTER
-    if (this.stage.startsWith("hub_")){
-      return this.showValentineHub();
-    }
-
-    if (this.stage === "hub"){
-      // ENTER also returns to main menu (optional)
-      return this.boot();
-    }
-
     if (this.stage === "login"){
       this.ui.setStatus("VALIDATING…");
 
+      // admin skip
       if (a === this.OVERRIDE_ID.toLowerCase()){
         this.ui.setHeaderUnlocked("IZABELLA");
         await this.ui.loading(this.loadMsgs, this.loadDetails);
@@ -450,7 +379,7 @@ export class Game {
         return this.askRiddle();
       }
 
-      // ✅ STEP 1: NEW HUB UNLOCK
+      // ✅ Step 1 entry point (your “Ask her to be my valentine” hub)
       if (a === this.NEXT_ID.toLowerCase()){
         return this.showValentineHub();
       }
