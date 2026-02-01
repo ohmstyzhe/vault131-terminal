@@ -346,7 +346,7 @@ html, body{
   background-repeat:no-repeat;
   background-position:center;
   background-size: min(680px, 80%);
-  opacity:0.16;                 /* try 0.10 - 0.22 */
+  opacity:0.25;                 /* try 0.10 - 0.22 */
   filter: blur(0.2px);
   pointer-events:none;
   z-index:0;
