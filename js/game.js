@@ -1,3 +1,4 @@
+
 export class Game {
   constructor(ui, audio){
     this.ui = ui;
@@ -8,7 +9,8 @@ export class Game {
     this.NEXT_ID = "14-LOVE-READY";
     this.FINAL_CODE = "531";
 
-    // ✅ CHANGE THIS to whatever you want (this is YOUR admin skip)
+    // admin skip to jump to the end instantly
+    // (this is the override code you asked about)
     this.OVERRIDE_ID = "ADMIN-531";
 
     this.riddles = [
@@ -61,9 +63,7 @@ export class Game {
     this.hintUsed = 0;
   }
 
-  start(){
-    this.boot();
-  }
+  start(){ this.boot(); }
 
   async boot(){
     this.stage = "login";
@@ -107,9 +107,7 @@ export class Game {
   }
 
   async askRiddle(){
-    if (this.r >= this.riddles.length){
-      return this.askFinal();
-    }
+    if (this.r >= this.riddles.length) return this.askFinal();
 
     this.stage = "riddle";
     this.hintUsed = 0;
@@ -117,7 +115,6 @@ export class Game {
     this.ui.setStatus(`TEST MODULE ${this.r+1}/5 LOADED`);
 
     const current = this.riddles[this.r];
-
     await this.ui.type([`RIDDLE ${this.r+1}: ${current.q}`, "", "> "], 35);
 
     this.ui.showInput("TYPE ANSWER");
@@ -153,25 +150,36 @@ export class Game {
     });
   }
 
-  async showReadyScene(){
-    this.stage = "ready";
+  _getNextValentinesTarget(){
+    // Countdown to Feb 14, 12:00 AM (local time)
+    const now = new Date();
+    let year = now.getFullYear();
+
+    let target = new Date(year, 1, 14, 0, 0, 0, 0); // month 1 = Feb
+    if (target.getTime() < now.getTime()){
+      year += 1;
+      target = new Date(year, 1, 14, 0, 0, 0, 0);
+    }
+    return target;
+  }
+
+  async showValentineHub(){
+    this.stage = "valentine";
     this.ui.setHeaderUnlocked("IZABELLA");
-    this.ui.setStatus("NEXT ADVENTURE UNLOCKED");
-    this.ui.clear();
+    this.ui.setStatus("VAULT-TEC INTERFACE: OPERATIONAL");
 
-    await this.ui.type([
-      "ACCESS ACCEPTED.",
-      "",
-      "Izabella — on the 14th, be ready to go out.",
-      "Wear something nice.",
-      "Do your hair and makeup.",
-      "",
-      "Expect to have some fun. 🙂",
-      "",
-      "Press ENTER to return to main menu."
-    ], 35);
-
-    this.ui.showInput("PRESS ENTER");
+    this.ui.showValentineHub({
+      userName: "IZABELLA",
+      targetDate: this._getNextValentinesTarget(),
+      statsText: "BUILD STATS: 3 DAYS • 1 TERMINAL • 999 HEARTBEATS",
+      onTab: async (tab) => {
+        // Step 1 only = the hub exists.
+        // We’ll build each tab’s content in Step 2.
+        this.ui.setStatus(`OPENING: ${tab.toUpperCase()} (coming next)`);
+        await this.ui.powerDip();
+        this.ui.setStatus("LOCKED: UNDER DEVELOPMENT");
+      }
+    });
   }
 
   async showFinalSuccess(){
@@ -212,14 +220,13 @@ export class Game {
   async handleInput(raw){
     const a = (raw || "").trim().toLowerCase();
 
-    // easter egg
     if (a === "help") return this.showHelp();
     if (this.stage === "help") return this.boot();
 
     if (this.stage === "login"){
       this.ui.setStatus("VALIDATING…");
 
-      // ✅ override skip (admin)
+      // admin override skip to end screen
       if (a === this.OVERRIDE_ID.toLowerCase()){
         this.ui.setHeaderUnlocked("IZABELLA");
         await this.ui.loading(this.loadMsgs, this.loadDetails);
@@ -237,8 +244,9 @@ export class Game {
         return this.askRiddle();
       }
 
+      // ✅ THIS IS THE LOCKED VALENTINE HUB ENTRY
       if (a === this.NEXT_ID.toLowerCase()){
-        return this.showReadyScene(); // (you said later this should become the Pip-Boy screen)
+        return this.showValentineHub();
       }
 
       await this.ui.type(["✖ INVALID ID", "> "], 35);
@@ -283,8 +291,8 @@ export class Game {
       }
     }
 
-    if (this.stage === "ready"){
-      // back to menu
+    if (this.stage === "valentine"){
+      // if they press Enter while in hub (or you want a way out)
       return this.boot();
     }
   }
