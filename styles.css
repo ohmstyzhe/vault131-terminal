@@ -15,6 +15,9 @@ html, body{
   overflow:hidden;
 }
 
+/* =========================
+   CRT SHELL
+   ========================= */
 #crt{
   width: min(1220px, 96vw);
   height: min(82vh, 760px);
@@ -32,12 +35,15 @@ html, body{
     inset 0 0 140px rgba(0,0,0,0.95);
 }
 
-/* HEADER */
+/* =========================
+   HEADER
+   ========================= */
 #uiWrap{
   margin-bottom:10px;
   padding-bottom:10px;
   border-bottom:1px solid rgba(76,255,154,0.3);
 }
+
 #uiTop{
   display:flex;
   align-items:center;
@@ -45,12 +51,14 @@ html, body{
   gap:12px;
   flex-wrap:wrap;
 }
+
 #uiBar{
   color:var(--g);
   font-size:14px;
   letter-spacing:1px;
   opacity:0.92;
 }
+
 #uiStatus{
   margin-top:6px;
   color:rgba(76,255,154,0.85);
@@ -59,7 +67,9 @@ html, body{
   opacity:0.9;
 }
 
-/* TERMINAL */
+/* =========================
+   TERMINAL
+   ========================= */
 #terminal{
   flex:1;
   overflow-y:auto;
@@ -69,9 +79,13 @@ html, body{
     0 0 4px rgba(76,255,154,0.7),
     0 0 10px rgba(76,255,154,0.4);
   white-space:pre-wrap;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
-/* INPUT */
+/* =========================
+   INPUT
+   ========================= */
 #inputBox{
   display:none;
   width:80%;
@@ -86,7 +100,12 @@ html, body{
 }
 
 /* HINTS */
-#hintContainer{ margin-top:6px; display:flex; flex-wrap:wrap; gap:6px; }
+#hintContainer{
+  margin-top:6px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
 
 /* CURSOR */
 #cursor{
@@ -98,7 +117,9 @@ html, body{
 }
 @keyframes blink{50%{opacity:0;}}
 
-/* SCANLINES */
+/* =========================
+   SCANLINES
+   ========================= */
 #scanlines{
   position:absolute;
   inset:0;
@@ -107,6 +128,7 @@ html, body{
     transparent 1px, transparent 3px);
   pointer-events:none;
   animation: scan 2s linear infinite;
+  z-index:6;
 }
 @keyframes scan {from{background-position:0 0;}to{background-position:0 3px;}}
 
@@ -131,47 +153,9 @@ html, body{
   100%{opacity:0; filter:brightness(1) contrast(1);}
 }
 
-/* LOADING */
-.loadTrack{
-  width:100%;
-  max-width:520px;
-  height:12px;
-  border:2px solid rgba(76,255,154,0.65);
-  border-radius:6px;
-  overflow:hidden;
-  margin-top:8px;
-}
-.loadFill{height:100%; width:0%; background:rgba(76,255,154,0.95);}
-.loadMsg{margin-top:6px;opacity:.95;}
-.loadDetail{margin-top:4px;opacity:.82;font-size:13px;letter-spacing:0.5px;}
-
-/* FINAL CODE */
-.bigCode{
-  font-size:56px;
-  letter-spacing:10px;
-  font-weight:700;
-  text-align:center;
-  margin-top:14px;
-  text-shadow:
-    0 0 6px rgba(76,255,154,0.9),
-    0 0 18px rgba(76,255,154,0.6),
-    0 0 32px rgba(76,255,154,0.35);
-  animation: codeFlash 1.1s steps(2) infinite;
-}
-@keyframes codeFlash{
-  0%{opacity:1;}
-  50%{opacity:.35;}
-  100%{opacity:1;}
-}
-
-.radFlicker{ animation: rad 140ms steps(2) infinite; }
-@keyframes rad{
-  0%{filter:brightness(1) contrast(1);}
-  50%{filter:brightness(0.92) contrast(1.18);}
-  100%{filter:brightness(1) contrast(1);}
-}
-
-/* BUTTONS (fixes iOS beige pill + adds glow) */
+/* =========================
+   BUTTONS (fix iOS beige pill + glow)
+   ========================= */
 #crt button{
   -webkit-appearance:none;
   appearance:none;
@@ -215,41 +199,130 @@ html, body{
 
 #crt button:focus{ outline:none; }
 
-@media (max-width:720px){
-  #inputBox{width:100%;}
-  #crt{ padding:22px; }
+/* =========================
+   COMMON PANEL STYLES
+   (used by lock/menu/modules)
+   ========================= */
+.block{
+  border:2px solid rgba(76,255,154,0.28);
+  border-radius:14px;
+  background:rgba(0,0,0,0.28);
+  padding:14px 16px;
+  margin:12px 0;
+  box-shadow:
+    0 0 18px rgba(76,255,154,0.10),
+    inset 0 0 28px rgba(0,0,0,0.78);
 }
 
-/* ============================================================
-   VALENTINE HUD ONLY (GLIDER STYLE)
-   - Only affects screens that render: <div class="valHub gliderHud">
-   ============================================================ */
+.hr{
+  height:1px;
+  background:rgba(76,255,154,0.25);
+  margin:10px 0;
+}
 
-/* base wrapper (ONLY hub) */
+.smallHdr{
+  font-size:12px;
+  letter-spacing:1px;
+  opacity:0.92;
+  text-transform:uppercase;
+}
+
+/* Lock screen text (safe defaults) */
+.lockTitle{
+  font-size:18px;
+  letter-spacing:1px;
+  opacity:0.95;
+}
+
+.lockLines{
+  font-size:16px;
+  letter-spacing:0.7px;
+  line-height:1.35;
+}
+
+/* Menu buttons layout */
+.menuWrap{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.menuWrap button{
+  width:100%;
+  text-align:left;
+}
+
+/* LOADING BAR (if you use it) */
+.loadTrack{
+  width:100%;
+  max-width:520px;
+  height:12px;
+  border:2px solid rgba(76,255,154,0.65);
+  border-radius:6px;
+  overflow:hidden;
+  margin-top:8px;
+}
+.loadFill{height:100%; width:0%; background:rgba(76,255,154,0.95);}
+.loadMsg{margin-top:6px;opacity:.95;}
+.loadDetail{margin-top:4px;opacity:.82;font-size:13px;letter-spacing:0.5px;}
+
+/* FINAL CODE EFFECT (if you use it) */
+.bigCode{
+  font-size:56px;
+  letter-spacing:10px;
+  font-weight:700;
+  text-align:center;
+  margin-top:14px;
+  text-shadow:
+    0 0 6px rgba(76,255,154,0.9),
+    0 0 18px rgba(76,255,154,0.6),
+    0 0 32px rgba(76,255,154,0.35);
+  animation: codeFlash 1.1s steps(2) infinite;
+}
+@keyframes codeFlash{
+  0%{opacity:1;}
+  50%{opacity:.35;}
+  100%{opacity:1;}
+}
+
+.radFlicker{ animation: rad 140ms steps(2) infinite; }
+@keyframes rad{
+  0%{filter:brightness(1) contrast(1);}
+  50%{filter:brightness(0.92) contrast(1.18);}
+  100%{filter:brightness(1) contrast(1);}
+}
+
+/* =========================
+   VALENTINE HUB (ONLY HERE)
+   - watermark behind HUD
+   - glow + slow pulse
+   - compact boxes, less “dead space”
+   ========================= */
+
 .valHub{
   position:relative;
   padding: 6px 0 0;
 }
 
-/* watermark ONLY when hub is rendered */
+/* watermark ONLY in hub */
 .valHub .valBg{
   position:absolute;
   inset:0;
-  background-image:url("assets/vault-tec-logo.png"); /* MUST MATCH FILE NAME */
+  background-image:url("assets/vault-tec-logo.png"); /* <-- match exact case */
   background-repeat:no-repeat;
   background-position:center;
   background-size:min(860px, 92%);
   opacity:0.12;
-  filter:
-    blur(0.15px)
-    brightness(1.12)
-    contrast(1.05)
-    drop-shadow(0 0 16px rgba(76,255,154,0.22))
-    drop-shadow(0 0 32px rgba(76,255,154,0.10));
   pointer-events:none;
   z-index:0;
-  animation: valPulse 6.5s ease-in-out infinite;
   mix-blend-mode: screen;
+  animation: valPulse 6.5s ease-in-out infinite;
+  filter:
+    blur(0.15px)
+    brightness(1.10)
+    contrast(1.05)
+    drop-shadow(0 0 14px rgba(76,255,154,0.18))
+    drop-shadow(0 0 26px rgba(76,255,154,0.08));
 }
 
 @keyframes valPulse{
@@ -268,7 +341,7 @@ html, body{
     transform: scale(1.01);
     filter:
       blur(0.12px)
-      brightness(1.28)
+      brightness(1.24)
       contrast(1.08)
       drop-shadow(0 0 22px rgba(76,255,154,0.26))
       drop-shadow(0 0 46px rgba(76,255,154,0.14));
@@ -281,131 +354,62 @@ html, body{
   z-index:2;
 }
 
-/* -----------------------
-   GLIDER STYLE LAYOUT
-   ----------------------- */
-
-.valHub.gliderHud{
-  padding-top: 10px;
+/* hub-specific compact blocks */
+.valHub .block{
+  padding:12px 14px;      /* smaller than generic */
+  margin:10px 0;          /* tighter */
+  border-radius:14px;
 }
 
-/* top OS bar */
-.valHub.gliderHud .glTop{
+/* the row that holds countdown + target */
+.valRow{
   display:flex;
-  justify-content:space-between;
-  align-items:center;
-  border:2px solid rgba(76,255,154,0.35);
-  padding:8px 12px;
-  margin: 0 0 10px;
-  background:rgba(0,0,0,0.15);
-  border-radius:12px;
+  gap:10px;               /* close the gap */
+  flex-wrap:wrap;
+  align-items:stretch;
 }
 
-/* title stack */
-.valHub.gliderHud .glTitle{
-  font-size:14px;
-  letter-spacing:1px;
-  line-height:1.15;
-  opacity:0.95;
+/* make both boxes take space evenly (less scrolling) */
+.valRow > .block{
+  flex: 1 1 260px;        /* two columns when room, stack on small */
+  min-width: 260px;
+  margin:0;               /* prevents random extra “box spacing” */
 }
 
-.valHub.gliderHud .glSub{
-  font-size:11px;
-  opacity:0.78;
-  margin-top:2px;
-}
-
-/* speaker icon */
-.valHub.gliderHud .glSpeaker{
-  width:18px;
-  height:18px;
-  border:2px solid rgba(76,255,154,0.6);
-  border-radius:50%;
-  box-shadow:0 0 8px rgba(76,255,154,0.4);
-  opacity:0.95;
-}
-
-/* icon row */
-.valHub.gliderHud .glIcons{
-  display:flex;
-  justify-content:space-between;
-  gap:8px;
-  margin: 0 0 12px;
-}
-
-.valHub.gliderHud .glIcon{
-  flex:1;
-  background:transparent;
-  border:2px solid rgba(76,255,154,0.45);
-  padding:8px 6px;
-  text-align:center;
-  cursor:pointer;
-  border-radius:12px;
-}
-
-.valHub.gliderHud .glDot{
-  display:block;
-  width:18px;
-  height:18px;
-  margin:0 auto 4px;
-  border-radius:50%;
-  border:2px solid rgba(76,255,154,0.7);
-  box-shadow: 0 0 10px rgba(76,255,154,0.10);
-}
-
-.valHub.gliderHud .glLbl{
-  font-size:11px;
-  letter-spacing:1px;
-  opacity:0.92;
-}
-
-/* countdown panel */
-.valHub.gliderHud .glPanel{
-  border:2px solid rgba(76,255,154,0.35);
-  padding:12px;
-  border-radius:12px;
-  background:rgba(0,0,0,0.12);
-}
-
-.valHub.gliderHud .glPanelTitle{
-  font-size:12px;
-  letter-spacing:1px;
-  margin-bottom:8px;
-  opacity:0.9;
-}
-
-.valHub.gliderHud .glCountdown{
-  display:flex;
-  justify-content:space-between;
-  align-items:baseline;
-  gap:12px;
-}
-
-.valHub.gliderHud .glDays{
+/* countdown text sizing (not giant tall panels) */
+.valBig{
   font-size:32px;
+  letter-spacing:3px;
   font-weight:700;
-  letter-spacing:2px;
+  line-height:1.05;
   text-shadow:
     0 0 6px rgba(76,255,154,0.65),
     0 0 18px rgba(76,255,154,0.30);
 }
 
-.valHub.gliderHud .glTime{
-  font-size:14px;
-  opacity:0.85;
-  letter-spacing:1px;
+.valSmall{
+  font-size:13px;
+  letter-spacing:0.9px;
+  opacity:0.90;
+  line-height:1.28;
 }
 
-.valHub.gliderHud .glTarget{
-  margin-top:6px;
+/* small helper label */
+.valLabel{
   font-size:12px;
-  opacity:0.75;
-  letter-spacing:0.8px;
+  letter-spacing:1px;
+  opacity:0.85;
+  text-transform:uppercase;
+  margin-bottom:8px;
 }
 
-/* mobile tuning (ONLY hub) */
+/* =========================
+   RESPONSIVE
+   ========================= */
 @media (max-width:720px){
-  .valHub.gliderHud .glDays{ font-size:30px; }
-  .valHub.gliderHud .glIcons{ gap:6px; }
-  .valHub.gliderHud .glIcon{ padding:8px 4px; }
+  #inputBox{width:100%;}
+  #crt{ padding:22px; }
+  .valBig{ font-size:30px; }
+  .valRow{ gap:10px; }
+  .valRow > .block{ min-width: 0; flex:1 1 100%; }
 }
