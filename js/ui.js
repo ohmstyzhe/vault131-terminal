@@ -18,6 +18,10 @@ export class UI {
     this.cursor.id = "cursor";
     this.term.appendChild(this.cursor);
 
+    // Step 1 countdown refs
+    this._valDaysEl = null;
+    this._valTimeEl = null;
+
     this._bindAudioButton();
     this._bindInput();
     this._bindButtonHoverSounds();
@@ -70,7 +74,6 @@ export class UI {
     }, { passive:true });
   }
 
-  /* ===== basic UI helpers ===== */
   setHeaderLocked(){
     this.uiBar.textContent = "VAULT 131 DATABASE │ STATUS: LOCKED";
   }
@@ -109,7 +112,6 @@ export class UI {
     });
   }
 
-  /* ===== typewriter ===== */
   type(lines, speed=35){
     return new Promise((resolve) => {
       let i=0;
@@ -141,7 +143,6 @@ export class UI {
     });
   }
 
-  /* ===== power dip + loading ===== */
   powerDip(){
     return new Promise((resolve) => {
       this.dip.classList.remove("powerDipOn");
@@ -227,11 +228,17 @@ export class UI {
     return btn;
   }
 
-  /* ===== Step 1 hub renderer ===== */
+  /* =========================
+     STEP 1 HUB
+     ========================= */
   showValentineHub(model, handlers){
     this.clear();
     this.hideInput();
     this.clearHints();
+
+    // reset refs
+    this._valDaysEl = null;
+    this._valTimeEl = null;
 
     const wrap = document.createElement("div");
     wrap.className = "valHub";
@@ -261,10 +268,14 @@ export class UI {
 
     const small = document.createElement("div");
     small.className = "valSmall";
-    small.textContent = model.timeText; // HH:MM:SS
+    small.textContent = model.timeText;
     cd.appendChild(small);
 
     left.appendChild(cd);
+
+    // store refs for live updates
+    this._valDaysEl = big;
+    this._valTimeEl = small;
 
     const right = document.createElement("div");
     right.className = "valBlock";
@@ -285,7 +296,9 @@ export class UI {
     const note = document.createElement("div");
     note.className = "valNote";
     note.textContent =
-      "This module has been unlocked. Choose a menu option below. (Yes, this is extremely official.)";
+      "This module is live.\n" +
+      "Countdown is active until Valentine’s Day.\n" +
+      "(Yes, this is extremely official.)";
 
     const menu = document.createElement("div");
     menu.className = "valMenu";
@@ -318,5 +331,10 @@ export class UI {
 
     this.term.insertBefore(wrap, this.cursor);
     this.term.scrollTop = 0;
+  }
+
+  updateValentineCountdown(days, timeText){
+    if (this._valDaysEl) this._valDaysEl.textContent = `${days} DAYS`;
+    if (this._valTimeEl) this._valTimeEl.textContent = timeText;
   }
 }
