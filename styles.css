@@ -371,3 +371,32 @@ html, body{
   .valHub{ padding-top:4px; }
   .valBig{ font-size:32px; }
 }
+
+/* =========================
+   FIX: “WONKY / SPACED OUT” VALENTINE SCREEN
+   ========================= */
+
+/* tighten terminal text spacing */
+#terminal{
+  line-height: 1.18;          /* was effectively huge because of blank lines */
+  letter-spacing: 0.6px;
+  padding-bottom: 6px;
+}
+
+/* collapse extra vertical gaps between printed lines (where possible) */
+#terminal br{
+  display: none;              /* if your UI uses <br>, this will tighten a LOT */
+}
+
+/* iOS scrolling fixes: makes scroll feel stable, not “loading weird” */
+#terminal{
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scroll-behavior: auto;
+}
+
+/* stop iOS from “rubber banding” the whole screen */
+html, body{
+  position: fixed;
+  width: 100%;
+}
