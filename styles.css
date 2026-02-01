@@ -343,3 +343,16 @@ html, body{
       drop-shadow(0 0 36px rgba(76,255,154,0.15));
   }
 }
+
+.rewardChoices{
+  margin-top: 12px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  max-width: 620px;
+}
+
+.rewardBtn{
+  width:100%;
+  text-align:left;
+}
