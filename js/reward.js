@@ -1,161 +1,130 @@
-// js/reward.js (ES MODULE)
+// js/reward.js
+// Reward Quiz module for the Vault 131 terminal
 
 const QUESTIONS = [
   {
-    q: "Which mission sounds most like us?",
-    a: ["Late-night drive + snacks", "Movie night + cozy blanket", "Random adventure date", "All of the above"],
+    q: "Q1: Pick a vibe for tonight:\nA) Cozy + cute\nB) Fancy + flirty\nC) Chaotic + fun",
+    answers: ["A", "B", "C"],
   },
   {
-    q: "Pick a Vault-Tec approved snack:",
-    a: ["Nuka-Cola", "Popcorn", "Sour candy", "Anything you hand me"],
+    q: "Q2: Choose a “mission type”:\nA) Movie night\nB) Go out\nC) Surprise activity",
+    answers: ["A", "B", "C"],
   },
   {
-    q: "Choose your perk:",
-    a: ["+1 Cuddle", "+1 Kiss", "+1 Compliment", "+1 Surprise"],
+    q: "Q3: Choose a reward style:\nA) Sweet (romantic)\nB) Playful (silly)\nC) Bold (confident)",
+    answers: ["A", "B", "C"],
   },
-  {
-    q: "What do I want you to say right now?",
-    a: ["I’m proud of you", "Thank you", "I love you", "All of it"],
-  }
 ];
 
-const REWARDS = [
-  "Reward Unlocked: 1 fancy date planned by Shaun.",
-  "Reward Unlocked: Choose the movie + I get snacks.",
-  "Reward Unlocked: 30 minute massage voucher (redeem anytime).",
-  "Reward Unlocked: One 'yes day' request (within reason).",
-  "Reward Unlocked: Surprise treat drop-off."
-];
+const REWARDS = {
+  A: [
+    "Reward: Blanket Fort + favorite snacks + 3 kisses (officially certified).",
+    "Reward: Pick the movie + I do the snacks + forehead kisses on demand.",
+    "Reward: 10 minute cuddle boost + “no phones” mini date.",
+  ],
+  B: [
+    "Reward: Dress up a little + photos together + dessert stop (your choice).",
+    "Reward: You choose the place, I handle the plan. (Vault-Tec funded.)",
+    "Reward: A slow dance in the kitchen + one surprise compliment each.",
+  ],
+  C: [
+    "Reward: Mystery mission: you get 3 clues, winner gets a prize.",
+    "Reward: Arcade rules at home: loser does a cute dare.",
+    "Reward: Random adventure drive + soundtrack picked by you.",
+  ],
+};
 
-function $(id){ return document.getElementById(id); }
-
-function clearTerminal(){
-  const t = $("terminal");
-  if (!t) return;
-  t.innerHTML = "";
-  t.scrollTop = 0;
+function pick(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function printLine(text){
-  const t = $("terminal");
-  if (!t) return;
-  const div = document.createElement("div");
-  div.textContent = text;
-  t.appendChild(div);
-  t.scrollTop = t.scrollHeight;
-}
-
-function spacer(){ printLine(""); }
-
-function setStatus(text){
-  const s = $("uiStatus");
-  if (s) s.textContent = text;
-}
-
-function showEnterPrompt(placeholder, onEnter){
-  const input = $("inputBox");
-  if (!input) return;
-
-  input.style.display = "block";
-  input.value = "";
-  input.placeholder = placeholder || "PRESS ENTER";
-  input.focus();
-
-  const handler = (e) => {
-    if (e.key === "Enter") {
-      input.removeEventListener("keydown", handler);
-      onEnter && onEnter();
-    }
-  };
-
-  input.addEventListener("keydown", handler);
-}
-
-function showChoices(choices, onPick){
-  const t = $("terminal");
-  if (!t) return;
-
-  const wrap = document.createElement("div");
-  wrap.className = "rewardChoices";
-
-  choices.forEach((c, i) => {
-    const btn = document.createElement("button");
-    btn.className = "rewardBtn";
-    btn.type = "button";
-    btn.textContent = `${i + 1}) ${c}`;
-    btn.addEventListener("click", () => onPick(i));
-    wrap.appendChild(btn);
-  });
-
-  t.appendChild(wrap);
-  t.scrollTop = t.scrollHeight;
-}
-
-function removeChoices(){
-  document.querySelectorAll(".rewardChoices").forEach(n => n.remove());
-}
-
-function pickReward(score){
-  const base = Math.min(REWARDS.length - 1, Math.floor(score / 2));
-  const jitter = Math.floor(Math.random() * 2);
-  return REWARDS[Math.min(REWARDS.length - 1, base + jitter)];
+function normalize(input) {
+  return (input || "").trim().toUpperCase();
 }
 
 /**
- * Call this from app.js
- * @param {Function} returnToMenu - function that redraws your main menu screen
+ * Starts the reward quiz flow.
+ * @param {UI} ui
+ * @param {object} opts
+ * @param {Function} opts.onReturn  called when quiz finishes / user exits
  */
-export function startRewardQuiz(returnToMenu){
+export async function startRewardQuiz(ui, { onReturn } = {}) {
+  ui.setStatus("REWARD QUIZ");
+  ui.clear();
+  ui.hideInput();
+  ui.clearHints();
+
+  await ui.type([
+    "REWARD QUIZ MODULE LOADED",
+    "",
+    "Answer A / B / C for each question.",
+    "Type EXIT at any time to return.",
+    "",
+  ]);
+
   let idx = 0;
-  let score = 0;
+  const choices = [];
 
-  clearTerminal();
-  setStatus("REWARD QUIZ MODULE: ONLINE");
-
-  printLine("REWARD QUIZ MODULE LOADED");
-  printLine("Answer honestly. Vault-Tec is watching. 🙂");
-  spacer();
-
-  const ask = () => {
-    removeChoices();
-    clearTerminal();
-    setStatus(`REWARD QUIZ: QUESTION ${idx + 1} / ${QUESTIONS.length}`);
-
-    const item = QUESTIONS[idx];
-    printLine(item.q);
-    spacer();
-
-    showChoices(item.a, (picked) => {
-      score += 1;               // every answer gives points
-      if (picked === item.a.length - 1) score += 1; // bonus for last option (cute “All of it” style)
-
-      idx++;
-      if (idx >= QUESTIONS.length) finish();
-      else ask();
-    });
+  const askNext = async () => {
+    if (idx >= QUESTIONS.length) return finish();
+    await ui.type(["", QUESTIONS[idx].q, ""]);
+    ui.showInput("TYPE A, B, or C");
   };
 
-  const finish = () => {
-    removeChoices();
-    clearTerminal();
-    setStatus("REWARD QUIZ: COMPLETE");
+  const finish = async () => {
+    ui.hideInput();
+    ui.clearHints();
 
-    const reward = pickReward(score);
+    // Determine “dominant” reward bucket by most common A/B/C
+    const tally = { A: 0, B: 0, C: 0 };
+    choices.forEach((c) => (tally[c] = (tally[c] || 0) + 1));
+    const bucket =
+      tally.A >= tally.B && tally.A >= tally.C ? "A" : tally.B >= tally.C ? "B" : "C";
 
-    printLine(">>> PROCESSING RESULTS...");
-    printLine(`Score: ${score}/${QUESTIONS.length * 2}`);
-    spacer();
-    printLine("=== REWARD DISPENSED ===");
-    printLine(reward);
-    spacer();
-    printLine("Press ENTER to return.");
+    const reward = pick(REWARDS[bucket]);
 
-    showEnterPrompt("PRESS ENTER", () => {
-      const input = $("inputBox");
-      if (input) input.style.display = "none";
-      if (typeof returnToMenu === "function") returnToMenu();
-    });
+    await ui.type([
+      "",
+      "EVALUATING RESPONSES…",
+      "CALIBRATING ROMANCE PROTOCOLS…",
+      "",
+      "✅ QUIZ COMPLETE",
+      "",
+      reward,
+      "",
+      "Press ENTER to return to the Valentine hub.",
+    ]);
+
+    // One-shot: pressing enter returns
+    ui.showInput("PRESS ENTER");
+    ui.onSubmit = () => {
+      ui.onSubmit = null;
+      ui.hideInput();
+      if (onReturn) onReturn();
+    };
   };
 
-  ask();
+  ui.onSubmit = async (raw) => {
+    const v = normalize(raw);
+
+    if (v === "EXIT") {
+      ui.onSubmit = null;
+      ui.hideInput();
+      if (onReturn) onReturn();
+      return;
+    }
+
+    const q = QUESTIONS[idx];
+    if (!q.answers.includes(v)) {
+      await ui.type(["INVALID INPUT. USE A / B / C."]);
+      ui.showInput("TYPE A, B, or C");
+      return;
+    }
+
+    choices.push(v);
+    idx += 1;
+    await askNext();
+  };
+
+  await askNext();
 }
