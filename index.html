@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>VAULT 131 DATABASE</title>
-  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=4">
 </head>
+
 <body>
   <div id="crt">
     <div id="uiWrap">
@@ -16,16 +17,52 @@
       <div id="uiStatus">STANDBY… AWAITING INPUT</div>
     </div>
 
+    <!-- Terminal mode -->
     <div id="terminal"></div>
     <input id="inputBox" autocomplete="off" spellcheck="false" />
     <div id="hintContainer"></div>
 
-    <div id="valScreen" aria-hidden="true"></div>
+    <!-- Valentine HUD mode (hidden until 14-LOVE-READY) -->
+    <div id="valScreen" aria-hidden="true">
+      <div class="hudFrame">
+        <div class="hudTop">
+          <div class="hudTitle">VAULT 131 • VALENTINE OPS</div>
+          <div class="hudSub">STATUS: UNDISCOVERED</div>
+        </div>
+
+        <div class="hudBody">
+          <div class="hudBg">VAULT-TEC<br>INDUSTRIES</div>
+
+          <div class="hudCenter">
+            <div class="countLabel">COUNTDOWN TO VALENTINE’S DAY</div>
+            <div class="countBig" id="countBig">--d --:--:--</div>
+            <div class="countSmall" id="countSmall">Calculating…</div>
+          </div>
+
+          <div class="hudButtons" id="hudButtons">
+            <button class="hudBtn" data-hud="done" disabled>COMPLETED</button>
+            <button class="hudBtn" data-hud="info">INFO</button>
+            <button class="hudBtn" data-hud="quiz">QUIZ</button>
+            <button class="hudBtn" data-hud="games">MINI GAMES</button>
+            <button class="hudBtn" data-hud="log">MISSION LOG</button>
+          </div>
+
+          <div class="hudPanel" id="hudPanel">
+            <!-- Filled by JS -->
+          </div>
+        </div>
+
+        <div class="hudBottom">
+          <button class="hudBtn" id="hudBackBtn" type="button">RETURN TO LOGIN</button>
+        </div>
+      </div>
+    </div>
 
     <div id="powerDip"></div>
     <div id="scanlines"></div>
   </div>
 
-<script type="module" src="js/app.js?v=3"></script>
+  <!-- IMPORTANT: must be module because we import audio/ui -->
+  <script type="module" src="js/app.js?v=4"></script>
 </body>
 </html>
