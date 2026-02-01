@@ -1,142 +1,149 @@
-/* ===============================
-   ui.js — DOM, typewriter, helpers
-   =============================== */
+export class UI {
+  constructor(audio){
+    this.audio = audio;
 
-window.el = {
-  crt: document.getElementById("crt"),
-  uiBar: document.getElementById("uiBar"),
-  uiStatus: document.getElementById("uiStatus"),
-  term: document.getElementById("terminal"),
-  input: document.getElementById("inputBox"),
-  hints: document.getElementById("hintContainer"),
-  dip: document.getElementById("powerDip")
-};
+    this.crt = document.getElementById("crt");
+    this.uiBar = document.getElementById("uiBar");
+    this.uiStatus = document.getElementById("uiStatus");
+    this.term = document.getElementById("terminal");
+    this.input = document.getElementById("inputBox");
+    this.hints = document.getElementById("hintContainer");
+    this.volBtn = document.getElementById("volBtn");
+    this.valScreen = document.getElementById("valScreen");
+    this.powerDip = document.getElementById("powerDip");
 
-if(!el.crt || !el.uiBar || !el.uiStatus || !el.term || !el.input || !el.hints || !el.dip){
-  throw new Error("Missing required DOM IDs. Check index.html element ids.");
-}
+    this.cursor = document.createElement("span");
+    this.cursor.id = "cursor";
+    this.term.appendChild(this.cursor);
 
-/* cursor */
-window.cursor = document.createElement("span");
-cursor.id = "cursor";
-el.term.appendChild(cursor);
+    this._wireAudioBtn();
+    this._wireBeepOnHover();
+    this._wireTypingBeep();
+  }
 
-/* UI setters */
-window.setLocked = function setLocked(){
-  el.uiBar.textContent = "VAULT 131 DATABASE │ STATUS: LOCKED";
-};
+  _wireAudioBtn(){
+    this.updateVolBtn();
+    this.volBtn.addEventListener("click", ()=>{
+      const on = this.audio.toggle();
+      this.updateVolBtn();
+      this.setStatus(on ? "AUDIO ENABLED" : "AUDIO MUTED");
+      this.audio.beep(on ? 980 : 420, 0.05, 0.03);
+    });
+  }
 
-window.setUnlocked = function setUnlocked(){
-  el.uiBar.textContent = "VAULT 131 DATABASE │ STATUS: OPERATIONAL │ USER: IZABELLA";
-};
+  updateVolBtn(){
+    this.volBtn.textContent = this.audio.audioOn ? "AUDIO: ON" : "AUDIO: OFF";
+    this.volBtn.classList.toggle("on", this.audio.audioOn);
+  }
 
-window.setStatus = function setStatus(text){
-  el.uiStatus.textContent = text;
-};
+  _wireBeepOnHover(){
+    let last = 0;
+    this.crt.addEventListener("pointerover", (e)=>{
+      const btn = e.target.closest("button");
+      if(!btn) return;
+      const now = Date.now();
+      if(now - last < 70) return;
+      last = now;
+      this.audio.hoverBeep();
+    }, { passive:true });
 
-/* terminal helpers */
-window.clearTerm = function clearTerm(){
-  el.term.innerHTML = "";
-  el.term.appendChild(cursor);
-};
+    this.crt.addEventListener("click", (e)=>{
+      const btn = e.target.closest("button");
+      if(!btn) return;
+      this.audio.clickBeep();
+    }, { passive:true });
+  }
 
-window.showInput = function showInput(ph=""){
-  el.input.style.display = "block";
-  el.input.placeholder = ph;
-  el.input.value = "";
-  el.input.focus();
-};
+  _wireTypingBeep(){
+    this.input.addEventListener("keydown", (e)=>{
+      const ignore = new Set(["Shift","Alt","Control","Meta","Tab","CapsLock","ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Escape"]);
+      if(ignore.has(e.key)) return;
+      if(e.key === "Enter") return;
+      this.audio.typeBeep();
+    });
+  }
 
-window.hideInput = function hideInput(){
-  el.input.style.display = "none";
-};
+  setStatus(t){ this.uiStatus.textContent = t; }
+  setLocked(){ this.uiBar.textContent = "VAULT 131 DATABASE │ STATUS: LOCKED"; }
+  setUnlocked(){ this.uiBar.textContent = "VAULT 131 DATABASE │ STATUS: OPERATIONAL │ USER: IZABELLA"; }
 
-/* typewriter */
-window.typeLines = function typeLines(lines, speed = 35, cb){
-  let i = 0;
+  clear(){
+    this.term.innerHTML = "";
+    this.term.appendChild(this.cursor);
+  }
 
-  (function next(){
-    if(i >= lines.length){ cb && cb(); return; }
+  showInput(ph=""){
+    this.input.style.display = "block";
+    this.input.placeholder = ph;
+    this.input.value = "";
+    this.input.focus();
+  }
 
-    const d = document.createElement("div");
-    el.term.insertBefore(d, cursor);
+  hideInput(){ this.input.style.display = "none"; }
 
-    let j = 0;
-    const prePause = (Math.random() < 0.18) ? (180 + Math.random()*240) : 0;
+  showHints(buttons){
+    this.hints.innerHTML = "";
+    buttons.forEach(b => this.hints.appendChild(b));
+  }
 
-    setTimeout(()=>{
-      (function c(){
-        if(j >= lines[i].length){
-          i++;
-          setTimeout(next, 260 + Math.random()*120);
-          return;
-        }
-        d.textContent += lines[i][j++];
-        if(window.beep) beep(880, 0.02, 0.02);
-        el.term.scrollTop = el.term.scrollHeight;
-        setTimeout(c, speed + Math.random()*25);
-      })();
-    }, prePause);
-  })();
-};
+  hideHints(){
+    this.hints.innerHTML = "";
+  }
 
-/* hint buttons */
-window.showHints = function showHints(arr){
-  el.hints.innerHTML = "";
+  showTerminal(){
+    this.term.style.display = "block";
+    this.input.style.display = "block";
+    this.hints.style.display = "flex";
+    if(this.valScreen){
+      this.valScreen.style.display = "none";
+      this.valScreen.setAttribute("aria-hidden","true");
+    }
+  }
 
-  for(let i = window.hintUsed; i < 3; i++){
-    const b = document.createElement("button");
-    b.type = "button";
-    b.textContent = "HINT " + (i+1);
+  showValentine(){
+    this.term.style.display = "none";
+    this.input.style.display = "none";
+    this.hints.style.display = "none";
+    if(this.valScreen){
+      this.valScreen.style.display = "block";
+      this.valScreen.setAttribute("aria-hidden","false");
+    }
+  }
 
-    b.onclick = ()=>{
-      if(window.locked) return;
-      setStatus("HINT MODULE: ACTIVE");
-      typeLines(["HINT: " + arr[i]], 30, ()=> setStatus("AWAITING INPUT…"));
-      window.hintUsed++;
-      showHints(arr);
+  powerDip(cb){
+    if(!this.powerDip){ cb && cb(); return; }
+    this.powerDip.classList.remove("powerDipOn");
+    void this.powerDip.offsetWidth;
+    this.powerDip.classList.add("powerDipOn");
+    setTimeout(()=> cb && cb(), 420);
+  }
+
+  type(lines, speed=35, cb){
+    let i=0;
+    const next = ()=>{
+      if(i >= lines.length){ cb && cb(); return; }
+      const d = document.createElement("div");
+      this.term.insertBefore(d, this.cursor);
+      let j=0;
+
+      const prePause = (Math.random()<0.18) ? (180 + Math.random()*240) : 0;
+
+      setTimeout(()=>{
+        const step = ()=>{
+          if(j >= lines[i].length){
+            i++;
+            setTimeout(next, 260 + Math.random()*120);
+            return;
+          }
+          d.textContent += lines[i][j++];
+          // keep the classic terminal tick (only if audio ON)
+          this.audio.beep(880, 0.012, 0.015);
+          this.term.scrollTop = this.term.scrollHeight;
+          setTimeout(step, speed + Math.random()*22);
+        };
+        step();
+      }, prePause);
     };
-
-    el.hints.appendChild(b);
+    next();
   }
-};
-
-/* power dip animation */
-window.powerDip = function powerDip(cb){
-  el.dip.classList.remove("powerDipOn");
-  void el.dip.offsetWidth;
-  el.dip.classList.add("powerDipOn");
-
-  setStatus("POWER FLUCTUATION… STABILIZING");
-  setTimeout(()=>{
-    setStatus("STABILITY: NOMINAL");
-    cb && cb();
-  }, 420);
-};
-
-/* global button hover/tap sound (works for dynamically created buttons too) */
-(function attachButtonSounds(){
-  let last = 0;
-  function fire(){
-    const now = Date.now();
-    if(now - last < 90) return;
-    last = now;
-    if(window.hoverBeep) hoverBeep();
-  }
-
-  // desktop hover
-  el.crt.addEventListener("mouseover", (e)=>{
-    const b = e.target.closest("button");
-    if(!b) return;
-    if(!window.audioOn) return;
-    fire();
-  });
-
-  // mobile tap/press
-  el.crt.addEventListener("pointerdown", (e)=>{
-    const b = e.target.closest("button");
-    if(!b) return;
-    if(!window.audioOn) return;
-    fire();
-  });
-})();
+}
