@@ -70,34 +70,66 @@ html, body{
     0 0 10px rgba(76,255,154,0.4);
   white-space:pre-wrap;
   position:relative;
+  z-index:2;
 }
 
 /* INPUT */
 #inputBox{
-  display:none;
-  width:80%;
+  width:100%;
   margin-top:10px;
   background:rgba(0,0,0,0.6);
   color:var(--g);
-  border:2px solid var(--g);
-  padding:10px;
-  border-radius:10px;
+  border:2px solid rgba(76,255,154,0.75);
+  padding:12px 12px;
+  border-radius:12px;
   font-size:16px;
   outline:none;
+  text-transform:uppercase;
+  box-shadow:0 0 18px rgba(76,255,154,0.10);
 }
 
 /* HINTS */
 #hintContainer{ margin-top:6px; display:flex; flex-wrap:wrap; gap:6px; }
 
-/* CURSOR */
-#cursor{
-  display:inline-block;
-  width:10px;
-  background:var(--g);
-  margin-left:2px;
-  animation: blink 1s infinite;
+/* BUTTONS (fixes iOS beige pill + glow) */
+#crt button{
+  -webkit-appearance:none;
+  appearance:none;
+  background:transparent;
+  color:var(--g);
+  border:2px solid rgba(76,255,154,0.55);
+  border-radius:10px;
+  padding:10px 14px;
+  cursor:pointer;
+  font:inherit;
+  font-size:12px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  box-shadow:0 0 12px rgba(76,255,154,0.12);
+  transition: box-shadow .15s ease, border-color .15s ease, transform .08s ease, filter .15s ease;
 }
-@keyframes blink{50%{opacity:0;}}
+#crt button:hover,
+#crt button:focus-visible{
+  border-color: rgba(76,255,154,0.95);
+  box-shadow:
+    0 0 10px rgba(76,255,154,0.30),
+    0 0 18px rgba(76,255,154,0.20),
+    inset 0 0 10px rgba(76,255,154,0.12);
+  filter: brightness(1.12);
+}
+#crt button:active{
+  transform: translateY(1px);
+  box-shadow:
+    0 0 14px rgba(76,255,154,0.28),
+    inset 0 0 14px rgba(76,255,154,0.16);
+}
+#crt button:disabled{
+  opacity:0.45;
+  cursor:default;
+  filter:none;
+  box-shadow:none;
+}
+#crt button:focus{ outline:none; }
 
 /* SCANLINES */
 #scanlines{
@@ -133,124 +165,70 @@ html, body{
   100%{opacity:0; filter:brightness(1) contrast(1);}
 }
 
-/* LOADING */
-.loadTrack{
-  width:100%;
-  max-width:520px;
-  height:12px;
-  border:2px solid rgba(76,255,154,0.65);
-  border-radius:6px;
-  overflow:hidden;
-  margin-top:8px;
-}
-.loadFill{height:100%; width:0%; background:rgba(76,255,154,0.95);}
-.loadMsg{margin-top:6px;opacity:.95;}
-.loadDetail{margin-top:4px;opacity:.82;font-size:13px;letter-spacing:0.5px;}
-
-/* FINAL CODE */
-.bigCode{
-  font-size:56px;
-  letter-spacing:10px;
-  font-weight:700;
-  text-align:center;
-  margin-top:14px;
-  text-shadow:
-    0 0 6px rgba(76,255,154,0.9),
-    0 0 18px rgba(76,255,154,0.6),
-    0 0 32px rgba(76,255,154,0.35);
-  animation: codeFlash 1.1s steps(2) infinite;
-}
-@keyframes codeFlash{
-  0%{opacity:1;}
-  50%{opacity:.35;}
-  100%{opacity:1;}
-}
-
-.radFlicker{ animation: rad 140ms steps(2) infinite; }
-@keyframes rad{
-  0%{filter:brightness(1) contrast(1);}
-  50%{filter:brightness(0.92) contrast(1.18);}
-  100%{filter:brightness(1) contrast(1);}
-}
-
-/* BUTTONS (fixes iOS beige pill + adds glow) */
-#crt button{
-  -webkit-appearance:none;
-  appearance:none;
-  background:transparent;
-  color:var(--g);
-  border:2px solid rgba(76,255,154,0.55);
-  border-radius:10px;
-  padding:10px 14px;
-  cursor:pointer;
-  font:inherit;
-  font-size:12px;
-  letter-spacing:1px;
-  text-transform:uppercase;
-  box-shadow:0 0 12px rgba(76,255,154,0.12);
-  transition: box-shadow .15s ease, border-color .15s ease, transform .08s ease, filter .15s ease;
-}
-
-#crt button:hover,
-#crt button:focus-visible{
-  border-color: rgba(76,255,154,0.95);
-  box-shadow:
-    0 0 10px rgba(76,255,154,0.30),
-    0 0 18px rgba(76,255,154,0.20),
-    inset 0 0 10px rgba(76,255,154,0.12);
-  filter: brightness(1.12);
-}
-
-#crt button:active{
-  transform: translateY(1px);
-  box-shadow:
-    0 0 14px rgba(76,255,154,0.28),
-    inset 0 0 14px rgba(76,255,154,0.16);
-}
-
-#crt button:disabled{
-  opacity:0.45;
-  cursor:default;
-  filter:none;
-  box-shadow:none;
-}
-
-#crt button:focus{ outline:none; }
-
 @media (max-width:720px){
-  #inputBox{width:100%;}
   #crt{ padding:22px; }
 }
 
 /* =========================
-   STEP 1: VALENTINE HUB UI
-   (logo ONLY shows here)
+   VALENTINE HUB (MAIN MENU)
+   Logo watermark ONLY here
    ========================= */
 .valHub{
   position:relative;
   padding:14px 6px 10px;
 }
 
-/* THE WATERMARK (ONLY ON VAL HUB) */
-.valHub::before{
-  content:"";
+/* The watermark layer (ONLY inside .valHub) */
+.valBg{
   position:absolute;
   inset:0;
-  background-image: url("assets/vault-tec-logo.png");
+  background-image:url("assets/vault-tec-logo.PNG"); /* EXACT CASE */
   background-repeat:no-repeat;
   background-position:center;
-  background-size: min(860px, 90%);
+  background-size:min(900px, 92%); /* bigger */
+  opacity:0.15; /* base visibility */
+  filter:
+    blur(0.2px)
+    drop-shadow(0 0 16px rgba(76,255,154,0.25))
+    drop-shadow(0 0 32px rgba(76,255,154,0.18));
   pointer-events:none;
   z-index:0;
-  mix-blend-mode: screen;
-
-  animation: vaultPulse 9s ease-in-out infinite;
+  mix-blend-mode:screen;
+  animation: vaultPulse 5.2s ease-in-out infinite;
 }
 
-/* keep val hub content above watermark */
+/* Slow pulse (subtle but visible) */
+@keyframes vaultPulse{
+  0%{
+    opacity:0.12;
+    transform:scale(1);
+    filter:
+      blur(0.2px)
+      drop-shadow(0 0 12px rgba(76,255,154,0.22))
+      drop-shadow(0 0 26px rgba(76,255,154,0.14));
+  }
+  50%{
+    opacity:0.20;
+    transform:scale(1.015);
+    filter:
+      blur(0.15px)
+      drop-shadow(0 0 22px rgba(76,255,154,0.34))
+      drop-shadow(0 0 46px rgba(76,255,154,0.22));
+  }
+  100%{
+    opacity:0.12;
+    transform:scale(1);
+    filter:
+      blur(0.2px)
+      drop-shadow(0 0 12px rgba(76,255,154,0.22))
+      drop-shadow(0 0 26px rgba(76,255,154,0.14));
+  }
+}
+
+/* Make sure hub content stays above watermark */
 .valHub > *{
   position:relative;
-  z-index:1;
+  z-index:2;
 }
 
 .valTopRow{
@@ -312,47 +290,7 @@ html, body{
   flex-direction:column;
   gap:10px;
 }
-
 .valMenu button{
-  width:100%;
-  text-align:left;
-}
-
-@keyframes vaultPulse {
-  0% {
-    opacity: 0.14;
-    filter:
-      blur(0.4px)
-      drop-shadow(0 0 14px rgba(76,255,154,0.25))
-      drop-shadow(0 0 36px rgba(76,255,154,0.15));
-  }
-
-  50% {
-    opacity: 0.19;
-    filter:
-      blur(0.6px)
-      drop-shadow(0 0 28px rgba(76,255,154,0.45))
-      drop-shadow(0 0 68px rgba(76,255,154,0.25));
-  }
-
-  100% {
-    opacity: 0.14;
-    filter:
-      blur(0.4px)
-      drop-shadow(0 0 14px rgba(76,255,154,0.25))
-      drop-shadow(0 0 36px rgba(76,255,154,0.15));
-  }
-}
-
-.rewardChoices{
-  margin-top: 12px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  max-width: 620px;
-}
-
-.rewardBtn{
   width:100%;
   text-align:left;
 }
