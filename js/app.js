@@ -7,14 +7,8 @@ window.addEventListener("DOMContentLoaded", () => {
   const ui = new UI(audio);
   const game = new Game(ui, audio);
 
-  ui.onSubmit = (value) => game.handleInput(value);
+  ui.onSubmit = (value) => game.handleSubmit(value);
+  ui.onClick = (action) => game.handleClick(action);
 
-  // audio button
-  document.getElementById("volBtn").addEventListener("click", () => {
-    audio.toggle();
-    ui.setAudioLabel(audio.enabled);
-    ui.powerDip();
-  });
-
-  game.start();
+  game.start(); // starts at ENTER ID
 });
