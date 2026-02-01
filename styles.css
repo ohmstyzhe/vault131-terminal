@@ -239,9 +239,12 @@ html, body{
   background-image: url("assets/vault-tec-logo.png");
   background-repeat:no-repeat;
   background-position:center;
-  background-size: min(720px, 78%);
-  opacity:0.12;               /* tweak 0.08 - 0.16 */
-  filter: blur(0.2px);
+  background-size: min(860px, 90%); /* BIGGER */
+  opacity:0.16;                    /* stronger presence */
+  filter:
+    blur(0.4px)
+    drop-shadow(0 0 18px rgba(76,255,154,0.35))
+    drop-shadow(0 0 42px rgba(76,255,154,0.18));
   pointer-events:none;
   z-index:0;
   mix-blend-mode: screen;
