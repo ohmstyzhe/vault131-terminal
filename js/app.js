@@ -1,3 +1,4 @@
+import { startRewardQuiz } from "./reward.js";
 import { AudioSystem } from "./audio.js";
 import { UI } from "./ui.js";
 import { Game } from "./game.js";
