@@ -15,9 +15,7 @@ html, body{
   overflow:hidden;
 }
 
-/* ======================
-   CRT FRAME
-   ====================== */
+/* ================= CRT SHELL ================= */
 #crt{
   width: min(1220px, 96vw);
   height: min(82vh, 760px);
@@ -35,33 +33,7 @@ html, body{
     inset 0 0 140px rgba(0,0,0,0.95);
 }
 
-/* ======================
-   VAULT-TEC WATERMARK
-   ====================== */
-#crt::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background-image:url("./assets/vault-tec-logo.PNG");
-  background-repeat:no-repeat;
-  background-position:center;
-  background-size:min(720px, 78%);
-  opacity:0.12;
-  filter: blur(0.3px) saturate(2) hue-rotate(80deg);
-  mix-blend-mode:screen;
-  pointer-events:none;
-  z-index:0;
-}
-
-/* keep UI above watermark */
-#crt > *{
-  position:relative;
-  z-index:2;
-}
-
-/* ======================
-   HEADER
-   ====================== */
+/* ================= HEADER ================= */
 #uiWrap{
   margin-bottom:10px;
   padding-bottom:10px;
@@ -88,23 +60,20 @@ html, body{
   opacity:0.9;
 }
 
-/* ======================
-   TERMINAL
-   ====================== */
+/* ================= TERMINAL ================= */
 #terminal{
   flex:1;
   overflow-y:auto;
   overflow-x:hidden;
   color:var(--g);
+  white-space:pre-wrap;
   text-shadow:
     0 0 4px rgba(76,255,154,0.7),
     0 0 10px rgba(76,255,154,0.4);
-  white-space:pre-wrap;
+  position:relative;
 }
 
-/* ======================
-   INPUT
-   ====================== */
+/* ================= INPUT ================= */
 #inputBox{
   display:none;
   width:80%;
@@ -118,9 +87,7 @@ html, body{
   outline:none;
 }
 
-/* ======================
-   CURSOR
-   ====================== */
+/* ================= CURSOR ================= */
 #cursor{
   display:inline-block;
   width:10px;
@@ -130,9 +97,7 @@ html, body{
 }
 @keyframes blink{50%{opacity:0;}}
 
-/* ======================
-   SCANLINES
-   ====================== */
+/* ================= SCANLINES ================= */
 #scanlines{
   position:absolute;
   inset:0;
@@ -152,9 +117,7 @@ html, body{
   to{background-position:0 3px;}
 }
 
-/* ======================
-   POWER DIP
-   ====================== */
+/* ================= POWER DIP ================= */
 #powerDip{
   position:absolute;
   inset:0;
@@ -167,21 +130,18 @@ html, body{
   opacity:0;
   pointer-events:none;
   z-index:8;
-  mix-blend-mode:screen;
 }
 .powerDipOn{
   animation: dip 420ms ease-in-out 1;
 }
 @keyframes dip{
-  0%{opacity:0;filter:brightness(1);}
-  20%{opacity:.9;filter:brightness(.65);}
-  55%{opacity:.35;filter:brightness(.85);}
-  100%{opacity:0;filter:brightness(1);}
+  0%{opacity:0;}
+  20%{opacity:.9;}
+  55%{opacity:.35;}
+  100%{opacity:0;}
 }
 
-/* ======================
-   BUTTONS
-   ====================== */
+/* ================= BUTTONS ================= */
 #crt button{
   appearance:none;
   background:transparent;
@@ -195,76 +155,80 @@ html, body{
   letter-spacing:1px;
   text-transform:uppercase;
   box-shadow:0 0 12px rgba(76,255,154,0.12);
-  transition:.15s;
+  transition: box-shadow .15s ease, border-color .15s ease, transform .08s ease;
 }
 #crt button:hover{
   border-color:rgba(76,255,154,0.95);
-  box-shadow:0 0 18px rgba(76,255,154,.35);
+  box-shadow:0 0 18px rgba(76,255,154,0.3);
+}
+#crt button:active{
+  transform:translateY(1px);
 }
 #crt button:disabled{
   opacity:.45;
   cursor:default;
-  box-shadow:none;
 }
 
-/* ======================
-   VALENTINE HUB
-   ====================== */
+/* ================= VALENTINE HUB ================= */
 .valHub{
   position:relative;
   padding:14px 6px 10px;
 }
 
-.valTopRow{
-  display:flex;
-  gap:12px;
-  justify-content:space-between;
-  flex-wrap:wrap;
-  margin-bottom:10px;
+/* ✅ ONLY Valentine screen watermark */
+.valBg{
+  position:absolute;
+  inset:0;
+  background-image:url("assets/vault-tec-logo.png");
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:min(560px, 75%);
+  opacity:0.14;
+  filter: blur(0.2px);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* Keep Valentine UI above logo */
+.valHub > *{
+  position:relative;
+  z-index:1;
 }
 
 .valBlock{
-  min-width:260px;
   padding:10px 12px;
-  border:2px solid rgba(76,255,154,.3);
+  border:2px solid rgba(76,255,154,0.30);
   border-radius:12px;
-  background:rgba(0,0,0,.35);
-}
-
-.valTitle{
-  font-size:12px;
-  letter-spacing:1px;
-  margin-bottom:8px;
-  text-transform:uppercase;
+  background:rgba(0,0,0,0.35);
 }
 
 .valCountdown{
   display:flex;
-  gap:12px;
   align-items:baseline;
+  gap:12px;
 }
-
 .valBig{
   font-size:34px;
-  letter-spacing:3px;
   font-weight:700;
+  letter-spacing:3px;
 }
-
 .valSmall{
   font-size:14px;
   opacity:.9;
-}
-
-.valNote{
-  margin:10px 0 14px;
-  padding:10px 12px;
-  border-left:3px solid rgba(76,255,154,.55);
-  background:rgba(0,0,0,.22);
-  border-radius:10px;
 }
 
 .valMenu{
   display:flex;
   flex-direction:column;
   gap:10px;
+}
+.valMenu button{
+  width:100%;
+  text-align:left;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width:720px){
+  #inputBox{width:100%;}
+  #crt{padding:22px;}
 }
