@@ -523,3 +523,57 @@ html, body{
   padding: 8px 12px;
 }
 */
+
+/* =========================
+   VAULT STATS — CLEAN LAYOUT
+   ========================= */
+
+.statsPanel{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 18px;
+  align-items:start;
+  text-align:left;
+  margin-top: 10px;
+}
+
+/* each stat block */
+.statItem{
+  border: 2px solid rgba(76,255,154,0.26);
+  border-radius: 12px;
+  background: rgba(0,0,0,0.22);
+  padding: 10px 12px;
+}
+
+/* label + value styling */
+.statLabel{
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.85;
+  margin-bottom: 6px;
+}
+
+.statValue{
+  font-size: 18px;
+  letter-spacing: 1px;
+  font-weight: 700;
+  line-height: 1.15;
+  text-shadow:
+    0 0 6px rgba(76,255,154,0.55),
+    0 0 16px rgba(76,255,154,0.18);
+}
+
+/* make the stats block itself not feel “tiny” on mobile */
+#terminal .block.statsBlock{
+  width: min(680px, 100%);
+  margin: 12px auto;
+}
+
+/* phone: stack to one column so it fills the width & reduces weird wrapping */
+@media (max-width: 520px){
+  .statsPanel{
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
