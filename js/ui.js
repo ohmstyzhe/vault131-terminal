@@ -11,7 +11,7 @@ export class UI {
     this.dip = document.getElementById("powerDip");
     this.volBtn = document.getElementById("volBtn");
 
-    this.onSubmit = null; // set by app.js
+    this.onSubmit = null;
     this.locked = false;
 
     this.cursor = document.createElement("span");
@@ -39,7 +39,7 @@ export class UI {
 
   _bindInput(){
     this.input.addEventListener("keydown", (e) => {
-      // typing sound (but NOT on enter)
+      // typing sound (not on Enter)
       if (e.key && e.key.length === 1) this.audio.typeBeep();
 
       if (e.key !== "Enter") return;
@@ -55,10 +55,8 @@ export class UI {
   }
 
   _bindButtonHoverSounds(){
-    // desktop hover + mobile touch
-    const fire = (el) => {
-      if (!el) return;
-      if (el.disabled) return;
+    const fire = (btn) => {
+      if (!btn || btn.disabled) return;
       this.audio.hoverBeep();
     };
 
@@ -73,13 +71,14 @@ export class UI {
     }, { passive:true });
   }
 
-  /* ===== basic UI helpers ===== */
   setHeaderLocked(){
     this.uiBar.textContent = "VAULT 131 DATABASE │ STATUS: LOCKED";
   }
+
   setHeaderUnlocked(user="IZABELLA"){
     this.uiBar.textContent = `VAULT 131 DATABASE │ STATUS: OPERATIONAL │ USER: ${user}`;
   }
+
   setStatus(text){
     this.uiStatus.textContent = text;
   }
@@ -94,6 +93,7 @@ export class UI {
     this.input.placeholder = placeholder;
     this.input.focus();
   }
+
   hideInput(){
     this.input.style.display = "none";
   }
@@ -112,12 +112,13 @@ export class UI {
     });
   }
 
-  /* ===== typewriter ===== */
   type(lines, speed=35){
     return new Promise((resolve) => {
       let i=0;
+
       const nextLine = () => {
         if (i >= lines.length) return resolve();
+
         const d = document.createElement("div");
         this.term.insertBefore(d, this.cursor);
 
@@ -133,7 +134,6 @@ export class UI {
               return;
             }
             d.textContent += lines[i][j++];
-            // this is your old beep-on-typewriter feel
             this.audio.beep(880, 0.03, 0.02);
             this.term.scrollTop = this.term.scrollHeight;
             setTimeout(tick, speed + Math.random()*25);
@@ -141,11 +141,11 @@ export class UI {
           tick();
         }, prePause);
       };
+
       nextLine();
     });
   }
 
-  /* ===== power dip + loading ===== */
   powerDip(){
     return new Promise((resolve) => {
       this.dip.classList.remove("powerDipOn");
