@@ -432,3 +432,39 @@ html, body{
 .valHub{
   padding-top: 6px;
 }
+
+/* =========================
+   VALENTINE HUB — WIDER LAYOUT
+   ========================= */
+
+/* let the Valentine hub use more horizontal space */
+.valHub{
+  max-width: 100%;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+/* make the row actually span the terminal */
+.valHub .valRow{
+  display: grid;
+  grid-template-columns: 1.2fr 1fr; /* countdown slightly wider */
+  gap: 12px;
+  align-items: stretch;
+}
+
+/* widen each box */
+.valHub .block{
+  width: 100%;
+  max-width: none;
+}
+
+/* make the countdown feel centered, not shoved */
+.valHub .valBig{
+  text-align: left;
+}
+
+/* reduce unnecessary vertical height */
+.valHub .block{
+  padding: 10px 14px;
+  margin: 6px 0;
+}
