@@ -1,4 +1,6 @@
-:root{ --g:#4cff9a; }
+:root{
+  --g:#4cff9a;
+}
 
 *{ box-sizing:border-box; }
 
@@ -66,24 +68,36 @@ html, body{
   text-shadow:
     0 0 4px rgba(76,255,154,0.7),
     0 0 10px rgba(76,255,154,0.4);
+  white-space:pre-wrap;
+  position:relative;
 }
 
 /* INPUT */
 #inputBox{
   display:none;
-  width:100%;
-  margin-top:14px;
+  width:80%;
+  margin-top:10px;
   background:rgba(0,0,0,0.6);
   color:var(--g);
-  border:2px solid rgba(76,255,154,0.75);
-  padding:16px 16px;
-  border-radius:12px;
+  border:2px solid var(--g);
+  padding:10px;
+  border-radius:10px;
   font-size:16px;
-  letter-spacing:1px;
   outline:none;
-  text-transform:uppercase;
 }
-#inputBox::placeholder{ color:rgba(76,255,154,0.55); }
+
+/* HINTS */
+#hintContainer{ margin-top:6px; display:flex; flex-wrap:wrap; gap:6px; }
+
+/* CURSOR */
+#cursor{
+  display:inline-block;
+  width:10px;
+  background:var(--g);
+  margin-left:2px;
+  animation: blink 1s infinite;
+}
+@keyframes blink{50%{opacity:0;}}
 
 /* SCANLINES */
 #scanlines{
@@ -96,7 +110,7 @@ html, body{
   animation: scan 2s linear infinite;
   z-index:6;
 }
-@keyframes scan { from{background-position:0 0;} to{background-position:0 3px;} }
+@keyframes scan {from{background-position:0 0;}to{background-position:0 3px;}}
 
 /* POWER DIP */
 #powerDip{
@@ -119,15 +133,55 @@ html, body{
   100%{opacity:0; filter:brightness(1) contrast(1);}
 }
 
-/* BUTTONS (iOS-safe) */
+/* LOADING */
+.loadTrack{
+  width:100%;
+  max-width:520px;
+  height:12px;
+  border:2px solid rgba(76,255,154,0.65);
+  border-radius:6px;
+  overflow:hidden;
+  margin-top:8px;
+}
+.loadFill{height:100%; width:0%; background:rgba(76,255,154,0.95);}
+.loadMsg{margin-top:6px;opacity:.95;}
+.loadDetail{margin-top:4px;opacity:.82;font-size:13px;letter-spacing:0.5px;}
+
+/* FINAL CODE */
+.bigCode{
+  font-size:56px;
+  letter-spacing:10px;
+  font-weight:700;
+  text-align:center;
+  margin-top:14px;
+  text-shadow:
+    0 0 6px rgba(76,255,154,0.9),
+    0 0 18px rgba(76,255,154,0.6),
+    0 0 32px rgba(76,255,154,0.35);
+  animation: codeFlash 1.1s steps(2) infinite;
+}
+@keyframes codeFlash{
+  0%{opacity:1;}
+  50%{opacity:.35;}
+  100%{opacity:1;}
+}
+
+.radFlicker{ animation: rad 140ms steps(2) infinite; }
+@keyframes rad{
+  0%{filter:brightness(1) contrast(1);}
+  50%{filter:brightness(0.92) contrast(1.18);}
+  100%{filter:brightness(1) contrast(1);}
+}
+
+/* BUTTONS (iOS safe + glow) */
 #crt button{
   -webkit-appearance:none;
   appearance:none;
   background:transparent;
   color:var(--g);
   border:2px solid rgba(76,255,154,0.55);
-  border-radius:12px;
-  padding:12px 14px;
+  border-radius:10px;
+  padding:10px 14px;
   cursor:pointer;
   font:inherit;
   font-size:12px;
@@ -136,6 +190,7 @@ html, body{
   box-shadow:0 0 12px rgba(76,255,154,0.12);
   transition: box-shadow .15s ease, border-color .15s ease, transform .08s ease, filter .15s ease;
 }
+
 #crt button:hover,
 #crt button:focus-visible{
   border-color: rgba(76,255,154,0.95);
@@ -145,6 +200,7 @@ html, body{
     inset 0 0 10px rgba(76,255,154,0.12);
   filter: brightness(1.12);
 }
+
 #crt button:active{
   transform: translateY(1px);
   box-shadow:
@@ -152,65 +208,40 @@ html, body{
     inset 0 0 14px rgba(76,255,154,0.16);
 }
 
-/* UI blocks */
-.block{
-  border:2px solid rgba(76,255,154,0.30);
-  border-radius:12px;
-  background:rgba(0,0,0,0.35);
-  padding:12px 14px;
-  margin:10px 0;
-}
-.smallHdr{
-  font-size:12px;
-  letter-spacing:1px;
-  opacity:0.9;
-  text-transform:uppercase;
-  margin-bottom:8px;
-}
-.hr{
-  border-bottom:1px solid rgba(76,255,154,0.25);
-  margin:10px 0 12px;
+#crt button:disabled{
+  opacity:0.45;
+  cursor:default;
+  filter:none;
+  box-shadow:none;
 }
 
-/* MENU */
-.menuWrap{ display:flex; flex-direction:column; gap:10px; margin-top:14px; }
-.menuWrap button{ width:100%; text-align:left; }
+#crt button:focus{ outline:none; }
 
-/* LOCK SCREEN */
-.lockTitle{
-  font-size:18px;
-  letter-spacing:1px;
-  opacity:0.95;
-  margin-top:6px;
-}
-.lockLines{
-  white-space:pre-wrap;
-  line-height:1.35;
-  font-size:16px;
-  letter-spacing:0.6px;
+@media (max-width:720px){
+  #inputBox{width:100%;}
+  #crt{ padding:22px; }
 }
 
 /* =========================
-   VALENTINE SCREEN ONLY LOGO
+   VALENTINE HUB (ONLY)
    ========================= */
 .valHub{
   position:relative;
   padding:14px 6px 10px;
 }
+
 .valHub .valBg{
   position:absolute;
   inset:0;
   background-image:url("assets/vault-tec-logo.png");
   background-repeat:no-repeat;
   background-position:center;
-  background-size: min(980px, 92%);     /* bigger */
-  opacity:0.14;                          /* stronger */
+  background-size: min(980px, 92%);
+  opacity:0.14;
   pointer-events:none;
   z-index:0;
   mix-blend-mode: screen;
   animation: vaultPulse 4.8s ease-in-out infinite;
-
-  /* glow stack */
   filter:
     blur(0.15px)
     contrast(1.2)
@@ -218,6 +249,7 @@ html, body{
     drop-shadow(0 0 14px rgba(76,255,154,0.35))
     drop-shadow(0 0 34px rgba(76,255,154,0.22));
 }
+
 .valHub > *{ position:relative; z-index:1; }
 
 @keyframes vaultPulse{
@@ -225,9 +257,7 @@ html, body{
     opacity:0.12;
     transform: scale(1);
     filter:
-      blur(0.15px)
-      contrast(1.2)
-      brightness(1.10)
+      blur(0.15px) contrast(1.2) brightness(1.10)
       drop-shadow(0 0 12px rgba(76,255,154,0.28))
       drop-shadow(0 0 26px rgba(76,255,154,0.18));
   }
@@ -235,15 +265,12 @@ html, body{
     opacity:0.18;
     transform: scale(1.015);
     filter:
-      blur(0.15px)
-      contrast(1.25)
-      brightness(1.20)
+      blur(0.15px) contrast(1.25) brightness(1.20)
       drop-shadow(0 0 18px rgba(76,255,154,0.40))
       drop-shadow(0 0 44px rgba(76,255,154,0.26));
   }
 }
 
-/* VAL UI */
 .valRow{ display:flex; gap:12px; flex-wrap:wrap; justify-content:space-between; }
 .valRow .block{ flex:1; min-width:260px; }
 .valBig{
@@ -258,6 +285,5 @@ html, body{
 .valSmall{ font-size:14px; letter-spacing:1px; opacity:0.92; }
 
 @media (max-width:720px){
-  #crt{ padding:22px; }
   .valBig{ font-size:38px; }
 }
