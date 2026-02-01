@@ -10,4 +10,4 @@ window.addEventListener("DOMContentLoaded", () => {
   ui.onSubmit = (value) => game.handleInput(value);
 
   game.start();
-});
+})
