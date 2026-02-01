@@ -15,6 +15,9 @@ html, body{
   overflow:hidden;
 }
 
+/* ======================
+   CRT FRAME
+   ====================== */
 #crt{
   width: min(1220px, 96vw);
   height: min(82vh, 760px);
@@ -32,7 +35,33 @@ html, body{
     inset 0 0 140px rgba(0,0,0,0.95);
 }
 
-/* HEADER */
+/* ======================
+   VAULT-TEC WATERMARK
+   ====================== */
+#crt::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image:url("./assets/vault-tec-logo.PNG");
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:min(720px, 78%);
+  opacity:0.12;
+  filter: blur(0.3px) saturate(2) hue-rotate(80deg);
+  mix-blend-mode:screen;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* keep UI above watermark */
+#crt > *{
+  position:relative;
+  z-index:2;
+}
+
+/* ======================
+   HEADER
+   ====================== */
 #uiWrap{
   margin-bottom:10px;
   padding-bottom:10px;
@@ -59,7 +88,9 @@ html, body{
   opacity:0.9;
 }
 
-/* TERMINAL */
+/* ======================
+   TERMINAL
+   ====================== */
 #terminal{
   flex:1;
   overflow-y:auto;
@@ -71,7 +102,9 @@ html, body{
   white-space:pre-wrap;
 }
 
-/* INPUT */
+/* ======================
+   INPUT
+   ====================== */
 #inputBox{
   display:none;
   width:80%;
@@ -85,10 +118,9 @@ html, body{
   outline:none;
 }
 
-/* HINTS */
-#hintContainer{ margin-top:6px; display:flex; flex-wrap:wrap; gap:6px; }
-
-/* CURSOR */
+/* ======================
+   CURSOR
+   ====================== */
 #cursor{
   display:inline-block;
   width:10px;
@@ -98,82 +130,59 @@ html, body{
 }
 @keyframes blink{50%{opacity:0;}}
 
-/* SCANLINES */
+/* ======================
+   SCANLINES
+   ====================== */
 #scanlines{
   position:absolute;
   inset:0;
-  background:repeating-linear-gradient(to bottom,
-    rgba(0,0,0,.28), rgba(0,0,0,.28) 1px,
-    transparent 1px, transparent 3px);
+  background:repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,.28),
+    rgba(0,0,0,.28) 1px,
+    transparent 1px,
+    transparent 3px
+  );
   pointer-events:none;
   animation: scan 2s linear infinite;
+  z-index:6;
 }
-@keyframes scan {from{background-position:0 0;}to{background-position:0 3px;}}
+@keyframes scan{
+  from{background-position:0 0;}
+  to{background-position:0 3px;}
+}
 
-/* POWER DIP */
+/* ======================
+   POWER DIP
+   ====================== */
 #powerDip{
   position:absolute;
   inset:0;
-  background:radial-gradient(circle at 50% 45%,
+  background:radial-gradient(
+    circle at 50% 45%,
     rgba(76,255,154,0.10),
     rgba(0,0,0,0.92) 60%,
-    rgba(0,0,0,0.98) 100%);
+    rgba(0,0,0,0.98) 100%
+  );
   opacity:0;
   pointer-events:none;
   z-index:8;
   mix-blend-mode:screen;
 }
-.powerDipOn{ animation: dip 420ms ease-in-out 1; }
+.powerDipOn{
+  animation: dip 420ms ease-in-out 1;
+}
 @keyframes dip{
-  0%{opacity:0; filter:brightness(1) contrast(1);}
-  20%{opacity:0.9; filter:brightness(0.65) contrast(1.25);}
-  55%{opacity:0.35; filter:brightness(0.85) contrast(1.15);}
-  100%{opacity:0; filter:brightness(1) contrast(1);}
+  0%{opacity:0;filter:brightness(1);}
+  20%{opacity:.9;filter:brightness(.65);}
+  55%{opacity:.35;filter:brightness(.85);}
+  100%{opacity:0;filter:brightness(1);}
 }
 
-/* LOADING */
-.loadTrack{
-  width:100%;
-  max-width:520px;
-  height:12px;
-  border:2px solid rgba(76,255,154,0.65);
-  border-radius:6px;
-  overflow:hidden;
-  margin-top:8px;
-}
-.loadFill{height:100%; width:0%; background:rgba(76,255,154,0.95);}
-.loadMsg{margin-top:6px;opacity:.95;}
-.loadDetail{margin-top:4px;opacity:.82;font-size:13px;letter-spacing:0.5px;}
-
-/* FINAL CODE */
-.bigCode{
-  font-size:56px;
-  letter-spacing:10px;
-  font-weight:700;
-  text-align:center;
-  margin-top:14px;
-  text-shadow:
-    0 0 6px rgba(76,255,154,0.9),
-    0 0 18px rgba(76,255,154,0.6),
-    0 0 32px rgba(76,255,154,0.35);
-  animation: codeFlash 1.1s steps(2) infinite;
-}
-@keyframes codeFlash{
-  0%{opacity:1;}
-  50%{opacity:.35;}
-  100%{opacity:1;}
-}
-
-.radFlicker{ animation: rad 140ms steps(2) infinite; }
-@keyframes rad{
-  0%{filter:brightness(1) contrast(1);}
-  50%{filter:brightness(0.92) contrast(1.18);}
-  100%{filter:brightness(1) contrast(1);}
-}
-
-/* BUTTONS (fixes iOS beige pill + adds glow) */
+/* ======================
+   BUTTONS
+   ====================== */
 #crt button{
-  -webkit-appearance:none;
   appearance:none;
   background:transparent;
   color:var(--g);
@@ -186,62 +195,27 @@ html, body{
   letter-spacing:1px;
   text-transform:uppercase;
   box-shadow:0 0 12px rgba(76,255,154,0.12);
-  transition: box-shadow .15s ease, border-color .15s ease, transform .08s ease, filter .15s ease;
+  transition:.15s;
 }
-
-#crt button:hover,
-#crt button:focus-visible{
-  border-color: rgba(76,255,154,0.95);
-  box-shadow:
-    0 0 10px rgba(76,255,154,0.30),
-    0 0 18px rgba(76,255,154,0.20),
-    inset 0 0 10px rgba(76,255,154,0.12);
-  filter: brightness(1.12);
+#crt button:hover{
+  border-color:rgba(76,255,154,0.95);
+  box-shadow:0 0 18px rgba(76,255,154,.35);
 }
-
-#crt button:active{
-  transform: translateY(1px);
-  box-shadow:
-    0 0 14px rgba(76,255,154,0.28),
-    inset 0 0 14px rgba(76,255,154,0.16);
-}
-
 #crt button:disabled{
-  opacity:0.45;
+  opacity:.45;
   cursor:default;
-  filter:none;
   box-shadow:none;
 }
 
-#crt button:focus{ outline:none; }
-
-@media (max-width:720px){
-  #inputBox{width:100%;}
-  #crt{ padding:22px; }
-}
-
-/* =========================
-   STEP 1: VALENTINE HUB UI
-   ========================= */
+/* ======================
+   VALENTINE HUB
+   ====================== */
 .valHub{
   position:relative;
   padding:14px 6px 10px;
 }
 
-.valBg{
-  position:absolute;
-  inset:0;
-  background-image:url("assets/vault-tec.png");
-  background-repeat:no-repeat;
-  background-position:center;
-  background-size:min(520px, 70%);
-  opacity:0.12;
-  filter: blur(0.2px) contrast(1.1);
-  pointer-events:none;
-}
-
 .valTopRow{
-  position:relative;
   display:flex;
   gap:12px;
   justify-content:space-between;
@@ -252,109 +226,45 @@ html, body{
 .valBlock{
   min-width:260px;
   padding:10px 12px;
-  border:2px solid rgba(76,255,154,0.30);
+  border:2px solid rgba(76,255,154,.3);
   border-radius:12px;
-  background:rgba(0,0,0,0.35);
+  background:rgba(0,0,0,.35);
 }
 
 .valTitle{
   font-size:12px;
   letter-spacing:1px;
-  opacity:0.9;
   margin-bottom:8px;
   text-transform:uppercase;
 }
 
 .valCountdown{
   display:flex;
-  align-items:baseline;
   gap:12px;
+  align-items:baseline;
 }
 
 .valBig{
   font-size:34px;
   letter-spacing:3px;
   font-weight:700;
-  text-shadow:
-    0 0 6px rgba(76,255,154,0.65),
-    0 0 18px rgba(76,255,154,0.30);
 }
 
 .valSmall{
   font-size:14px;
-  letter-spacing:1px;
-  opacity:0.9;
+  opacity:.9;
 }
 
 .valNote{
-  position:relative;
   margin:10px 0 14px;
   padding:10px 12px;
-  border-left:3px solid rgba(76,255,154,0.55);
-  background:rgba(0,0,0,0.22);
+  border-left:3px solid rgba(76,255,154,.55);
+  background:rgba(0,0,0,.22);
   border-radius:10px;
-  line-height:1.35;
 }
 
 .valMenu{
-  position:relative;
   display:flex;
   flex-direction:column;
   gap:10px;
-}
-
-.valMenu button{
-  width:100%;
-  text-align:left;
-}
-
-/* ===== VAULT-TEC WATERMARK BACKGROUND ===== */
-#crt::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background-image: url("assets/vault-tec-logo.PNG");
-  background-repeat:no-repeat;
-  background-position:center;
-  background-size: min(720px, 78%);
-  opacity:0.10;              /* adjust 0.06 - 0.16 */
-  filter: blur(0.2px);
-  pointer-events:none;
-  z-index:0;
-}
-
-/* keep your UI content above the watermark */
-#crt > *{
-  position:relative;
-  z-index:2;
-}
-
-/* make sure scanlines + power dip stay on top */
-#scanlines{ z-index:6; }
-#powerDip{ z-index:8; }
-
-/* ===== VAULT-TEC WATERMARK (inside terminal so it shows behind panels) ===== */
-#terminal{
-  position: relative;
-}
-
-#terminal::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background-image: url("assets/vault-tec-logo.PNG");
-  background-repeat:no-repeat;
-  background-position:center;
-  background-size: min(680px, 80%);
-  opacity:0.25;                 /* try 0.10 - 0.22 */
-  filter: blur(0.2px);
-  pointer-events:none;
-  z-index:0;
-  mix-blend-mode: screen;
-}
-
-/* keep terminal content above the watermark */
-#terminal > *{
-  position: relative;
-  z-index:1;
 }
