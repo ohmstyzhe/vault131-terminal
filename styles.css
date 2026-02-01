@@ -307,3 +307,28 @@ html, body{
   width:100%;
   text-align:left;
 }
+
+/* ===== VAULT-TEC WATERMARK BACKGROUND ===== */
+#crt::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image: url("assets/vault-tec-logo.PNG");
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size: min(720px, 78%);
+  opacity:0.10;              /* adjust 0.06 - 0.16 */
+  filter: blur(0.2px);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* keep your UI content above the watermark */
+#crt > *{
+  position:relative;
+  z-index:2;
+}
+
+/* make sure scanlines + power dip stay on top */
+#scanlines{ z-index:6; }
+#powerDip{ z-index:8; }
