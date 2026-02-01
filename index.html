@@ -2,19 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>VAULT 131 DATABASE</title>
-
-  <!-- Styles -->
-  <link rel="stylesheet" href="./styles.css?v=6" />
+  <link rel="stylesheet" href="styles.css?v=3">
 </head>
 
 <body>
   <div id="crt">
-    <!-- HEADER -->
     <div id="uiWrap">
       <div id="uiTop">
         <div id="uiBar">VAULT 131 DATABASE │ STATUS: LOCKED</div>
@@ -23,31 +17,18 @@
       <div id="uiStatus">STANDBY… AWAITING INPUT</div>
     </div>
 
-    <!-- TERMINAL -->
+    <!-- TERMINAL MODE -->
     <div id="terminal"></div>
-
-    <!-- INPUT -->
-    <input
-      id="inputBox"
-      type="text"
-      autocomplete="off"
-      autocapitalize="off"
-      autocorrect="off"
-      spellcheck="false"
-    />
-
-    <!-- HINTS -->
+    <input id="inputBox" autocomplete="off" spellcheck="false" />
     <div id="hintContainer"></div>
 
-    <!-- FX LAYERS -->
+    <!-- VALENTINE HUD MODE (LOCKED UNTIL 14-LOVE-READY) -->
+    <div id="valScreen" aria-hidden="true"></div>
+
     <div id="powerDip"></div>
     <div id="scanlines"></div>
   </div>
 
-  <!-- JS (ORDER MATTERS) -->
-  <script src="./js/audio.js?v=6"></script>
-  <script src="./js/ui.js?v=6"></script>
-  <script src="./js/game.js?v=6"></script>
-  <script src="./app.js?v=6"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>
