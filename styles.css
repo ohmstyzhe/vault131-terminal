@@ -468,3 +468,58 @@ html, body{
   padding: 10px 14px;
   margin: 6px 0;
 }
+
+/* =========================
+   VAL HUB — TIGHTEN + LESS SCROLL
+   ========================= */
+
+/* tighter overall hub spacing */
+.valHub{
+  padding: 6px 8px 8px;
+}
+
+/* the row that contains COUNTDOWN + TARGET */
+.valHub .valRow{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;                 /* smaller gap between boxes */
+  margin: 6px 0 8px;        /* reduce extra space below row */
+  align-items: stretch;
+}
+
+/* tighten box padding + remove “random space” caused by tall blocks */
+.valHub .block{
+  padding: 10px 12px;
+  margin: 6px 0;            /* smaller vertical spacing */
+}
+
+/* IMPORTANT: stop inner boxes from forcing tall empty height */
+.valHub .valRow .block{
+  min-height: 0 !important; /* kills the “giant empty floor” feeling */
+  height: auto !important;
+  padding-bottom: 10px;
+}
+
+/* make the big number not create extra vertical gap */
+.valHub .valBig{
+  line-height: 1.05;
+  margin: 2px 0 6px;
+}
+
+/* tighten small text lines */
+.valHub .valSmall{
+  line-height: 1.2;
+}
+
+/* the message panel under the boxes — make it shorter */
+.valHub .valNote,
+.valHub .block .valSmall{
+  margin-top: 6px;
+}
+
+/* OPTIONAL: if your note block is still too tall, uncomment this */
+/*
+.valHub .block:last-of-type{
+  padding: 8px 12px;
+}
+*/
