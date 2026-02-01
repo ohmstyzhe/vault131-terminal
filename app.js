@@ -1,14 +1,12 @@
-import { AudioSystem } from "./audio.js";
-import { UI } from "./ui.js";
-import { Game } from "./game.js";
+import { AudioSystem } from "./js/audio.js";
+import { UI } from "./js/ui.js";
+import { Game } from "./js/game.js";
 
 window.addEventListener("DOMContentLoaded", () => {
   const audio = new AudioSystem();
   const ui = new UI(audio);
   const game = new Game(ui, audio);
 
-  // Wire UI -> Game input
   ui.onSubmit = (value) => game.handleInput(value);
-
   game.start();
 });
