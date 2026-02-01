@@ -32,6 +32,22 @@ html, body{
     inset 0 0 140px rgba(0,0,0,0.95);
 }
 
+/* Background logo layer (Step 1 uses this) */
+#crt.hasLogo::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image:url("assets/vault-tec.png");
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:min(780px, 85%);
+  opacity:0.10;
+  filter: blur(0.2px) contrast(1.05);
+  pointer-events:none;
+  z-index:1;
+}
+#crt > *{ position:relative; z-index:2; }
+
 /* HEADER */
 #uiWrap{
   margin-bottom:10px;
@@ -86,7 +102,12 @@ html, body{
 }
 
 /* HINTS */
-#hintContainer{ margin-top:6px; display:flex; flex-wrap:wrap; gap:6px; }
+#hintContainer{
+  margin-top:6px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
 
 /* CURSOR */
 #cursor{
@@ -107,6 +128,7 @@ html, body{
     transparent 1px, transparent 3px);
   pointer-events:none;
   animation: scan 2s linear infinite;
+  z-index:9;
 }
 @keyframes scan {from{background-position:0 0;}to{background-position:0 3px;}}
 
@@ -171,22 +193,22 @@ html, body{
   100%{filter:brightness(1) contrast(1);}
 }
 
-/* === BUTTONS (fixes iOS beige pill + adds glow) === */
+/* === BUTTONS (iOS pill fix + glow) === */
 #crt button{
   -webkit-appearance:none;
   appearance:none;
   background:transparent;
   color:var(--g);
   border:2px solid rgba(76,255,154,0.55);
-  border-radius:10px;
-  padding:10px 14px;
+  border-radius:14px;
+  padding:14px 18px;
   cursor:pointer;
   font:inherit;
-  font-size:12px;
+  font-size:14px;
   letter-spacing:1px;
   text-transform:uppercase;
   box-shadow:0 0 12px rgba(76,255,154,0.12);
-  transition: box-shadow .15s ease, border-color .15s ease, transform .08s ease, filter .15s ease;
+  transition: box-shadow .15s ease, border-color .15s ease, transform .08s ease, filter .15s ease, opacity .15s ease;
 }
 
 #crt button:hover,
@@ -206,99 +228,54 @@ html, body{
     inset 0 0 14px rgba(76,255,154,0.16);
 }
 
+#crt button:disabled{
+  opacity:0.35;
+  cursor:default;
+  filter:none;
+  box-shadow:0 0 8px rgba(76,255,154,0.08);
+}
+
 #crt button:focus{ outline:none; }
 
-#crt button[disabled]{
-  opacity:0.35;
-  cursor:not-allowed;
-  filter:none;
-  box-shadow:none;
+#volBtn{
+  padding:10px 14px;
+  border-radius:12px;
+}
+#volBtn.on{
+  border-color: var(--g);
+  color: var(--g);
 }
 
-/* ===== Step 1: Valentine Hub (Pip-Boy-ish) ===== */
-.valHub{
-  position:relative;
-  padding:14px 12px;
+.menuBlock{
+  margin-top:10px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
 }
 
-.valBg{
-  position:absolute;
-  inset:0;
-  background-image: url("assets/vault-tec.png"); /* <- put your image here */
-  background-repeat:no-repeat;
-  background-position:center;
-  background-size: 85%;
-  opacity:0.11;
-  filter: blur(0.2px) contrast(1.05);
-  pointer-events:none;
-}
-
-.valTopRow{
+.countRow{
   display:flex;
   justify-content:space-between;
   gap:12px;
-  margin-bottom:12px;
-}
-
-.valBlock{
-  border:1px solid rgba(76,255,154,0.45);
-  border-radius:12px;
-  padding:10px 12px;
-  width:100%;
-  background: rgba(0,0,0,0.25);
-}
-
-.valTitle{
-  font-size:12px;
-  letter-spacing:1px;
-  opacity:0.92;
-  margin-bottom:8px;
-  text-transform:uppercase;
-}
-
-.valCountdown{
-  display:flex;
-  justify-content:space-between;
   align-items:flex-end;
-  gap:10px;
+  margin-top:6px;
+  opacity:0.95;
 }
 
-.valBig{
+.countBig{
   font-size:34px;
   letter-spacing:2px;
-  text-shadow: 0 0 10px rgba(76,255,154,0.25);
   line-height:1;
 }
-
-.valSmall{
-  font-size:12px;
-  opacity:0.85;
-}
-
-.valNote{
-  margin: 10px 0 14px;
-  opacity:0.92;
-  line-height:1.45;
-}
-
-.valMenu{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  margin-top:10px;
-}
-
-.valMenu button{
-  width:100%;
-  text-align:left;
-  padding:14px 16px;
-  border-radius:14px;
+.countSmall{
   font-size:13px;
+  opacity:0.85;
   letter-spacing:1px;
+  text-transform:uppercase;
 }
 
 @media (max-width:720px){
   #inputBox{width:100%;}
   #crt{ padding:22px; }
-  .valBig{ font-size:30px; }
+  .countBig{ font-size:28px; }
 }
