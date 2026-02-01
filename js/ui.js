@@ -39,7 +39,6 @@ export class UI {
 
   _bindInput(){
     this.input.addEventListener("keydown", (e) => {
-      // typing sound (not on Enter)
       if (e.key && e.key.length === 1) this.audio.typeBeep();
 
       if (e.key !== "Enter") return;
@@ -56,8 +55,7 @@ export class UI {
 
   _bindButtonHoverSounds(){
     const fire = (el) => {
-      if (!el) return;
-      if (el.disabled) return;
+      if (!el || el.disabled) return;
       this.audio.hoverBeep();
     };
 
@@ -79,16 +77,13 @@ export class UI {
   setHeaderUnlocked(user="IZABELLA"){
     this.uiBar.textContent = `VAULT 131 DATABASE │ STATUS: OPERATIONAL │ USER: ${user}`;
   }
-  setStatus(text){ this.uiStatus.textContent = text; }
+  setStatus(text){
+    this.uiStatus.textContent = text;
+  }
 
   clear(){
     this.term.innerHTML = "";
     this.term.appendChild(this.cursor);
-  }
-
-  mount(node){
-    this.term.insertBefore(node, this.cursor);
-    this.term.scrollTop = this.term.scrollHeight;
   }
 
   showInput(placeholder=""){
@@ -96,9 +91,13 @@ export class UI {
     this.input.placeholder = placeholder;
     this.input.focus();
   }
-  hideInput(){ this.input.style.display = "none"; }
+  hideInput(){
+    this.input.style.display = "none";
+  }
 
-  clearHints(){ this.hints.innerHTML = ""; }
+  clearHints(){
+    this.hints.innerHTML = "";
+  }
 
   showHintButtons(hintsArr, onHint){
     this.clearHints();
@@ -108,15 +107,6 @@ export class UI {
       b.onclick = () => onHint(idx);
       this.hints.appendChild(b);
     });
-  }
-
-  addButton(label, onClick, opts={}){
-    const btn = document.createElement("button");
-    btn.textContent = label;
-    if (opts.disabled) btn.disabled = true;
-    btn.onclick = onClick;
-    this.mount(btn);
-    return btn;
   }
 
   /* ===== typewriter ===== */
@@ -223,6 +213,110 @@ export class UI {
     const big = document.createElement("div");
     big.className="bigCode";
     big.textContent = code;
-    this.mount(big);
+    this.term.insertBefore(big, this.cursor);
+    this.term.scrollTop = this.term.scrollHeight;
+  }
+
+  addButton(label, onClick, opts={}){
+    const btn = document.createElement("button");
+    btn.textContent = label;
+    btn.onclick = onClick;
+    if (opts.disabled) btn.disabled = true;
+    this.term.insertBefore(btn, this.cursor);
+    this.term.scrollTop = this.term.scrollHeight;
+    return btn;
+  }
+
+  /* ===== Step 1 hub renderer ===== */
+  showValentineHub(model, handlers){
+    this.clear();
+    this.hideInput();
+    this.clearHints();
+
+    const wrap = document.createElement("div");
+    wrap.className = "valHub";
+
+    const bg = document.createElement("div");
+    bg.className = "valBg";
+    wrap.appendChild(bg);
+
+    const top = document.createElement("div");
+    top.className = "valTopRow";
+
+    const left = document.createElement("div");
+    left.className = "valBlock";
+
+    const title = document.createElement("div");
+    title.className = "valTitle";
+    title.textContent = "VAULT-TEC STATUS | VALENTINE ACCESS";
+    left.appendChild(title);
+
+    const cd = document.createElement("div");
+    cd.className = "valCountdown";
+
+    const big = document.createElement("div");
+    big.className = "valBig";
+    big.textContent = model.days + " DAYS";
+    cd.appendChild(big);
+
+    const small = document.createElement("div");
+    small.className = "valSmall";
+    small.textContent = model.timeText; // HH:MM:SS
+    cd.appendChild(small);
+
+    left.appendChild(cd);
+
+    const right = document.createElement("div");
+    right.className = "valBlock";
+
+    const rtitle = document.createElement("div");
+    rtitle.className = "valTitle";
+    rtitle.textContent = "COUNTDOWN TARGET";
+    right.appendChild(rtitle);
+
+    const rsmall = document.createElement("div");
+    rsmall.className = "valSmall";
+    rsmall.textContent = model.targetText;
+    right.appendChild(rsmall);
+
+    top.appendChild(left);
+    top.appendChild(right);
+
+    const note = document.createElement("div");
+    note.className = "valNote";
+    note.textContent =
+      "This module has been unlocked. Choose a menu option below. (Yes, this is extremely official.)";
+
+    const menu = document.createElement("div");
+    menu.className = "valMenu";
+
+    const b1 = document.createElement("button");
+    b1.textContent = "1) COMPLETED";
+    b1.disabled = true;
+
+    const b2 = document.createElement("button");
+    b2.textContent = "2) VAULT STATS";
+    b2.onclick = handlers.onStats;
+
+    const b3 = document.createElement("button");
+    b3.textContent = "3) REWARD QUIZ";
+    b3.onclick = handlers.onQuiz;
+
+    const b4 = document.createElement("button");
+    b4.textContent = "4) MINI GAMES";
+    b4.onclick = handlers.onMiniGames;
+
+    const b5 = document.createElement("button");
+    b5.textContent = "5) MISSION LOG";
+    b5.onclick = handlers.onMissionLog;
+
+    menu.append(b1,b2,b3,b4,b5);
+
+    wrap.appendChild(top);
+    wrap.appendChild(note);
+    wrap.appendChild(menu);
+
+    this.term.insertBefore(wrap, this.cursor);
+    this.term.scrollTop = 0;
   }
 }
