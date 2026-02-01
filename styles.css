@@ -32,22 +32,6 @@ html, body{
     inset 0 0 140px rgba(0,0,0,0.95);
 }
 
-/* Background logo layer (Step 1 uses this) */
-#crt.hasLogo::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background-image:url("assets/vault-tec.png");
-  background-repeat:no-repeat;
-  background-position:center;
-  background-size:min(780px, 85%);
-  opacity:0.10;
-  filter: blur(0.2px) contrast(1.05);
-  pointer-events:none;
-  z-index:1;
-}
-#crt > *{ position:relative; z-index:2; }
-
 /* HEADER */
 #uiWrap{
   margin-bottom:10px;
@@ -102,12 +86,7 @@ html, body{
 }
 
 /* HINTS */
-#hintContainer{
-  margin-top:6px;
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-}
+#hintContainer{ margin-top:6px; display:flex; flex-wrap:wrap; gap:6px; }
 
 /* CURSOR */
 #cursor{
@@ -128,7 +107,6 @@ html, body{
     transparent 1px, transparent 3px);
   pointer-events:none;
   animation: scan 2s linear infinite;
-  z-index:9;
 }
 @keyframes scan {from{background-position:0 0;}to{background-position:0 3px;}}
 
@@ -193,22 +171,22 @@ html, body{
   100%{filter:brightness(1) contrast(1);}
 }
 
-/* === BUTTONS (iOS pill fix + glow) === */
+/* BUTTONS (fixes iOS beige pill + adds glow) */
 #crt button{
   -webkit-appearance:none;
   appearance:none;
   background:transparent;
   color:var(--g);
   border:2px solid rgba(76,255,154,0.55);
-  border-radius:14px;
-  padding:14px 18px;
+  border-radius:10px;
+  padding:10px 14px;
   cursor:pointer;
   font:inherit;
-  font-size:14px;
+  font-size:12px;
   letter-spacing:1px;
   text-transform:uppercase;
   box-shadow:0 0 12px rgba(76,255,154,0.12);
-  transition: box-shadow .15s ease, border-color .15s ease, transform .08s ease, filter .15s ease, opacity .15s ease;
+  transition: box-shadow .15s ease, border-color .15s ease, transform .08s ease, filter .15s ease;
 }
 
 #crt button:hover,
@@ -229,53 +207,103 @@ html, body{
 }
 
 #crt button:disabled{
-  opacity:0.35;
+  opacity:0.45;
   cursor:default;
   filter:none;
-  box-shadow:0 0 8px rgba(76,255,154,0.08);
+  box-shadow:none;
 }
 
 #crt button:focus{ outline:none; }
 
-#volBtn{
-  padding:10px 14px;
-  border-radius:12px;
-}
-#volBtn.on{
-  border-color: var(--g);
-  color: var(--g);
-}
-
-.menuBlock{
-  margin-top:10px;
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-}
-
-.countRow{
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-  align-items:flex-end;
-  margin-top:6px;
-  opacity:0.95;
-}
-
-.countBig{
-  font-size:34px;
-  letter-spacing:2px;
-  line-height:1;
-}
-.countSmall{
-  font-size:13px;
-  opacity:0.85;
-  letter-spacing:1px;
-  text-transform:uppercase;
-}
-
 @media (max-width:720px){
   #inputBox{width:100%;}
   #crt{ padding:22px; }
-  .countBig{ font-size:28px; }
+}
+
+/* =========================
+   STEP 1: VALENTINE HUB UI
+   ========================= */
+.valHub{
+  position:relative;
+  padding:14px 6px 10px;
+}
+
+.valBg{
+  position:absolute;
+  inset:0;
+  background-image:url("assets/vault-tec.png");
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:min(520px, 70%);
+  opacity:0.12;
+  filter: blur(0.2px) contrast(1.1);
+  pointer-events:none;
+}
+
+.valTopRow{
+  position:relative;
+  display:flex;
+  gap:12px;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+
+.valBlock{
+  min-width:260px;
+  padding:10px 12px;
+  border:2px solid rgba(76,255,154,0.30);
+  border-radius:12px;
+  background:rgba(0,0,0,0.35);
+}
+
+.valTitle{
+  font-size:12px;
+  letter-spacing:1px;
+  opacity:0.9;
+  margin-bottom:8px;
+  text-transform:uppercase;
+}
+
+.valCountdown{
+  display:flex;
+  align-items:baseline;
+  gap:12px;
+}
+
+.valBig{
+  font-size:34px;
+  letter-spacing:3px;
+  font-weight:700;
+  text-shadow:
+    0 0 6px rgba(76,255,154,0.65),
+    0 0 18px rgba(76,255,154,0.30);
+}
+
+.valSmall{
+  font-size:14px;
+  letter-spacing:1px;
+  opacity:0.9;
+}
+
+.valNote{
+  position:relative;
+  margin:10px 0 14px;
+  padding:10px 12px;
+  border-left:3px solid rgba(76,255,154,0.55);
+  background:rgba(0,0,0,0.22);
+  border-radius:10px;
+  line-height:1.35;
+}
+
+.valMenu{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.valMenu button{
+  width:100%;
+  text-align:left;
 }
