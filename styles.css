@@ -37,6 +37,8 @@ html, body{
   margin-bottom:10px;
   padding-bottom:10px;
   border-bottom:1px solid rgba(76,255,154,0.3);
+  position:relative;
+  z-index:2;
 }
 #uiTop{
   display:flex;
@@ -70,6 +72,7 @@ html, body{
     0 0 10px rgba(76,255,154,0.4);
   white-space:pre-wrap;
   position:relative;
+  z-index:2;
 }
 
 /* INPUT */
@@ -84,10 +87,19 @@ html, body{
   border-radius:10px;
   font-size:16px;
   outline:none;
+  position:relative;
+  z-index:2;
 }
 
 /* HINTS */
-#hintContainer{ margin-top:6px; display:flex; flex-wrap:wrap; gap:6px; }
+#hintContainer{
+  margin-top:6px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  position:relative;
+  z-index:2;
+}
 
 /* CURSOR */
 #cursor{
@@ -173,7 +185,7 @@ html, body{
   100%{filter:brightness(1) contrast(1);}
 }
 
-/* BUTTONS (iOS safe + glow) */
+/* BUTTONS (fixes iOS beige pill + adds glow) */
 #crt button{
   -webkit-appearance:none;
   appearance:none;
@@ -217,73 +229,145 @@ html, body{
 
 #crt button:focus{ outline:none; }
 
-@media (max-width:720px){
-  #inputBox{width:100%;}
-  #crt{ padding:22px; }
+/* ====== COMMON UI BLOCKS (used by your menus/screens) ====== */
+.block{
+  margin: 10px 0;
+  padding: 12px 14px;
+  border:2px solid rgba(76,255,154,0.30);
+  border-radius:12px;
+  background:rgba(0,0,0,0.35);
+}
+
+.hr{
+  height:1px;
+  background: rgba(76,255,154,0.30);
+  margin:10px 0;
+}
+
+.smallHdr{
+  font-size:12px;
+  letter-spacing:1px;
+  opacity:0.9;
+  text-transform:uppercase;
+}
+
+.lockTitle{
+  font-size:16px;
+  letter-spacing:1px;
+  font-weight:700;
+}
+
+.lockLines{
+  white-space:pre-wrap;
+  line-height:1.35;
+  font-size:16px;
+  letter-spacing:0.6px;
+}
+
+.menuWrap{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.menuWrap button{
+  width:100%;
+  text-align:left;
 }
 
 /* =========================
-   VALENTINE HUB (ONLY)
+   VALENTINE HUB (ONLY HERE)
+   - watermark behind HUD
+   - bigger + glow + slow pulse
+   - cleaner spacing
    ========================= */
+
 .valHub{
   position:relative;
-  padding:14px 6px 10px;
+  padding: 6px 0 0;
 }
 
+/* The watermark image ONLY exists inside Valentine Hub */
 .valHub .valBg{
   position:absolute;
   inset:0;
-  background-image:url("assets/vault-tec-logo.png");
+  background-image:url("assets/vault-tec-logo.png"); /* MUST MATCH FILE NAME */
   background-repeat:no-repeat;
   background-position:center;
-  background-size: min(980px, 92%);
-  opacity:0.14;
-  pointer-events:none;
-  z-index:0;
-  mix-blend-mode: screen;
-  animation: vaultPulse 4.8s ease-in-out infinite;
+  background-size:min(860px, 92%);
+  opacity:0.12;
   filter:
     blur(0.15px)
-    contrast(1.2)
-    brightness(1.15)
-    drop-shadow(0 0 14px rgba(76,255,154,0.35))
-    drop-shadow(0 0 34px rgba(76,255,154,0.22));
+    brightness(1.12)
+    contrast(1.05)
+    drop-shadow(0 0 16px rgba(76,255,154,0.22))
+    drop-shadow(0 0 32px rgba(76,255,154,0.10));
+  pointer-events:none;
+  z-index:0;
+  animation: valPulse 6.5s ease-in-out infinite;
+  mix-blend-mode: screen;
 }
 
-.valHub > *{ position:relative; z-index:1; }
-
-@keyframes vaultPulse{
-  0%, 100%{
-    opacity:0.12;
+@keyframes valPulse{
+  0%,100%{
+    opacity:0.10;
     transform: scale(1);
     filter:
-      blur(0.15px) contrast(1.2) brightness(1.10)
-      drop-shadow(0 0 12px rgba(76,255,154,0.28))
-      drop-shadow(0 0 26px rgba(76,255,154,0.18));
+      blur(0.18px)
+      brightness(1.05)
+      contrast(1.03)
+      drop-shadow(0 0 14px rgba(76,255,154,0.18))
+      drop-shadow(0 0 26px rgba(76,255,154,0.08));
   }
   50%{
     opacity:0.18;
-    transform: scale(1.015);
+    transform: scale(1.01);
     filter:
-      blur(0.15px) contrast(1.25) brightness(1.20)
-      drop-shadow(0 0 18px rgba(76,255,154,0.40))
-      drop-shadow(0 0 44px rgba(76,255,154,0.26));
+      blur(0.12px)
+      brightness(1.28)
+      contrast(1.08)
+      drop-shadow(0 0 22px rgba(76,255,154,0.26))
+      drop-shadow(0 0 46px rgba(76,255,154,0.14));
   }
 }
 
-.valRow{ display:flex; gap:12px; flex-wrap:wrap; justify-content:space-between; }
-.valRow .block{ flex:1; min-width:260px; }
-.valBig{
-  font-size:44px;
-  font-weight:700;
-  letter-spacing:6px;
-  text-shadow:
-    0 0 6px rgba(76,255,154,0.85),
-    0 0 18px rgba(76,255,154,0.45),
-    0 0 34px rgba(76,255,154,0.22);
+/* Keep all Valentine Hub content above the watermark */
+.valHub > *{
+  position:relative;
+  z-index:2;
 }
-.valSmall{ font-size:14px; letter-spacing:1px; opacity:0.92; }
 
+/* Slightly tighten the hub layout (fix “wonky spacing”) */
+.valHub .block{
+  margin: 8px 0;
+}
+
+.valRow{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  align-items:stretch;
+}
+
+.valBig{
+  font-size:34px;
+  letter-spacing:3px;
+  font-weight:700;
+  text-shadow:
+    0 0 6px rgba(76,255,154,0.65),
+    0 0 18px rgba(76,255,154,0.30);
+}
+
+.valSmall{
+  font-size:14px;
+  letter-spacing:1px;
+  opacity:0.92;
+  line-height:1.35;
+}
+
+/* Responsive */
 @media (max-width:720px){
-  .valBig{ font-size:38px; }
+  #inputBox{width:100%;}
+  #crt{ padding:22px; }
+  .valHub{ padding-top:4px; }
+  .valBig{ font-size:32px; }
 }
