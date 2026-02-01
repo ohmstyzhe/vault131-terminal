@@ -37,8 +37,6 @@ html, body{
   margin-bottom:10px;
   padding-bottom:10px;
   border-bottom:1px solid rgba(76,255,154,0.3);
-  position:relative;
-  z-index:2;
 }
 #uiTop{
   display:flex;
@@ -71,8 +69,6 @@ html, body{
     0 0 4px rgba(76,255,154,0.7),
     0 0 10px rgba(76,255,154,0.4);
   white-space:pre-wrap;
-  position:relative;
-  z-index:2;
 }
 
 /* INPUT */
@@ -87,19 +83,10 @@ html, body{
   border-radius:10px;
   font-size:16px;
   outline:none;
-  position:relative;
-  z-index:2;
 }
 
 /* HINTS */
-#hintContainer{
-  margin-top:6px;
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-  position:relative;
-  z-index:2;
-}
+#hintContainer{ margin-top:6px; display:flex; flex-wrap:wrap; gap:6px; }
 
 /* CURSOR */
 #cursor{
@@ -120,7 +107,6 @@ html, body{
     transparent 1px, transparent 3px);
   pointer-events:none;
   animation: scan 2s linear infinite;
-  z-index:6;
 }
 @keyframes scan {from{background-position:0 0;}to{background-position:0 3px;}}
 
@@ -229,91 +215,46 @@ html, body{
 
 #crt button:focus{ outline:none; }
 
-/* ====== COMMON UI BLOCKS (used by your menus/screens) ====== */
-.block{
-  margin: 10px 0;
-  padding: 12px 14px;
-  border:2px solid rgba(76,255,154,0.30);
-  border-radius:12px;
-  background:rgba(0,0,0,0.35);
+@media (max-width:720px){
+  #inputBox{width:100%;}
+  #crt{ padding:22px; }
 }
 
-.hr{
-  height:1px;
-  background: rgba(76,255,154,0.30);
-  margin:10px 0;
-}
+/* ============================================================
+   VALENTINE HUD ONLY (GLIDER STYLE)
+   - Only affects screens that render: <div class="valHub gliderHud">
+   ============================================================ */
 
-.smallHdr{
-  font-size:12px;
-  letter-spacing:1px;
-  opacity:0.9;
-  text-transform:uppercase;
-}
-
-.lockTitle{
-  font-size:16px;
-  letter-spacing:1px;
-  font-weight:700;
-}
-
-.lockLines{
-  white-space:pre-wrap;
-  line-height:1.35;
-  font-size:16px;
-  letter-spacing:0.6px;
-}
-
-.menuWrap{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-.menuWrap button{
-  width:100%;
-  text-align:left;
-}
-
-/* =========================
-   VALENTINE HUB (ONLY HERE)
-   - watermark behind HUD
-   - bigger + glow + slow pulse
-   - compact boxes + less scrolling
-   ========================= */
-
+/* base wrapper (ONLY hub) */
 .valHub{
-  position: relative;
+  position:relative;
   padding: 6px 0 0;
 }
 
-/* Watermark ONLY inside Valentine Hub */
+/* watermark ONLY when hub is rendered */
 .valHub .valBg{
-  position: absolute;
-  inset: 0;
-  background-image: url("assets/vault-tec-logo.png"); /* MUST MATCH FILE NAME */
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: min(860px, 92%);
-  opacity: 0.12;
-  pointer-events: none;
-  z-index: 0;
-  mix-blend-mode: screen;
-
-  /* glow */
+  position:absolute;
+  inset:0;
+  background-image:url("assets/vault-tec-logo.png"); /* MUST MATCH FILE NAME */
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:min(860px, 92%);
+  opacity:0.12;
   filter:
     blur(0.15px)
     brightness(1.12)
     contrast(1.05)
     drop-shadow(0 0 16px rgba(76,255,154,0.22))
     drop-shadow(0 0 32px rgba(76,255,154,0.10));
-
-  /* slow pulse */
+  pointer-events:none;
+  z-index:0;
   animation: valPulse 6.5s ease-in-out infinite;
+  mix-blend-mode: screen;
 }
 
 @keyframes valPulse{
-  0%, 100%{
-    opacity: 0.10;
+  0%,100%{
+    opacity:0.10;
     transform: scale(1);
     filter:
       blur(0.18px)
@@ -323,7 +264,7 @@ html, body{
       drop-shadow(0 0 26px rgba(76,255,154,0.08));
   }
   50%{
-    opacity: 0.18;
+    opacity:0.18;
     transform: scale(1.01);
     filter:
       blur(0.12px)
@@ -334,69 +275,137 @@ html, body{
   }
 }
 
-/* Keep hub content above watermark */
+/* keep hub content above watermark */
 .valHub > *{
-  position: relative;
-  z-index: 2;
+  position:relative;
+  z-index:2;
 }
 
-/* Compact blocks ONLY inside the hub */
-.valHub .block{
-  margin: 6px 0;
-  padding: 10px 12px;
-  border-radius: 10px;
+/* -----------------------
+   GLIDER STYLE LAYOUT
+   ----------------------- */
+
+.valHub.gliderHud{
+  padding-top: 10px;
 }
 
-/* If your Valentine hub uses <br> and it adds too much space,
-   tighten them ONLY in the hub (NOT globally) */
-.valHub br{
-  line-height: 0;
+/* top OS bar */
+.valHub.gliderHud .glTop{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border:2px solid rgba(76,255,154,0.35);
+  padding:8px 12px;
+  margin: 0 0 10px;
+  background:rgba(0,0,0,0.15);
+  border-radius:12px;
 }
 
-/* Row that holds countdown + target */
-.valHub .valRow{
-  display: flex;
-  gap: 10px;              /* closer gap between boxes */
-  flex-wrap: wrap;
-  align-items: flex-start; /* prevents tall empty stretching */
-  margin: 6px 0 0;
+/* title stack */
+.valHub.gliderHud .glTitle{
+  font-size:14px;
+  letter-spacing:1px;
+  line-height:1.15;
+  opacity:0.95;
 }
 
-/* Make the two boxes wider so you scroll less */
-.valHub .valRow > .block{
-  flex: 1 1 0;
-  min-width: 0;
+.valHub.gliderHud .glSub{
+  font-size:11px;
+  opacity:0.78;
+  margin-top:2px;
 }
 
-/* Text sizing (less “giant tall box” feel) */
-.valHub .valBig{
-  font-size: 30px;
-  line-height: 1.05;
-  letter-spacing: 3px;
-  font-weight: 700;
-  margin: 2px 0 4px;
+/* speaker icon */
+.valHub.gliderHud .glSpeaker{
+  width:18px;
+  height:18px;
+  border:2px solid rgba(76,255,154,0.6);
+  border-radius:50%;
+  box-shadow:0 0 8px rgba(76,255,154,0.4);
+  opacity:0.95;
+}
+
+/* icon row */
+.valHub.gliderHud .glIcons{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  margin: 0 0 12px;
+}
+
+.valHub.gliderHud .glIcon{
+  flex:1;
+  background:transparent;
+  border:2px solid rgba(76,255,154,0.45);
+  padding:8px 6px;
+  text-align:center;
+  cursor:pointer;
+  border-radius:12px;
+}
+
+.valHub.gliderHud .glDot{
+  display:block;
+  width:18px;
+  height:18px;
+  margin:0 auto 4px;
+  border-radius:50%;
+  border:2px solid rgba(76,255,154,0.7);
+  box-shadow: 0 0 10px rgba(76,255,154,0.10);
+}
+
+.valHub.gliderHud .glLbl{
+  font-size:11px;
+  letter-spacing:1px;
+  opacity:0.92;
+}
+
+/* countdown panel */
+.valHub.gliderHud .glPanel{
+  border:2px solid rgba(76,255,154,0.35);
+  padding:12px;
+  border-radius:12px;
+  background:rgba(0,0,0,0.12);
+}
+
+.valHub.gliderHud .glPanelTitle{
+  font-size:12px;
+  letter-spacing:1px;
+  margin-bottom:8px;
+  opacity:0.9;
+}
+
+.valHub.gliderHud .glCountdown{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  gap:12px;
+}
+
+.valHub.gliderHud .glDays{
+  font-size:32px;
+  font-weight:700;
+  letter-spacing:2px;
   text-shadow:
     0 0 6px rgba(76,255,154,0.65),
     0 0 18px rgba(76,255,154,0.30);
 }
 
-.valHub .valSmall{
-  font-size: 13px;
-  line-height: 1.25;
-  letter-spacing: 1px;
-  opacity: 0.88;
+.valHub.gliderHud .glTime{
+  font-size:14px;
+  opacity:0.85;
+  letter-spacing:1px;
 }
 
-/* If you have a note box, keep it tight */
-.valHub .valNote{
-  margin: 6px 0 8px;
-  padding: 10px 12px;
-  line-height: 1.28;
+.valHub.gliderHud .glTarget{
+  margin-top:6px;
+  font-size:12px;
+  opacity:0.75;
+  letter-spacing:0.8px;
 }
 
-/* Mobile tune */
-@media (max-width: 720px){
-  .valHub{ padding-top: 4px; }
-  .valHub .block{ padding: 10px 10px; }
-  .valHub .valBig{ font-size: 28px; }
+/* mobile tuning (ONLY hub) */
+@media (max-width:720px){
+  .valHub.gliderHud .glDays{ font-size:30px; }
+  .valHub.gliderHud .glIcons{ gap:6px; }
+  .valHub.gliderHud .glIcon{ padding:8px 4px; }
 }
