@@ -2,26 +2,27 @@
   --g:#4cff9a;
 }
 
+/* RESET */
 *{ box-sizing:border-box; }
 
 html, body{
   margin:0;
   height:100%;
   background:#000;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   display:flex;
   justify-content:center;
   align-items:center;
   overflow:hidden;
 }
 
+/* CRT */
 #crt{
-  width: min(1220px, 96vw);
-  height: min(82vh, 760px);
-  min-height: 520px;
+  width:min(1200px, 96vw);
+  height:min(88vh, 780px);
   background:#050b07;
   border-radius:22px;
-  padding:34px;
+  padding:28px;
   position:relative;
   overflow:hidden;
   display:flex;
@@ -34,31 +35,25 @@ html, body{
 
 /* HEADER */
 #uiWrap{
-  margin-bottom:10px;
-  padding-bottom:10px;
+  margin-bottom:8px;
+  padding-bottom:8px;
   border-bottom:1px solid rgba(76,255,154,0.3);
-  position:relative;
-  z-index:2;
 }
 #uiTop{
   display:flex;
-  align-items:center;
   justify-content:space-between;
+  align-items:center;
   gap:12px;
-  flex-wrap:wrap;
 }
 #uiBar{
   color:var(--g);
   font-size:14px;
   letter-spacing:1px;
-  opacity:0.92;
 }
 #uiStatus{
-  margin-top:6px;
+  margin-top:4px;
   color:rgba(76,255,154,0.85);
   font-size:12px;
-  letter-spacing:0.8px;
-  opacity:0.9;
 }
 
 /* TERMINAL */
@@ -71,14 +66,13 @@ html, body{
     0 0 4px rgba(76,255,154,0.7),
     0 0 10px rgba(76,255,154,0.4);
   white-space:pre-wrap;
-  position:relative;
-  z-index:2;
+  padding-right:6px;
 }
 
 /* INPUT */
 #inputBox{
   display:none;
-  width:80%;
+  width:100%;
   margin-top:10px;
   background:rgba(0,0,0,0.6);
   color:var(--g);
@@ -87,493 +81,145 @@ html, body{
   border-radius:10px;
   font-size:16px;
   outline:none;
-  position:relative;
-  z-index:2;
 }
-
-/* HINTS */
-#hintContainer{
-  margin-top:6px;
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-  position:relative;
-  z-index:2;
-}
-
-/* CURSOR */
-#cursor{
-  display:inline-block;
-  width:10px;
-  background:var(--g);
-  margin-left:2px;
-  animation: blink 1s infinite;
-}
-@keyframes blink{50%{opacity:0;}}
 
 /* SCANLINES */
 #scanlines{
   position:absolute;
   inset:0;
-  background:repeating-linear-gradient(to bottom,
-    rgba(0,0,0,.28), rgba(0,0,0,.28) 1px,
-    transparent 1px, transparent 3px);
+  background:repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,.28),
+    rgba(0,0,0,.28) 1px,
+    transparent 1px,
+    transparent 3px
+  );
   pointer-events:none;
   animation: scan 2s linear infinite;
   z-index:6;
 }
-@keyframes scan {from{background-position:0 0;}to{background-position:0 3px;}}
+@keyframes scan{
+  from{background-position:0 0;}
+  to{background-position:0 3px;}
+}
 
 /* POWER DIP */
 #powerDip{
   position:absolute;
   inset:0;
   background:radial-gradient(circle at 50% 45%,
-    rgba(76,255,154,0.10),
+    rgba(76,255,154,0.12),
     rgba(0,0,0,0.92) 60%,
     rgba(0,0,0,0.98) 100%);
   opacity:0;
   pointer-events:none;
   z-index:8;
-  mix-blend-mode:screen;
 }
-.powerDipOn{ animation: dip 420ms ease-in-out 1; }
+.powerDipOn{
+  animation: dip 420ms ease-in-out 1;
+}
 @keyframes dip{
-  0%{opacity:0; filter:brightness(1) contrast(1);}
-  20%{opacity:0.9; filter:brightness(0.65) contrast(1.25);}
-  55%{opacity:0.35; filter:brightness(0.85) contrast(1.15);}
-  100%{opacity:0; filter:brightness(1) contrast(1);}
+  0%{opacity:0;}
+  40%{opacity:.9;}
+  100%{opacity:0;}
 }
 
-/* LOADING */
-.loadTrack{
-  width:100%;
-  max-width:520px;
-  height:12px;
-  border:2px solid rgba(76,255,154,0.65);
-  border-radius:6px;
-  overflow:hidden;
-  margin-top:8px;
-}
-.loadFill{height:100%; width:0%; background:rgba(76,255,154,0.95);}
-.loadMsg{margin-top:6px;opacity:.95;}
-.loadDetail{margin-top:4px;opacity:.82;font-size:13px;letter-spacing:0.5px;}
-
-/* FINAL CODE */
-.bigCode{
-  font-size:56px;
-  letter-spacing:10px;
-  font-weight:700;
-  text-align:center;
-  margin-top:14px;
-  text-shadow:
-    0 0 6px rgba(76,255,154,0.9),
-    0 0 18px rgba(76,255,154,0.6),
-    0 0 32px rgba(76,255,154,0.35);
-  animation: codeFlash 1.1s steps(2) infinite;
-}
-@keyframes codeFlash{
-  0%{opacity:1;}
-  50%{opacity:.35;}
-  100%{opacity:1;}
-}
-
-.radFlicker{ animation: rad 140ms steps(2) infinite; }
-@keyframes rad{
-  0%{filter:brightness(1) contrast(1);}
-  50%{filter:brightness(0.92) contrast(1.18);}
-  100%{filter:brightness(1) contrast(1);}
-}
-
-/* BUTTONS (fixes iOS beige pill + adds glow) */
+/* BUTTONS */
 #crt button{
-  -webkit-appearance:none;
-  appearance:none;
   background:transparent;
   color:var(--g);
   border:2px solid rgba(76,255,154,0.55);
   border-radius:10px;
   padding:10px 14px;
-  cursor:pointer;
   font:inherit;
   font-size:12px;
   letter-spacing:1px;
+  cursor:pointer;
   text-transform:uppercase;
-  box-shadow:0 0 12px rgba(76,255,154,0.12);
-  transition: box-shadow .15s ease, border-color .15s ease, transform .08s ease, filter .15s ease;
+  box-shadow:0 0 12px rgba(76,255,154,0.15);
+}
+#crt button:hover{
+  border-color:rgba(76,255,154,0.95);
+  box-shadow:0 0 18px rgba(76,255,154,0.35);
 }
 
-#crt button:hover,
-#crt button:focus-visible{
-  border-color: rgba(76,255,154,0.95);
-  box-shadow:
-    0 0 10px rgba(76,255,154,0.30),
-    0 0 18px rgba(76,255,154,0.20),
-    inset 0 0 10px rgba(76,255,154,0.12);
-  filter: brightness(1.12);
+/* ============================
+   VALENTINE HUB — FIXED LAYOUT
+   ============================ */
+
+.valHub{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
 }
 
-#crt button:active{
-  transform: translateY(1px);
-  box-shadow:
-    0 0 14px rgba(76,255,154,0.28),
-    inset 0 0 14px rgba(76,255,154,0.16);
+/* Background logo ONLY HERE */
+.valBg{
+  position:absolute;
+  inset:0;
+  background-image:url("assets/vault-tec-logo.png");
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:65%;
+  opacity:0.12;
+  filter:blur(.3px);
+  pointer-events:none;
 }
 
-#crt button:disabled{
-  opacity:0.45;
-  cursor:default;
-  filter:none;
-  box-shadow:none;
-}
-
-#crt button:focus{ outline:none; }
-
-/* ====== COMMON UI BLOCKS (used by your menus/screens) ====== */
+/* Shared block */
 .block{
-  margin: 10px 0;
-  padding: 12px 14px;
+  width:100%;
+  padding:12px 14px;
   border:2px solid rgba(76,255,154,0.30);
   border-radius:12px;
   background:rgba(0,0,0,0.35);
 }
 
-.hr{
-  height:1px;
-  background: rgba(76,255,154,0.30);
-  margin:10px 0;
+/* Countdown row — THIS IS THE BIG FIX */
+.valRow{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:12px;
 }
 
+/* Text sizing */
 .smallHdr{
   font-size:12px;
   letter-spacing:1px;
-  opacity:0.9;
-  text-transform:uppercase;
-}
-
-.lockTitle{
-  font-size:16px;
-  letter-spacing:1px;
-  font-weight:700;
-}
-
-.lockLines{
-  white-space:pre-wrap;
-  line-height:1.35;
-  font-size:16px;
-  letter-spacing:0.6px;
-}
-
-.menuWrap{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-.menuWrap button{
-  width:100%;
-  text-align:left;
-}
-
-/* =========================
-   VALENTINE HUB (ONLY HERE)
-   - watermark behind HUD
-   - bigger + glow + slow pulse
-   - cleaner spacing
-   ========================= */
-
-.valHub{
-  position:relative;
-  padding: 6px 0 0;
-}
-
-/* The watermark image ONLY exists inside Valentine Hub */
-.valHub .valBg{
-  position:absolute;
-  inset:0;
-  background-image:url("assets/vault-tec-logo.png"); /* MUST MATCH FILE NAME */
-  background-repeat:no-repeat;
-  background-position:center;
-  background-size:min(860px, 92%);
-  opacity:0.12;
-  filter:
-    blur(0.15px)
-    brightness(1.12)
-    contrast(1.05)
-    drop-shadow(0 0 16px rgba(76,255,154,0.22))
-    drop-shadow(0 0 32px rgba(76,255,154,0.10));
-  pointer-events:none;
-  z-index:0;
-  animation: valPulse 6.5s ease-in-out infinite;
-  mix-blend-mode: screen;
-}
-
-@keyframes valPulse{
-  0%,100%{
-    opacity:0.10;
-    transform: scale(1);
-    filter:
-      blur(0.18px)
-      brightness(1.05)
-      contrast(1.03)
-      drop-shadow(0 0 14px rgba(76,255,154,0.18))
-      drop-shadow(0 0 26px rgba(76,255,154,0.08));
-  }
-  50%{
-    opacity:0.18;
-    transform: scale(1.01);
-    filter:
-      blur(0.12px)
-      brightness(1.28)
-      contrast(1.08)
-      drop-shadow(0 0 22px rgba(76,255,154,0.26))
-      drop-shadow(0 0 46px rgba(76,255,154,0.14));
-  }
-}
-
-/* Keep all Valentine Hub content above the watermark */
-.valHub > *{
-  position:relative;
-  z-index:2;
-}
-
-/* Slightly tighten the hub layout (fix “wonky spacing”) */
-.valHub .block{
-  margin: 8px 0;
-}
-
-.valRow{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-  align-items:stretch;
+  opacity:.9;
+  margin-bottom:6px;
 }
 
 .valBig{
-  font-size:34px;
-  letter-spacing:3px;
+  font-size:38px;
   font-weight:700;
+  letter-spacing:3px;
   text-shadow:
-    0 0 6px rgba(76,255,154,0.65),
-    0 0 18px rgba(76,255,154,0.30);
+    0 0 6px rgba(76,255,154,0.7),
+    0 0 20px rgba(76,255,154,0.4);
 }
 
 .valSmall{
   font-size:14px;
   letter-spacing:1px;
-  opacity:0.92;
+  opacity:.85;
+}
+
+/* Reduce paragraph spacing */
+.valNote{
   line-height:1.35;
+  padding:10px 12px;
+  border-left:3px solid rgba(76,255,154,0.55);
+  background:rgba(0,0,0,0.25);
+  border-radius:10px;
 }
 
-/* Responsive */
+/* Mobile tightening */
 @media (max-width:720px){
-  #inputBox{width:100%;}
   #crt{ padding:22px; }
-  .valHub{ padding-top:4px; }
-  .valBig{ font-size:32px; }
-}
-
-/* =========================
-   FIX: “WONKY / SPACED OUT” VALENTINE SCREEN
-   ========================= */
-
-/* tighten terminal text spacing */
-#terminal{
-  line-height: 1.18;          /* was effectively huge because of blank lines */
-  letter-spacing: 0.6px;
-  padding-bottom: 6px;
-}
-
-/* collapse extra vertical gaps between printed lines (where possible) */
-#terminal br{
-  display: none;              /* if your UI uses <br>, this will tighten a LOT */
-}
-
-/* iOS scrolling fixes: makes scroll feel stable, not “loading weird” */
-#terminal{
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-  scroll-behavior: auto;
-}
-
-/* stop iOS from “rubber banding” the whole screen */
-html, body{
-  position: fixed;
-  width: 100%;
-}
-
-/* =========================
-   VALENTINE HUB — COMPACT BOXES
-   ========================= */
-
-/* shrink all blocks inside the Valentine hub */
-.valHub .block{
-  padding: 10px 12px;          /* was way larger */
-  margin: 6px 0;               /* tighten vertical spacing */
-  border-radius: 10px;
-}
-
-/* tighten the two side-by-side boxes */
-.valHub .valRow{
-  gap: 10px;                   /* less space between boxes */
-}
-
-/* countdown box text spacing */
-.valHub .valBig{
-  font-size: 30px;             /* was visually too large */
-  margin-bottom: 4px;
-}
-
-.valHub .valSmall{
-  font-size: 13px;
-  opacity: 0.85;
-}
-
-/* remove unnecessary vertical stretch */
-.valHub{
-  padding-top: 6px;
-}
-
-/* =========================
-   VALENTINE HUB — WIDER LAYOUT
-   ========================= */
-
-/* let the Valentine hub use more horizontal space */
-.valHub{
-  max-width: 100%;
-  padding-left: 8px;
-  padding-right: 8px;
-}
-
-/* make the row actually span the terminal */
-.valHub .valRow{
-  display: grid;
-  grid-template-columns: 1.2fr 1fr; /* countdown slightly wider */
-  gap: 12px;
-  align-items: stretch;
-}
-
-/* widen each box */
-.valHub .block{
-  width: 100%;
-  max-width: none;
-}
-
-/* make the countdown feel centered, not shoved */
-.valHub .valBig{
-  text-align: left;
-}
-
-/* reduce unnecessary vertical height */
-.valHub .block{
-  padding: 10px 14px;
-  margin: 6px 0;
-}
-
-/* =========================
-   VAL HUB — TIGHTEN + LESS SCROLL
-   ========================= */
-
-/* tighter overall hub spacing */
-.valHub{
-  padding: 6px 8px 8px;
-}
-
-/* the row that contains COUNTDOWN + TARGET */
-.valHub .valRow{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;                 /* smaller gap between boxes */
-  margin: 6px 0 8px;        /* reduce extra space below row */
-  align-items: stretch;
-}
-
-/* tighten box padding + remove “random space” caused by tall blocks */
-.valHub .block{
-  padding: 10px 12px;
-  margin: 6px 0;            /* smaller vertical spacing */
-}
-
-/* IMPORTANT: stop inner boxes from forcing tall empty height */
-.valHub .valRow .block{
-  min-height: 0 !important; /* kills the “giant empty floor” feeling */
-  height: auto !important;
-  padding-bottom: 10px;
-}
-
-/* make the big number not create extra vertical gap */
-.valHub .valBig{
-  line-height: 1.05;
-  margin: 2px 0 6px;
-}
-
-/* tighten small text lines */
-.valHub .valSmall{
-  line-height: 1.2;
-}
-
-/* the message panel under the boxes — make it shorter */
-.valHub .valNote,
-.valHub .block .valSmall{
-  margin-top: 6px;
-}
-
-/* OPTIONAL: if your note block is still too tall, uncomment this */
-/*
-.valHub .block:last-of-type{
-  padding: 8px 12px;
-}
-*/
-
-/* =========================
-   VAULT STATS — CLEAN LAYOUT
-   ========================= */
-
-.statsPanel{
-  display:grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px 18px;
-  align-items:start;
-  text-align:left;
-  margin-top: 10px;
-}
-
-/* each stat block */
-.statItem{
-  border: 2px solid rgba(76,255,154,0.26);
-  border-radius: 12px;
-  background: rgba(0,0,0,0.22);
-  padding: 10px 12px;
-}
-
-/* label + value styling */
-.statLabel{
-  font-size: 12px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  opacity: 0.85;
-  margin-bottom: 6px;
-}
-
-.statValue{
-  font-size: 18px;
-  letter-spacing: 1px;
-  font-weight: 700;
-  line-height: 1.15;
-  text-shadow:
-    0 0 6px rgba(76,255,154,0.55),
-    0 0 16px rgba(76,255,154,0.18);
-}
-
-/* make the stats block itself not feel “tiny” on mobile */
-#terminal .block.statsBlock{
-  width: min(680px, 100%);
-  margin: 12px auto;
-}
-
-/* phone: stack to one column so it fills the width & reduces weird wrapping */
-@media (max-width: 520px){
-  .statsPanel{
-    grid-template-columns: 1fr;
-    gap: 10px;
+  .valRow{
+    grid-template-columns:1fr;
+    gap:10px;
   }
 }
