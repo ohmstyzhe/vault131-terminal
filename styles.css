@@ -223,3 +223,49 @@ html, body{
     gap:10px;
   }
 }
+
+/* =========================
+   VAL HUB: tighter + smaller
+   (paste at very bottom)
+   ========================= */
+
+/* tighten overall vertical spacing */
+.valHub{
+  gap: 8px !important;
+  padding: 0 !important;
+}
+
+/* make the “cards” smaller ONLY in val hub */
+.valHub .block{
+  padding: 8px 10px !important;
+  border-radius: 10px !important;
+  margin: 0 !important;
+}
+
+/* reduce internal spacing for headings + text */
+.valHub .smallHdr{
+  margin-bottom: 4px !important;
+  font-size: 11px !important;
+  letter-spacing: 0.9px !important;
+}
+
+.valHub .valNote{
+  padding: 8px 10px !important;
+  margin: 0 !important;
+}
+
+/* if you have a big “modules” wrapper block, tighten it */
+.valHub .menuWrap{
+  gap: 8px !important;
+  margin-top: 6px !important;
+}
+
+/* make buttons slightly shorter (less tall) */
+.valHub button{
+  padding: 8px 12px !important;
+}
+
+/* if there’s a big empty “spacer” block, compress it */
+.valHub .hr{
+  margin: 6px 0 !important;
+}
