@@ -1,4 +1,4 @@
-export class UI{
+export class UI {
   constructor(audio){
     this.audio = audio;
 
@@ -11,157 +11,149 @@ export class UI{
     this.dip = document.getElementById("powerDip");
     this.volBtn = document.getElementById("volBtn");
 
+    this.onSubmit = null; // set by app.js
     this.locked = false;
 
     this.cursor = document.createElement("span");
     this.cursor.id = "cursor";
     this.term.appendChild(this.cursor);
 
-    this._wireAudioButton();
-    this._wireHoverSounds();
-    this._wireTypingSounds();
-    this._updateVolBtn();
+    this._bindAudioButton();
+    this._bindInput();
+    this._bindButtonHoverSounds();
   }
 
-  _wireAudioButton(){
-    this.volBtn.addEventListener("click", async ()=>{
-      const on = await this.audio.toggle();
+  _bindAudioButton(){
+    this._updateVolBtn();
+    this.volBtn.addEventListener("click", () => {
+      const on = this.audio.toggle();
       this._updateVolBtn();
       this.setStatus(on ? "AUDIO ENABLED" : "AUDIO MUTED");
     });
   }
 
-  _wireHoverSounds(){
-    // event delegation so dynamically created buttons work too
-    this.crt.addEventListener("pointerenter", (e)=>{
-      const btn = e.target.closest("button");
-      if(!btn) return;
-      // only when audio enabled + after user interaction
-      this.audio.hover();
-    }, true);
+  _updateVolBtn(){
+    this.volBtn.textContent = this.audio.audioOn ? "AUDIO: ON" : "AUDIO: OFF";
+    this.volBtn.classList.toggle("on", this.audio.audioOn);
   }
 
-  _wireTypingSounds(){
-    this.input.addEventListener("keydown", (e)=>{
-      // only play for “normal keys” (letters/numbers/backspace)
-      if(e.key === "Enter") return;
-      if(e.key.length === 1 || e.key === "Backspace") this.audio.key();
+  _bindInput(){
+    this.input.addEventListener("keydown", (e) => {
+      // typing sound (but NOT on enter)
+      if (e.key && e.key.length === 1) this.audio.typeBeep();
+
+      if (e.key !== "Enter") return;
+      if (this.locked) return;
+
+      const raw = this.input.value.trim();
+      this.input.value = "";
+      this.hideInput();
+      this.clearHints();
+
+      if (this.onSubmit) this.onSubmit(raw);
     });
   }
 
-  _updateVolBtn(){
-    this.volBtn.textContent = this.audio.enabled ? "AUDIO: ON" : "AUDIO: OFF";
-    this.volBtn.classList.toggle("on", this.audio.enabled);
+  _bindButtonHoverSounds(){
+    // desktop hover + mobile touch
+    const fire = (el) => {
+      if (!el) return;
+      if (el.disabled) return;
+      this.audio.hoverBeep();
+    };
+
+    this.crt.addEventListener("mouseover", (e) => {
+      const btn = e.target.closest("button");
+      if (btn) fire(btn);
+    });
+
+    this.crt.addEventListener("touchstart", (e) => {
+      const btn = e.target.closest("button");
+      if (btn) fire(btn);
+    }, { passive:true });
   }
 
-  /* ===== basics ===== */
+  /* ===== basic UI helpers ===== */
+  setHeaderLocked(){
+    this.uiBar.textContent = "VAULT 131 DATABASE │ STATUS: LOCKED";
+  }
+  setHeaderUnlocked(user="IZABELLA"){
+    this.uiBar.textContent = `VAULT 131 DATABASE │ STATUS: OPERATIONAL │ USER: ${user}`;
+  }
+  setStatus(text){
+    this.uiStatus.textContent = text;
+  }
+
   clear(){
     this.term.innerHTML = "";
     this.term.appendChild(this.cursor);
   }
 
-  setStatus(text){
-    this.uiStatus.textContent = text;
-  }
-
-  setLockedHeader(){
-    this.uiBar.textContent = "VAULT 131 DATABASE │ STATUS: LOCKED";
-  }
-
-  setUnlockedHeader(user="IZABELLA"){
-    this.uiBar.textContent = `VAULT 131 DATABASE │ STATUS: OPERATIONAL │ USER: ${user}`;
-  }
-
   showInput(placeholder=""){
     this.input.style.display = "block";
     this.input.placeholder = placeholder;
-    this.input.value = "";
     this.input.focus();
   }
-
   hideInput(){
     this.input.style.display = "none";
-  }
-
-  setHints(hintArr, onHintClick){
-    this.hints.innerHTML = "";
-    hintArr.forEach((label)=>{
-      const b = document.createElement("button");
-      b.type = "button";
-      b.textContent = label;
-      b.onclick = () => onHintClick(label);
-      this.hints.appendChild(b);
-    });
   }
 
   clearHints(){
     this.hints.innerHTML = "";
   }
 
-  addButton(text, onClick){
-    const b = document.createElement("button");
-    b.type = "button";
-    b.textContent = text;
-    b.onclick = onClick;
-    this.term.insertBefore(b, this.cursor);
-    this._scrollBottom();
-    return b;
-  }
-
-  addBigCode(codeText){
-    const d = document.createElement("div");
-    d.className = "bigCode";
-    d.textContent = codeText;
-    this.term.insertBefore(d, this.cursor);
-    this._scrollBottom();
-  }
-
-  _scrollBottom(){
-    this.term.scrollTop = this.term.scrollHeight;
+  showHintButtons(hintsArr, onHint){
+    this.clearHints();
+    hintsArr.forEach((_, idx) => {
+      const b = document.createElement("button");
+      b.textContent = `HINT ${idx + 1}`;
+      b.onclick = () => onHint(idx);
+      this.hints.appendChild(b);
+    });
   }
 
   /* ===== typewriter ===== */
-  typeLines(lines, speed=35){
-    return new Promise((resolve)=>{
-      let i = 0;
-
+  type(lines, speed=35){
+    return new Promise((resolve) => {
+      let i=0;
       const nextLine = () => {
-        if(i >= lines.length){ resolve(); return; }
+        if (i >= lines.length) return resolve();
+        const d = document.createElement("div");
+        this.term.insertBefore(d, this.cursor);
 
-        const lineEl = document.createElement("div");
-        this.term.insertBefore(lineEl, this.cursor);
-
-        let j = 0;
+        let j=0;
         const prePause = (Math.random() < 0.18) ? (180 + Math.random()*240) : 0;
 
-        setTimeout(()=>{
+        setTimeout(() => {
           const tick = () => {
-            if(j >= lines[i].length){
+            if (j >= lines[i].length){
               i++;
+              this.term.scrollTop = this.term.scrollHeight;
               setTimeout(nextLine, 260 + Math.random()*120);
               return;
             }
-            lineEl.textContent += lines[i][j++];
-            this.audio.beep();
-            this._scrollBottom();
+            d.textContent += lines[i][j++];
+            // this is your old beep-on-typewriter feel
+            this.audio.beep(880, 0.03, 0.02);
+            this.term.scrollTop = this.term.scrollHeight;
             setTimeout(tick, speed + Math.random()*25);
           };
           tick();
         }, prePause);
       };
-
       nextLine();
     });
   }
 
-  /* ===== effects ===== */
+  /* ===== power dip + loading ===== */
   powerDip(){
-    return new Promise((resolve)=>{
+    return new Promise((resolve) => {
       this.dip.classList.remove("powerDipOn");
       void this.dip.offsetWidth;
       this.dip.classList.add("powerDipOn");
+
       this.setStatus("POWER FLUCTUATION… STABILIZING");
-      setTimeout(()=>{
+      setTimeout(() => {
         this.setStatus("STABILITY: NOMINAL");
         resolve();
       }, 420);
@@ -169,53 +161,45 @@ export class UI{
   }
 
   loading(loadMsgs, loadDetails){
-    return new Promise((resolve)=>{
+    return new Promise((resolve) => {
       this.locked = true;
       this.hideInput();
       this.clearHints();
-
       this.setStatus("PROCESSING… PLEASE WAIT");
 
       const track = document.createElement("div");
       const fill = document.createElement("div");
-      track.className = "loadTrack";
-      fill.className = "loadFill";
+      track.className="loadTrack";
+      fill.className="loadFill";
       track.appendChild(fill);
 
       const msg = document.createElement("div");
-      msg.className = "loadMsg";
+      msg.className="loadMsg";
 
       const detail = document.createElement("div");
-      detail.className = "loadDetail";
+      detail.className="loadDetail";
 
       this.term.insertBefore(track, this.cursor);
       this.term.insertBefore(msg, this.cursor);
       this.term.insertBefore(detail, this.cursor);
 
+      this.crt.classList.add("radFlicker");
+
       let p=0, mi=0, di=0;
       msg.textContent = loadMsgs[Math.floor(Math.random()*loadMsgs.length)];
       detail.textContent = loadDetails[Math.floor(Math.random()*loadDetails.length)];
 
-      this.crt.classList.add("radFlicker");
-
-      const msgI = setInterval(()=>{
-        msg.textContent = loadMsgs[mi++ % loadMsgs.length];
-      }, 650);
-
-      const detI = setInterval(()=>{
-        detail.textContent = loadDetails[di++ % loadDetails.length];
-      }, 520);
+      const msgI = setInterval(()=> msg.textContent = loadMsgs[mi++ % loadMsgs.length], 650);
+      const detI = setInterval(()=> detail.textContent = loadDetails[di++ % loadDetails.length], 520);
 
       const t = setInterval(()=>{
         p += 2 + Math.floor(Math.random()*6);
         if(p>100) p=100;
         fill.style.width = p + "%";
-        this._scrollBottom();
+        this.term.scrollTop = this.term.scrollHeight;
 
         if(p>=100){
-          clearInterval(t);
-          clearInterval(msgI);
-          clearInterval(detI);
+          clearInterval(t); clearInterval(msgI); clearInterval(detI);
 
           setTimeout(()=>{
             track.remove(); msg.remove(); detail.remove();
@@ -227,5 +211,22 @@ export class UI{
         }
       }, 60);
     });
+  }
+
+  showBigCode(code){
+    const big = document.createElement("div");
+    big.className="bigCode";
+    big.textContent = code;
+    this.term.insertBefore(big, this.cursor);
+    this.term.scrollTop = this.term.scrollHeight;
+  }
+
+  addButton(label, onClick){
+    const btn = document.createElement("button");
+    btn.textContent = label;
+    btn.onclick = onClick;
+    this.term.insertBefore(btn, this.cursor);
+    this.term.scrollTop = this.term.scrollHeight;
+    return btn;
   }
 }
