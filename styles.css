@@ -432,3 +432,79 @@ html, body{
 .valHub{
   padding-top: 6px;
 }
+
+/* =========================================
+   VALENTINE HUB — tighter layout (ONLY)
+   Paste at BOTTOM of styles.css
+   ========================================= */
+
+/* make the hub use space efficiently */
+.valHub{
+  padding: 6px 0 0 !important;
+}
+
+/* tighten any generic blocks used inside the hub */
+.valHub .block{
+  margin: 8px 0 !important;
+  padding: 10px 12px !important;
+}
+
+/* reduce big empty “box feel” */
+.valHub .hr{
+  margin: 8px 0 !important;
+  opacity: 0.55;
+}
+
+/* the row that holds Countdown + Target */
+.valHub .valRow,
+.valHub .valTopRow{
+  gap: 10px !important;          /* closes the gap between the two boxes */
+  margin-bottom: 8px !important; /* removes the “random space” under header */
+}
+
+/* force both boxes to be wider so you scroll less */
+.valHub .valRow > .block,
+.valHub .valTopRow > .valBlock,
+.valHub .valTopRow > .block{
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+}
+
+/* make the boxes feel smaller (less dead space inside) */
+.valHub .valBlock{
+  padding: 8px 10px !important;
+  min-width: 0 !important;
+}
+
+/* scale the countdown so it doesn’t create giant tall panels */
+.valHub .valBig{
+  font-size: 30px !important;
+  line-height: 1.05 !important;
+  margin-top: 2px !important;
+}
+
+.valHub .valSmall{
+  font-size: 13px !important;
+  line-height: 1.25 !important;
+}
+
+/* tighten the note panel */
+.valHub .valNote{
+  margin: 8px 0 10px !important;
+  padding: 10px 12px !important;
+}
+
+/* tighten menu buttons spacing (if your hub has them) */
+.valHub .valMenu{
+  gap: 8px !important;
+}
+
+.valHub .valMenu button{
+  padding: 10px 12px !important;
+}
+
+/* mobile tuning: reduce padding + prevent tall “boxy” feel */
+@media (max-width:720px){
+  .valHub .block{ padding: 10px 10px !important; }
+  .valHub .valBig{ font-size: 28px !important; }
+}
