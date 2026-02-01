@@ -1,76 +1,72 @@
-export class AudioSystem{
+export class AudioSystem {
   constructor(){
     this.ctx = null;
-    this.humOsc = null;
-    this.humGain = null;
-    this.enabled = false;
+    this.hum = null;
+    this.gain = null;
+    this.audioOn = false;
+
+    // iOS-friendly: first user gesture anywhere can unlock audio context
+    const unlock = () => {
+      this.ensure();
+      if (this.ctx && this.ctx.state === "suspended") this.ctx.resume();
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("touchstart", unlock);
+    };
+    window.addEventListener("pointerdown", unlock, { once:false });
+    window.addEventListener("touchstart", unlock, { once:false });
   }
 
   ensure(){
-    if(this.ctx) return;
+    if (this.ctx) return;
     this.ctx = new (window.AudioContext || window.webkitAudioContext)();
 
-    this.humOsc = this.ctx.createOscillator();
-    this.humGain = this.ctx.createGain();
+    this.hum = this.ctx.createOscillator();
+    this.gain = this.ctx.createGain();
 
-    this.humOsc.type = "sawtooth";
-    this.humOsc.frequency.value = 60;
-    this.humGain.gain.value = 0;
+    this.hum.type = "sawtooth";
+    this.hum.frequency.value = 60;
+    this.gain.gain.value = 0;
 
-    this.humOsc.connect(this.humGain);
-    this.humGain.connect(this.ctx.destination);
-    this.humOsc.start();
+    this.hum.connect(this.gain);
+    this.gain.connect(this.ctx.destination);
+    this.hum.start();
   }
 
-  async toggle(){
+  setOn(on){
     this.ensure();
-    if(this.ctx.state === "suspended") await this.ctx.resume();
-    this.enabled = !this.enabled;
+    if (this.ctx.state === "suspended") this.ctx.resume();
+    this.audioOn = !!on;
 
-    if(this.enabled) this.fadeHumIn();
-    else this.fadeHumOut();
-
-    return this.enabled;
-  }
-
-  fadeHumIn(){
-    if(!this.ctx) return;
     const t = this.ctx.currentTime;
-    this.humGain.gain.cancelScheduledValues(t);
-    this.humGain.gain.linearRampToValueAtTime(0.02, t + 0.6);
+    this.gain.gain.cancelScheduledValues(t);
+    this.gain.gain.linearRampToValueAtTime(this.audioOn ? 0.02 : 0.0, t + (this.audioOn ? 0.6 : 0.15));
   }
 
-  fadeHumOut(){
-    if(!this.ctx) return;
-    const t = this.ctx.currentTime;
-    this.humGain.gain.cancelScheduledValues(t);
-    this.humGain.gain.linearRampToValueAtTime(0.0, t + 0.15);
+  toggle(){
+    this.setOn(!this.audioOn);
+    return this.audioOn;
   }
 
-  // small utility beep
-  _tone(freq=880, dur=0.03, vol=0.03){
-    if(!this.ctx || !this.enabled) return;
+  beep(freq=880, dur=0.03, vol=0.03){
+    if (!this.ctx || !this.audioOn) return;
     const o = this.ctx.createOscillator();
     const g = this.ctx.createGain();
     o.connect(g); g.connect(this.ctx.destination);
+
     o.frequency.value = freq;
     g.gain.value = vol;
+
     o.start();
     o.stop(this.ctx.currentTime + dur);
   }
 
-  // used for typewriter printing
-  beep(){
-    this._tone(880, 0.03, 0.03);
+  hoverBeep(){
+    // softer, shorter hover tick
+    this.beep(640, 0.02, 0.018);
   }
 
-  // used for hover over buttons
-  hover(){
-    this._tone(640, 0.02, 0.018);
-  }
-
-  // used when user types in the input box
-  key(){
-    this._tone(920, 0.015, 0.015);
+  typeBeep(){
+    // tiny typing chirp
+    this.beep(920, 0.015, 0.016);
   }
 }
