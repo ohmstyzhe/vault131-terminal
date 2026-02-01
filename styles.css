@@ -1,34 +1,393 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>VAULT 131 DATABASE</title>
-  <link rel="stylesheet" href="styles.css?v=3">
-</head>
+:root{
+  --g:#4cff9a;
+  --line: rgba(76,255,154,0.25);
+  --panel: rgba(0,0,0,0.22);
+}
 
-<body>
-  <div id="crt">
-    <div id="uiWrap">
-      <div id="uiTop">
-        <div id="uiBar">VAULT 131 DATABASE │ STATUS: LOCKED</div>
-        <button id="volBtn" type="button">AUDIO: OFF</button>
-      </div>
-      <div id="uiStatus">STANDBY… AWAITING INPUT</div>
-    </div>
+html, body{
+  margin:0; height:100%; background:#000;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  display:flex; justify-content:center; align-items:center;
+  overflow:hidden;
+}
 
-    <!-- TERMINAL MODE -->
-    <div id="terminal"></div>
-    <input id="inputBox" autocomplete="off" spellcheck="false" />
-    <div id="hintContainer"></div>
+#crt{
+  width: min(1200px, 96vw);
+  height: min(82vh, 760px);
+  background:#050b07;
+  border-radius:22px;
+  padding:34px;
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  border:3px solid rgba(76,255,154,0.35);
+  box-shadow:
+    0 0 45px rgba(76,255,154,0.25),
+    inset 0 0 140px rgba(0,0,0,0.95);
+}
 
-    <!-- VALENTINE HUD MODE (LOCKED UNTIL 14-LOVE-READY) -->
-    <div id="valScreen" aria-hidden="true"></div>
+/* HEADER */
+#uiWrap{
+  margin-bottom:10px;
+  padding-bottom:10px;
+  border-bottom:1px solid rgba(76,255,154,0.3);
+}
+#uiTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+#uiBar{
+  color:var(--g);
+  font-size:14px;
+  letter-spacing:1px;
+  opacity:0.92;
+}
+#uiStatus{
+  margin-top:6px;
+  color:rgba(76,255,154,0.85);
+  font-size:12px;
+  letter-spacing:0.8px;
+  opacity:0.9;
+}
 
-    <div id="powerDip"></div>
-    <div id="scanlines"></div>
-  </div>
+/* AUDIO BUTTON */
+#volBtn{
+  border:2px solid rgba(76,255,154,0.55);
+  background:transparent;
+  color:rgba(76,255,154,0.85);
+  font-family:inherit;
+  padding:6px 10px;
+  border-radius:8px;
+  cursor:pointer;
+  letter-spacing:1px;
+  font-size:12px;
+  margin:0;
+}
+#volBtn.on{
+  border-color:var(--g);
+  color:var(--g);
+  box-shadow: 0 0 12px rgba(76,255,154,0.25);
+}
 
-  <script src="app.js?v=3"></script>
-</body>
-</html>
+/* TERMINAL */
+#terminal{
+  flex:1;
+  overflow-y:auto;
+  overflow-x:hidden;
+  color:var(--g);
+  text-shadow:
+    0 0 4px rgba(76,255,154,0.7),
+    0 0 10px rgba(76,255,154,0.4);
+  white-space:pre-wrap;
+}
+
+/* INPUT */
+#inputBox{
+  display:none;
+  width:80%;
+  margin-top:10px;
+  background:rgba(0,0,0,0.6);
+  color:var(--g);
+  border:2px solid var(--g);
+  padding:10px;
+  border-radius:10px;
+  font-size:16px;
+  outline:none;
+}
+
+/* HINT BUTTONS */
+#hintContainer{ margin-top:6px; display:flex; flex-wrap:wrap; }
+
+/* CURSOR */
+#cursor{
+  display:inline-block;
+  width:10px;
+  background:var(--g);
+  margin-left:2px;
+  animation: blink 1s infinite;
+  box-shadow: 0 0 12px rgba(76,255,154,.35);
+}
+@keyframes blink{50%{opacity:0;}}
+
+/* SCANLINES */
+#scanlines{
+  position:absolute; inset:0;
+  background:repeating-linear-gradient(to bottom,
+    rgba(0,0,0,.28), rgba(0,0,0,.28) 1px,
+    transparent 1px, transparent 3px);
+  pointer-events:none;
+  animation: scan 2s linear infinite;
+  z-index: 9;
+}
+@keyframes scan {from{background-position:0 0;}to{background-position:0 3px;}}
+
+/* POWER DIP */
+#powerDip{
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at 50% 45%,
+    rgba(76,255,154,0.10),
+    rgba(0,0,0,0.92) 60%,
+    rgba(0,0,0,0.98) 100%);
+  opacity:0;
+  pointer-events:none;
+  z-index:10;
+  mix-blend-mode:screen;
+}
+.powerDipOn{ animation: dip 420ms ease-in-out 1; }
+@keyframes dip{
+  0%{opacity:0; filter:brightness(1) contrast(1);}
+  20%{opacity:0.9; filter:brightness(0.65) contrast(1.25);}
+  55%{opacity:0.35; filter:brightness(0.85) contrast(1.15);}
+  100%{opacity:0; filter:brightness(1) contrast(1);}
+}
+
+/* Loading */
+.loadTrack{
+  width:100%;
+  max-width:520px;
+  height:12px;
+  border:2px solid rgba(76,255,154,0.65);
+  border-radius:6px;
+  overflow:hidden;
+  margin-top:8px;
+}
+.loadFill{height:100%; width:0%; background:rgba(76,255,154,0.95);}
+.loadMsg{margin-top:6px;opacity:.95;}
+.loadDetail{margin-top:4px;opacity:.82;font-size:13px;letter-spacing:0.5px;}
+
+.radFlicker{ animation: rad 140ms steps(2) infinite; }
+@keyframes rad{
+  0%{filter:brightness(1) contrast(1);}
+  50%{filter:brightness(0.92) contrast(1.18);}
+  100%{filter:brightness(1) contrast(1);}
+}
+
+/* Final code */
+.bigCode{
+  font-size:56px;
+  letter-spacing:10px;
+  font-weight:700;
+  text-align:center;
+  margin-top:14px;
+  text-shadow:
+    0 0 6px rgba(76,255,154,0.9),
+    0 0 18px rgba(76,255,154,0.6),
+    0 0 32px rgba(76,255,154,0.35);
+  animation: codeFlash 1.1s steps(2) infinite;
+}
+@keyframes codeFlash{
+  0%{opacity:1;}
+  50%{opacity:.35;}
+  100%{opacity:1;}
+}
+
+/* === FORCE HUD BUTTON STYLE (fixes iOS beige pill) === */
+#crt button {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  color: var(--g);
+  border: 2px solid rgba(76,255,154,0.55);
+  border-radius: 10px;
+  padding: 6px 12px;
+  margin: 6px 6px 0 0;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  box-shadow: 0 0 12px rgba(76,255,154,0.12);
+  transition: box-shadow .15s ease, border-color .15s ease, color .15s ease, transform .06s ease, filter .15s ease;
+}
+
+#crt button:hover,
+#crt button:focus-visible{
+  border-color: rgba(76,255,154,0.95);
+  box-shadow:
+    0 0 10px rgba(76,255,154,0.30),
+    0 0 22px rgba(76,255,154,0.18),
+    inset 0 0 10px rgba(76,255,154,0.10);
+  filter: brightness(1.12);
+}
+
+#crt button:active{
+  transform: translateY(1px);
+  box-shadow:
+    0 0 14px rgba(76,255,154,0.28),
+    inset 0 0 14px rgba(76,255,154,0.16);
+}
+
+#crt button:disabled{
+  opacity: .45;
+  cursor: not-allowed;
+  filter: grayscale(0.2);
+}
+
+/* ============ VALENTINE HUD SCREEN ============ */
+#valScreen{
+  position:absolute;
+  inset: 92px 34px 34px 34px; /* under header, inside padding */
+  display:none;
+  z-index: 6;
+  border:2px solid rgba(76,255,154,.35);
+  border-radius:18px;
+  background: rgba(0,0,0,.18);
+  box-shadow: inset 0 0 60px rgba(0,0,0,.65);
+  overflow:hidden;
+}
+
+.valTopRow{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  padding:14px 14px 8px 14px;
+  border-bottom:1px solid var(--line);
+}
+
+.valHudLeft{
+  display:flex;
+  gap:14px;
+  align-items:flex-start;
+  flex-wrap:wrap;
+}
+
+.valTag{
+  display:inline-block;
+  border:2px solid rgba(76,255,154,.55);
+  padding:6px 10px;
+  border-radius:10px;
+  letter-spacing:2px;
+  font-size:12px;
+  text-transform:uppercase;
+  opacity:.92;
+}
+
+.valStats{
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+  align-items:center;
+  font-size:12px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  opacity:.85;
+}
+.valStats b{ opacity:1; }
+
+.valBody{
+  position:relative;
+  height: calc(100% - 124px);
+  padding:16px;
+  overflow:auto;
+}
+
+.valWatermark{
+  position:absolute;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  pointer-events:none;
+  opacity:.14;
+  transform: rotate(-6deg);
+  filter: blur(.2px);
+  text-align:center;
+}
+
+.valWatermark .wmBig{
+  font-size:64px;
+  letter-spacing:6px;
+  text-transform:uppercase;
+  font-weight:800;
+  color: var(--g);
+  text-shadow: 0 0 18px rgba(76,255,154,.25);
+}
+.valWatermark .wmSmall{
+  margin-top:10px;
+  font-size:14px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  opacity:.9;
+}
+
+.valPanel{
+  position:relative;
+  z-index:2;
+  border:2px solid rgba(76,255,154,.22);
+  border-radius:16px;
+  background: rgba(0,0,0,.22);
+  padding:14px;
+  box-shadow: inset 0 0 30px rgba(0,0,0,.65);
+  max-width: 860px;
+}
+
+.valTitle{
+  text-transform:uppercase;
+  letter-spacing:3px;
+  font-size:12px;
+  opacity:.85;
+  margin-bottom:10px;
+}
+
+.valText{
+  white-space:pre-wrap;
+  line-height:1.5;
+  font-size:13px;
+  letter-spacing:0.6px;
+  text-shadow:0 0 4px rgba(76,255,154,0.55);
+}
+
+.valBottom{
+  position:absolute;
+  left:0; right:0; bottom:0;
+  padding:10px 12px 12px 12px;
+  border-top:1px solid var(--line);
+  background: rgba(0,0,0,.25);
+}
+
+.valCountdown{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:8px;
+  font-size:12px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  opacity:.9;
+}
+
+.valCountdown .big{
+  font-size:14px;
+  opacity:1;
+  text-shadow:0 0 10px rgba(76,255,154,.22);
+}
+
+.valTabs{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+.valTabs button{
+  margin:0;
+}
+
+.valTabs button.active{
+  border-color: rgba(76,255,154,.95);
+  box-shadow: 0 0 18px rgba(76,255,154,.18);
+}
+
+@media (max-width:720px){
+  #crt{ padding:18px; }
+  #valScreen{ inset: 92px 18px 18px 18px; }
+  #inputBox{ width:100%; }
+}
