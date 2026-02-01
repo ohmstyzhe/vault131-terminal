@@ -332,3 +332,29 @@ html, body{
 /* make sure scanlines + power dip stay on top */
 #scanlines{ z-index:6; }
 #powerDip{ z-index:8; }
+
+/* ===== VAULT-TEC WATERMARK (inside terminal so it shows behind panels) ===== */
+#terminal{
+  position: relative;
+}
+
+#terminal::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image: url("assets/vault-tec-logo.PNG");
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size: min(680px, 80%);
+  opacity:0.16;                 /* try 0.10 - 0.22 */
+  filter: blur(0.2px);
+  pointer-events:none;
+  z-index:0;
+  mix-blend-mode: screen;
+}
+
+/* keep terminal content above the watermark */
+#terminal > *{
+  position: relative;
+  z-index:1;
+}
