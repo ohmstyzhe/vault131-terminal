@@ -1,79 +1,81 @@
-export class UI{
+export class UI {
   constructor(audio){
     this.audio = audio;
     this.terminal = document.getElementById("terminal");
-    this.statusEl = document.getElementById("uiStatus");
     this.input = document.getElementById("inputBox");
-    this.hints = document.getElementById("hintContainer");
-    this.onSubmit = null;
+    this.uiBar = document.getElementById("uiBar");
+    this.uiStatus = document.getElementById("uiStatus");
+    this.volBtn = document.getElementById("volBtn");
+    this.powerDip = document.getElementById("powerDip");
 
+    this.onSubmit = null;
+    this.onClick = null;
+
+    // button: audio toggle (first click unlocks audio on iOS)
+    this.volBtn.addEventListener("click", async () => {
+      await this.audio.toggle();
+      this.volBtn.textContent = this.audio.enabled ? "AUDIO: ON" : "AUDIO: OFF";
+      this.dip();
+    });
+
+    // submit on Enter
     this.input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter"){
+      if(e.key === "Enter"){
         const v = (this.input.value || "").trim();
         this.input.value = "";
-        if (this.onSubmit) this.onSubmit(v);
+        if(this.onSubmit) this.onSubmit(v);
       }
+    });
+
+    // click delegation for menu/buttons
+    this.terminal.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-action]");
+      if(!btn) return;
+      const action = btn.getAttribute("data-action");
+      if(this.onClick) this.onClick(action);
     });
   }
 
-  setStatus(text){
-    this.statusEl.textContent = text;
-  }
-
-  setAudioLabel(on){
-    const b = document.getElementById("volBtn");
-    b.textContent = on ? "AUDIO: ON" : "AUDIO: OFF";
-  }
+  setHeader(text){ this.uiBar.textContent = text; }
+  setStatus(text){ this.uiStatus.textContent = text; }
 
   clear(){
     this.terminal.innerHTML = "";
-    this.hints.innerHTML = "";
   }
 
-  print(lines = []){
-    // lines can be string or array of strings
-    if (typeof lines === "string") lines = [lines];
-    for (const line of lines){
-      const div = document.createElement("div");
-      div.textContent = line;
-      this.terminal.appendChild(div);
-    }
-    this.scrollToBottom();
+  html(markup){
+    this.terminal.innerHTML = markup;
+    this.scrollBottom();
   }
 
-  setInput(placeholder = "ENTER", show = true){
+  append(text){
+    const pre = document.createElement("div");
+    pre.style.whiteSpace = "pre-wrap";
+    pre.textContent = text;
+    this.terminal.appendChild(pre);
+    this.scrollBottom();
+  }
+
+  showInput(placeholder=""){
+    this.input.style.display = "block";
     this.input.placeholder = placeholder;
-    this.input.style.display = show ? "block" : "none";
-    if (show) setTimeout(() => this.input.focus(), 0);
+    // iOS focus sometimes needs a tiny delay
+    setTimeout(() => this.input.focus(), 40);
   }
 
-  setHints(buttons = []){
-    this.hints.innerHTML = "";
-    buttons.forEach(({label, value}) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.textContent = label;
-      btn.addEventListener("click", () => {
-        if (this.onSubmit) this.onSubmit(value);
-      });
-      this.hints.appendChild(btn);
-    });
+  hideInput(){
+    this.input.style.display = "none";
+    this.input.blur();
   }
 
-  // Render a “screen” as HTML (for the Valentine Hub layout)
-  renderHTML(html){
-    this.terminal.innerHTML = html;
-    this.scrollToBottom();
+  dip(){
+    this.powerDip.classList.remove("powerDipOn");
+    // restart animation
+    void this.powerDip.offsetWidth;
+    this.powerDip.classList.add("powerDipOn");
   }
 
-  scrollToBottom(){
+  scrollBottom(){
     this.terminal.scrollTop = this.terminal.scrollHeight;
-  }
-
-  powerDip(){
-    const dip = document.getElementById("powerDip");
-    dip.classList.remove("powerDipOn");
-    void dip.offsetWidth;
-    dip.classList.add("powerDipOn");
   }
 }
