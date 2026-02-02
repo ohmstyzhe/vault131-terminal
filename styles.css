@@ -680,7 +680,10 @@ html, body{
   inset:0;
   background-image:url("assets/vault-tec-logo.png");
   background-repeat:no-repeat;
-  background-position:center;
+
+  /* MOVE LOGO DOWN */
+  background-position: center 65%;
+
   background-size:min(760px, 90%);
   opacity:0.08;
   filter: blur(0.2px) brightness(1.05);
