@@ -225,9 +225,12 @@ export class Game {
     // --- FINAL SUCCESS END ---
   }
 
-  // ==========================================================
-  // ===== VALENTINE HUB START (ONLY SECTION MODIFIED) =========
-  // ==========================================================
+    /* =========================================================
+     VALENTINE HUB START
+     (ONLY TOUCHING VALENTINE HUB UI + countdown placement/icons)
+     ========================================================= */
+
+  // ===== Valentine Hub (separate screen) START =====
   showValentineHub(){
     this.stage = "hub";
     this.ui.setHeaderUnlocked("IZABELLA");
@@ -240,63 +243,167 @@ export class Game {
       <div class="valHub valGlider">
         <div class="valBg"></div>
 
-        <!-- TOP PANEL -->
+        <!-- TOP PANEL START -->
         <div class="valPanel">
-          <div class="valTop">
-            <div class="valTopLeft">
-              <div class="valTitle">*** GLIDER OPERATING SYSTEM ***</div>
-              <div class="valSub">128k RAM — 83259 Bytes Free</div>
-            </div>
-
-            <div class="valTopRight">
-              <div class="valMiniBox">
-                <div class="valMiniLabel">COUNTDOWN</div>
-                <div class="valMiniBig" id="vDays">-- DAYS</div>
-                <div class="valMiniTime" id="vTime">--:--:--</div>
-              </div>
+          <div class="valTopBar">
+            <div class="valTitle">
+              <div class="valTitleBig">VAULT-TEC OPERATIONS TERMINAL</div>
+              <div class="valTitleSub">PERSONAL ACCESS NODE :: VAULT 131</div>
             </div>
           </div>
 
-          <!-- GLOBE ROW (these replace Network/Global/USA/etc) -->
-          <div class="valGlobeRow">
-            <button class="valGlobeBtn" data-action="hub_stats" type="button">
-              <span class="valGlobe g1" aria-hidden="true"></span>
-              <span class="valGlobeLabel">SYSINFO</span>
-            </button>
-
-            <button class="valGlobeBtn" data-action="hub_rewards" type="button">
-              <span class="valGlobe g2" aria-hidden="true"></span>
-              <span class="valGlobeLabel">REWARDS</span>
-            </button>
-
-            <button class="valGlobeBtn" data-action="hub_minigames" type="button">
-              <span class="valGlobe g3" aria-hidden="true"></span>
-              <span class="valGlobeLabel">G.A.M.E</span>
-            </button>
-
-            <button class="valGlobeBtn" data-action="hub_mission" type="button">
-              <span class="valGlobe g4" aria-hidden="true"></span>
-              <span class="valGlobeLabel">MISSION</span>
-            </button>
-
-            <button class="valGlobeBtn" data-action="hub_back" type="button">
-              <span class="valGlobe g5" aria-hidden="true"></span>
-              <span class="valGlobeLabel">EXIT</span>
-            </button>
-          </div>
-
-          <div class="valBottomLine">
-            TARGET: 02/14/2026 00:00 (Local time)
+          <div class="valCountdownRow">
+            <div class="valCountdownLabel">VALENTINE’S DAY COUNTDOWN</div>
+            <div class="valCountdownValue">
+              <span id="vDays">-- DAYS</span>
+              <span class="valCountdownTime" id="vTime">--:--:--</span>
+            </div>
+            <div class="valTargetLine">TARGET: 02/14/2026 00:00 (Local time)</div>
           </div>
         </div>
+        <!-- TOP PANEL END -->
+
+        <!-- ICON ROW START -->
+        <div class="valIconRow">
+          <!-- IMPORTANT:
+               Replace the src paths with YOUR images.
+               Put them in /assets/ and match the filenames exactly. -->
+          <button class="valIconBtn" data-action="hub_stats">
+            <img class="valIconImg" src="assets/globe-sysinfo.png" alt="SYSINFO" />
+            <div class="valIconText">SYSINFO</div>
+          </button>
+
+          <button class="valIconBtn" data-action="hub_rewards">
+            <img class="valIconImg" src="assets/globe-rewards.png" alt="REWARDS" />
+            <div class="valIconText">REWARDS</div>
+          </button>
+
+          <button class="valIconBtn" data-action="hub_minigames">
+            <img class="valIconImg" src="assets/globe-game.png" alt="G.A.M.E" />
+            <div class="valIconText">G.A.M.E</div>
+          </button>
+
+          <button class="valIconBtn" data-action="hub_mission">
+            <img class="valIconImg" src="assets/globe-mission.png" alt="MISSION" />
+            <div class="valIconText">MISSION</div>
+          </button>
+
+          <button class="valIconBtn" data-action="hub_back">
+            <img class="valIconImg" src="assets/globe-exit.png" alt="EXIT" />
+            <div class="valIconText">EXIT</div>
+          </button>
+        </div>
+        <!-- ICON ROW END -->
+
+        <!-- OPTIONAL FOOT NOTE START (small, not boxy) -->
+        <div class="valFootNote">
+          This hub is live — counting down to Valentine’s Day.
+        </div>
+        <!-- OPTIONAL FOOT NOTE END -->
       </div>
     `);
 
     this.startCountdown();
   }
-  // ==========================================================
-  // ===== VALENTINE HUB END ===================================
-  // ==========================================================
+  // ===== Valentine Hub (separate screen) END =====
+
+
+  // ===== Countdown START =====
+  startCountdown(){
+    this.stopCountdown();
+
+    const target = new Date(2026, 1, 14, 0, 0, 0); // Feb 14 2026 00:00 local
+    const dEl = document.getElementById("vDays");
+    const tEl = document.getElementById("vTime");
+
+    const pad = (n) => String(n).padStart(2, "0");
+
+    const tick = () => {
+      const now = new Date();
+      let ms = target - now;
+      if (ms < 0) ms = 0;
+
+      const totalSeconds = Math.floor(ms / 1000);
+      const days = Math.floor(totalSeconds / 86400);
+      const rem = totalSeconds % 86400;
+
+      const hrs = Math.floor(rem / 3600);
+      const mins = Math.floor((rem % 3600) / 60);
+      const secs = rem % 60;
+
+      if (dEl) dEl.textContent = `${days} DAYS`;
+      if (tEl) tEl.textContent = `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+    };
+
+    tick();
+    this.timer = setInterval(tick, 1000);
+  }
+
+  stopCountdown(){
+    if (this.timer){
+      clearInterval(this.timer);
+      this.timer = null;
+    }
+  }
+  // ===== Countdown END =====
+
+
+  // ===== Hub Actions START =====
+  handleAction(action){
+    // Exit back to terminal
+    if (action === "hub_back") return this.boot();
+
+    // SYSINFO / Vault stats
+    if (action === "hub_stats"){
+      this.ui.setStatus("SYSINFO: LOADING");
+      this.ui.clear();
+      this.ui.hideInput();
+      this.ui.html(`
+        <div class="block">
+          <div class="valSmall" style="text-transform:uppercase; letter-spacing:1px;">SYSINFO</div>
+          <div style="margin-top:10px; line-height:1.35;">
+            BUILD TIME: <b>3 DAYS</b><br/>
+            MODULES: <b>TERMINAL + HUB</b><br/>
+            AUDIO: <b>OPTIONAL</b><br/>
+            USER: <b>IZABELLA</b><br/>
+          </div>
+        </div>
+        <div class="block">
+          <button data-action="hub_return">← BACK</button>
+        </div>
+      `);
+      return;
+    }
+
+    if (action === "hub_return"){
+      return this.showValentineHub();
+    }
+
+    // rewards / minigames / mission placeholders
+    if (action === "hub_rewards" || action === "hub_minigames" || action === "hub_mission"){
+      this.ui.setStatus("MODULE: UNDER CONSTRUCTION");
+      this.ui.clear();
+      this.ui.hideInput();
+      this.ui.html(`
+        <div class="block">
+          <div class="valSmall" style="text-transform:uppercase; letter-spacing:1px;">MODULE LOADED</div>
+          <div style="margin-top:10px; line-height:1.35; opacity:.9;">
+            This module is next.<br/>
+            (We’ll build it clean, no random changes.)
+          </div>
+        </div>
+        <div class="block">
+          <button data-action="hub_return">← BACK</button>
+        </div>
+      `);
+      return;
+    }
+  }
+  // ===== Hub Actions END =====
+
+  /* =========================================================
+     VALENTINE HUB END
+     ========================================================= */
 
   startCountdown(){
     // --- COUNTDOWN START ---
