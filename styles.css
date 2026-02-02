@@ -574,3 +574,36 @@ html, body{
 /* ==========================================================
    GLIDER HUD – CRT EFFECTS END
    ========================================================== */
+  
+  /* ==========================================================
+   GLIDER HUD – SYSTEM NOISE START
+   ========================================================== */
+
+@keyframes noiseShift{
+  0%{ background-position: 0 0; }
+  100%{ background-position: 120px 120px; }
+}
+
+.valHub.gliderHud::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:2;
+
+  background-image:
+    repeating-radial-gradient(
+      circle at 20% 30%,
+      rgba(255,255,255,0.015),
+      rgba(255,255,255,0.015) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+
+  opacity: .25;
+  animation: noiseShift 6s linear infinite;
+}
+
+/* ==========================================================
+   GLIDER HUD – SYSTEM NOISE END
+   ========================================================== */
