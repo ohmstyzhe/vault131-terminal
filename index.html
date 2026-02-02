@@ -26,14 +26,15 @@
     <div class="projectorBand"></div>
   </div>
 
+  <!-- Cache-buster moved INSIDE the body (the important fix) -->
+  <script>
+    const links = document.querySelectorAll('link[rel="stylesheet"]');
+    links.forEach(link => {
+      const href = link.getAttribute('href').split('?')[0];
+      link.setAttribute('href', `${href}?v=${Date.now()}`);
+    });
+  </script>
+
   <script type="module" src="js/app.js?v=9"></script>
 </body>
 </html>
-
-<script>
-  const links = document.querySelectorAll('link[rel="stylesheet"]');
-  links.forEach(link => {
-    const href = link.getAttribute('href').split('?')[0];
-    link.setAttribute('href', `${href}?v=${Date.now()}`);
-  });
-</script>
