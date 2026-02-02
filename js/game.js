@@ -1,16 +1,24 @@
-// game.js
 export class Game {
+  /* =========================
+     CONSTRUCTOR START
+     ========================= */
   constructor(ui, audio){
     this.ui = ui;
     this.audio = audio;
 
-    // ===== CODES START =====
+    /* =========================
+       CODES START
+       ========================= */
     this.ID = "101-317-76";        // riddle login
     this.NEXT_ID = "14-LOVE-READY"; // unlocks Valentine Hub
     this.FINAL_CODE = "531";        // briefcase code
-    // ===== CODES END =====
+    /* =========================
+       CODES END
+       ========================= */
 
-    // ===== RIDDLES DATA START =====
+    /* =========================
+       RIDDLES DATA START
+       ========================= */
     this.riddles = [
       { q:"I move without legs and follow you everywhere.", a:"shadow",
         h:["You see me when light hits you.","I copy your shape perfectly.","I disappear in darkness."] },
@@ -24,17 +32,25 @@ export class Game {
         a:"keyboard",
         h:["Think: terminal.","You’re using me right now.","Keys + space + enter = me."] }
     ];
-    // ===== RIDDLES DATA END =====
+    /* =========================
+       RIDDLES DATA END
+       ========================= */
 
-    // ===== FINAL QUESTION START =====
+    /* =========================
+       FINAL QUESTION START
+       ========================= */
     this.finalQ = {
       q:"FINAL AUTHORIZATION REQUIRED.\n\nThis number marks the day everything changed.\nWhat is the code?",
       a: this.FINAL_CODE,
       h:["There were flowers.","You went to the beach.","Someone was running late… for a good reason."]
     };
-    // ===== FINAL QUESTION END =====
+    /* =========================
+       FINAL QUESTION END
+       ========================= */
 
-    // ===== LOADING TEXT START =====
+    /* =========================
+       LOADING LINES START
+       ========================= */
     this.loadMsgs = [
       "ACCESSING VAULT RECORDS…",
       "DECRYPTING MEMORY SECTORS…",
@@ -58,26 +74,43 @@ export class Game {
       "CORE: SPINNING UP MODULES",
       "VAULT-TEC: INTEGRITY 100%"
     ];
-    // ===== LOADING TEXT END =====
+    /* =========================
+       LOADING LINES END
+       ========================= */
 
-    // ===== STATE START =====
-    this.stage = "login"; // login | riddle | final | done | hub | help
+    /* =========================
+       STATE START
+       ========================= */
+    this.stage = "login"; // login | riddle | final | done | hub
     this.r = 0;
     this.hintUsed = 0;
     this.timer = null;
 
     // UI actions (for hub buttons)
     this.ui.onAction = (action) => this.handleAction(action);
-    // ===== STATE END =====
+    /* =========================
+       STATE END
+       ========================= */
   }
+  /* =========================
+     CONSTRUCTOR END
+     ========================= */
 
-  // ===== GAME START START =====
+
+  /* =========================
+     GAME START START
+     ========================= */
   start(){
     this.boot();
   }
-  // ===== GAME START END =====
+  /* =========================
+     GAME START END
+     ========================= */
 
-  // ===== LOGIN SCREEN START =====
+
+  /* =========================
+     BOOT / LOGIN SCREEN START
+     ========================= */
   async boot(){
     this.stopCountdown();
 
@@ -98,9 +131,14 @@ export class Game {
 
     this.ui.showInput("ENTER ID");
   }
-  // ===== LOGIN SCREEN END =====
+  /* =========================
+     BOOT / LOGIN SCREEN END
+     ========================= */
 
-  // ===== HELP SCREEN START =====
+
+  /* =========================
+     HELP SCREEN START
+     ========================= */
   async showHelp(){
     this.stopCountdown();
     this.stage = "help";
@@ -123,9 +161,14 @@ export class Game {
 
     this.ui.showInput("PRESS ENTER");
   }
-  // ===== HELP SCREEN END =====
+  /* =========================
+     HELP SCREEN END
+     ========================= */
 
-  // ===== RIDDLES FLOW START =====
+
+  /* =========================
+     RIDDLE FLOW START
+     ========================= */
   async askRiddle(){
     this.stopCountdown();
 
@@ -146,9 +189,7 @@ export class Game {
     this.renderHints(current.h);
     this.ui.setStatus("AWAITING INPUT…");
   }
-  // ===== RIDDLES FLOW END =====
 
-  // ===== FINAL FLOW START =====
   async askFinal(){
     this.stopCountdown();
 
@@ -163,9 +204,7 @@ export class Game {
     this.renderHints(this.finalQ.h);
     this.ui.setStatus("AWAITING FINAL INPUT…");
   }
-  // ===== FINAL FLOW END =====
 
-  // ===== HINTS START =====
   renderHints(hArr){
     const remaining = hArr.slice(this.hintUsed, 3);
     this.ui.showHintButtons(remaining, async (idx) => {
@@ -180,9 +219,14 @@ export class Game {
       this.renderHints(hArr);
     });
   }
-  // ===== HINTS END =====
+  /* =========================
+     RIDDLE FLOW END
+     ========================= */
 
-  // ===== FINAL SUCCESS / BRIEFCASE START =====
+
+  /* =========================
+     FINAL SUCCESS SCREEN START
+     ========================= */
   async showFinalSuccess(){
     this.stopCountdown();
 
@@ -220,12 +264,69 @@ export class Game {
     this.ui.addButton("RETURN TO MAIN MENU", () => this.boot());
     this.ui.setStatus("SESSION COMPLETE");
   }
-  // ===== FINAL SUCCESS / BRIEFCASE END =====
+  /* =========================
+     FINAL SUCCESS SCREEN END
+     ========================= */
 
 
-  // ============================================================
-  // ===== VALENTINE HUB START (ONLY SECTION CHANGED) ============
-  // ============================================================
+  /* ============================================================
+     VALENTINE HUB (GLIDER STYLE) START
+     - ONLY THIS SECTION IS “THE REDESIGN”
+     - no external planet images; uses inline SVG icons
+     ============================================================ */
+
+  _gliderIcon(type){
+    // Small, simple “code-made” icons (SVG). No files needed.
+    // Keep these minimal so it stays fast on iPad.
+    const common = `viewBox="0 0 64 64" aria-hidden="true" focusable="false"`;
+    const ring = `<circle cx="32" cy="32" r="22" fill="none" stroke="currentColor" stroke-width="3"/>`;
+    const scan = `<path d="M12 24h40M12 32h40M12 40h40" stroke="currentColor" stroke-width="3" opacity=".65"/>`;
+
+    if (type === "globe"){
+      return `<svg ${common}><circle cx="32" cy="32" r="22" fill="none" stroke="currentColor" stroke-width="3"/>
+        <path d="M10 32h44" stroke="currentColor" stroke-width="3" opacity=".7"/>
+        <path d="M32 10c7 7 7 37 0 44" stroke="currentColor" stroke-width="3" opacity=".7"/>
+        <path d="M32 10c-7 7-7 37 0 44" stroke="currentColor" stroke-width="3" opacity=".7"/>
+      </svg>`;
+    }
+
+    if (type === "pin"){
+      return `<svg ${common}><path d="M32 56s16-16 16-28A16 16 0 0 0 16 28c0 12 16 28 16 28z"
+        fill="none" stroke="currentColor" stroke-width="3"/><circle cx="32" cy="28" r="5" fill="currentColor"/></svg>`;
+    }
+
+    if (type === "plus"){
+      return `<svg ${common}>${ring}<path d="M32 18v28M18 32h28" stroke="currentColor" stroke-width="4"/></svg>`;
+    }
+
+    if (type === "info"){
+      return `<svg ${common}>${ring}<path d="M32 28v18" stroke="currentColor" stroke-width="4"/>
+        <circle cx="32" cy="20" r="3" fill="currentColor"/></svg>`;
+    }
+
+    if (type === "gift"){
+      return `<svg ${common}>
+        <path d="M14 28h36v28H14z" fill="none" stroke="currentColor" stroke-width="3"/>
+        <path d="M32 28v28" stroke="currentColor" stroke-width="3"/>
+        <path d="M14 36h36" stroke="currentColor" stroke-width="3" opacity=".7"/>
+        <path d="M22 28c-4 0-7-3-7-7 0-4 3-7 7-7 6 0 10 14 10 14s-4-14-10-14z" opacity="0"/>
+        <path d="M32 28s-3-14-10-14c-3 0-6 2-6 6s3 8 8 8" fill="none" stroke="currentColor" stroke-width="3"/>
+        <path d="M32 28s3-14 10-14c3 0 6 2 6 6s-3 8-8 8" fill="none" stroke="currentColor" stroke-width="3"/>
+      </svg>`;
+    }
+
+    if (type === "exit"){
+      return `<svg ${common}>${ring}
+        <path d="M28 20h8v24h-8" fill="none" stroke="currentColor" stroke-width="3"/>
+        <path d="M28 32H14" stroke="currentColor" stroke-width="3"/>
+        <path d="M18 26l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="3"/>
+      </svg>`;
+    }
+
+    // default “scan planet”
+    return `<svg ${common}>${ring}${scan}</svg>`;
+  }
+
   showValentineHub(){
     this.stage = "hub";
     this.ui.setHeaderUnlocked("IZABELLA");
@@ -234,98 +335,100 @@ export class Game {
     this.ui.hideInput();
     this.ui.clearHints();
 
-    // NOTE:
-    // This is ONLY markup/layout. All other game logic is unchanged.
-    // Countdown still uses #vDays and #vTime (kept).
-
     this.ui.html(`
       <div class="valHub gliderHub">
-        <div class="valBg gliderBg"></div>
+        <div class="valBg"></div>
 
-        <!-- ===== GLIDER PANEL START ===== -->
-        <div class="gliderPanel block">
-
-          <!-- TOP BAR (matches circled reference area) -->
-          <div class="gliderTop">
+        <!-- GLIDER TOP PANEL -->
+        <div class="gliderPanel">
+          <div class="gliderTopRow">
             <div class="gliderTitle">
-              <span class="gliderStars">***</span>
-              <span>GLIDER OPERATING SYSTEM</span>
-              <span class="gliderStars">***</span>
+              <div class="gliderLine">*** GLIDER OPERATING SYSTEM ***</div>
+              <div class="gliderLine gliderSub">128k RAM - <span class="gliderDim">83259 Bytes Free</span></div>
             </div>
 
             <div class="gliderRight">
-              <span class="gliderSpeaker" aria-hidden="true">🔊</span>
+              <div class="gliderSpeaker" title="Audio status">
+                <span class="gliderSpeakerIcon">🔊</span>
+              </div>
+              <div class="gliderCountdown">
+                <div class="gliderCDTop"><span id="vDays">-- DAYS</span></div>
+                <div class="gliderCDBot"><span id="vTime">--:--:--</span></div>
+              </div>
             </div>
           </div>
 
-          <div class="gliderSub">
-            <span>128k RAM — 83259 Bytes Free</span>
-            <span class="gliderDivider">|</span>
-            <span class="gliderSmall">VALENTINE LINK: ACTIVE</span>
-          </div>
-
-          <!-- GLOBE ROW -->
-          <div class="globeRow" aria-label="Glider locations">
-            <button class="globeBtn" data-action="hub_stats" title="SysInfo">
-              <span class="globeIcon">🌐</span>
-              <span class="globeLabel">SYSINFO</span>
-            </button>
-
-            <button class="globeBtn" data-action="hub_rewards" title="Rewards">
-              <span class="globeIcon">🏅</span>
-              <span class="globeLabel">REWARDS</span>
-            </button>
-
-            <button class="globeBtn" data-action="hub_minigames" title="G.A.M.E">
-              <span class="globeIcon">🎮</span>
-              <span class="globeLabel">G.A.M.E</span>
-            </button>
-
-            <button class="globeBtn" data-action="hub_mission" title="Mission">
-              <span class="globeIcon">🧭</span>
-              <span class="globeLabel">MISSION</span>
-            </button>
-
-            <button class="globeBtn" data-action="hub_back" title="Exit">
-              <span class="globeIcon">⏎</span>
-              <span class="globeLabel">EXIT</span>
-            </button>
-          </div>
-
-          <!-- STATUS STRIP (countdown + target, compact) -->
-          <div class="gliderStrip">
-            <div class="stripCol">
-              <div class="stripLabel">COUNTDOWN</div>
-              <div class="stripBig" id="vDays">-- DAYS</div>
-              <div class="stripSmall" id="vTime">--:--:--</div>
+          <!-- GLIDER “WORLD/NETWORK” ROW -->
+          <div class="gliderWorldRow" aria-hidden="true">
+            <div class="gliderWorldItem">
+              <div class="gliderWorldIcon">${this._gliderIcon("globe")}</div>
+              <div class="gliderWorldLbl">Network</div>
             </div>
-
-            <div class="stripCol">
-              <div class="stripLabel">TARGET</div>
-              <div class="stripSmall">02/14/2026 00:00</div>
-              <div class="stripSmall" style="opacity:.75;">(Local time)</div>
+            <div class="gliderWorldItem">
+              <div class="gliderWorldIcon">${this._gliderIcon("scan")}</div>
+              <div class="gliderWorldLbl">Global</div>
             </div>
-
-            <div class="stripCol stripNote">
-              <div class="stripLabel">NOTICE</div>
-              <div class="stripSmall">This hub is live — counting down to Valentine’s Day.</div>
-              <div class="stripSmall" style="opacity:.75;">(Yes, this is extremely official.)</div>
+            <div class="gliderWorldItem">
+              <div class="gliderWorldIcon">${this._gliderIcon("scan")}</div>
+              <div class="gliderWorldLbl">USA</div>
+            </div>
+            <div class="gliderWorldItem">
+              <div class="gliderWorldIcon">${this._gliderIcon("scan")}</div>
+              <div class="gliderWorldLbl">Europe</div>
+            </div>
+            <div class="gliderWorldItem">
+              <div class="gliderWorldIcon">${this._gliderIcon("scan")}</div>
+              <div class="gliderWorldLbl">Oceania</div>
+            </div>
+            <div class="gliderWorldItem">
+              <div class="gliderWorldIcon">${this._gliderIcon("scan")}</div>
+              <div class="gliderWorldLbl">Net 2.0</div>
+            </div>
+            <div class="gliderWorldItem">
+              <div class="gliderWorldIcon">${this._gliderIcon("pin")}</div>
+              <div class="gliderWorldLbl">G.A.M.E</div>
             </div>
           </div>
-
         </div>
-        <!-- ===== GLIDER PANEL END ===== -->
+
+        <!-- GLIDER DOCK (THE CLICK OPTIONS) -->
+        <div class="gliderDock">
+          <button class="gliderTile" data-action="hub_stats">
+            <div class="gliderTileIcon">${this._gliderIcon("info")}</div>
+            <div class="gliderTileTxt">SysInfo</div>
+          </button>
+
+          <button class="gliderTile" data-action="hub_rewards">
+            <div class="gliderTileIcon">${this._gliderIcon("gift")}</div>
+            <div class="gliderTileTxt">Rewards</div>
+          </button>
+
+          <button class="gliderTile" data-action="hub_minigames">
+            <div class="gliderTileIcon">${this._gliderIcon("plus")}</div>
+            <div class="gliderTileTxt">G.A.M.E</div>
+          </button>
+
+          <button class="gliderTile" data-action="hub_mission">
+            <div class="gliderTileIcon">${this._gliderIcon("pin")}</div>
+            <div class="gliderTileTxt">Mission</div>
+          </button>
+
+          <button class="gliderTile" data-action="hub_back">
+            <div class="gliderTileIcon">${this._gliderIcon("exit")}</div>
+            <div class="gliderTileTxt">Exit</div>
+          </button>
+        </div>
+
+        <!-- FOOTER LINE (like the reference has status text) -->
+        <div class="gliderFooterLine">
+          TARGET: 02/14/2026 00:00 (Local time)
+        </div>
       </div>
     `);
 
     this.startCountdown();
   }
-  // ============================================================
-  // ===== VALENTINE HUB END (ONLY SECTION CHANGED) ==============
-  // ============================================================
 
-
-  // ===== COUNTDOWN START =====
   startCountdown(){
     this.stopCountdown();
 
@@ -362,69 +465,123 @@ export class Game {
       this.timer = null;
     }
   }
-  // ===== COUNTDOWN END =====
 
-  // ===== HUB BUTTON ACTIONS START =====
+  /* ============================================================
+     VALENTINE HUB (GLIDER STYLE) END
+     ============================================================ */
+
+
+  /* =========================
+     ACTION HANDLER START
+     ========================= */
   handleAction(action){
-    // Return to ID terminal
+    // Keep it simple for now: placeholders
     if (action === "hub_back") return this.boot();
 
-    // SYSINFO / VAULT STATS
+    /* =========================
+       VALENTINE HUB: SYSINFO SCREEN START
+       (still Valentine Hub feature)
+       ========================= */
     if (action === "hub_stats"){
-      this.ui.setStatus("VAULT STATS: LOADING");
+      this.ui.setStatus("SYSINFO: LOADING");
       this.ui.clear();
       this.ui.hideInput();
       this.ui.html(`
-        <div class="block">
-          <div class="valSmall" style="text-transform:uppercase; letter-spacing:1px;">VAULT STATS</div>
-          <div style="margin-top:10px; line-height:1.35;">
-            BUILD TIME: <b>3 DAYS</b><br/>
-            MODULES: <b>TERMINAL + HUB</b><br/>
-            AUDIO: <b>OPTIONAL</b><br/>
-            USER: <b>IZABELLA</b><br/>
+        <div class="valHub gliderHub">
+          <div class="valBg"></div>
+
+          <div class="gliderPanel">
+            <div class="gliderTopRow">
+              <div class="gliderTitle">
+                <div class="gliderLine">*** SYSTEM INFORMATION ***</div>
+                <div class="gliderLine gliderSub">VAULT 131 / USER: IZABELLA</div>
+              </div>
+            </div>
+
+            <div class="gliderInfoBody">
+              <div class="gliderInfoRow"><span class="k">BUILD TIME</span><span class="v">3 DAYS</span></div>
+              <div class="gliderInfoRow"><span class="k">MODULES</span><span class="v">TERMINAL + HUB</span></div>
+              <div class="gliderInfoRow"><span class="k">AUDIO</span><span class="v">OPTIONAL</span></div>
+              <div class="gliderInfoRow"><span class="k">TARGET</span><span class="v">02/14/2026 00:00</span></div>
+            </div>
           </div>
-        </div>
-        <div class="block">
-          <button data-action="hub_return">← BACK TO HUB</button>
+
+          <div class="gliderDock gliderDockSmall">
+            <button class="gliderTile" data-action="hub_return">
+              <div class="gliderTileIcon">${this._gliderIcon("exit")}</div>
+              <div class="gliderTileTxt">Back</div>
+            </button>
+          </div>
         </div>
       `);
       return;
     }
+    /* =========================
+       VALENTINE HUB: SYSINFO SCREEN END
+       ========================= */
 
     if (action === "hub_return"){
       return this.showValentineHub();
     }
 
-    // rewards / minigames / mission placeholders
+    /* =========================
+       VALENTINE HUB: PLACEHOLDER MODULES START
+       ========================= */
     if (action === "hub_rewards" || action === "hub_minigames" || action === "hub_mission"){
       this.ui.setStatus("MODULE: UNDER CONSTRUCTION");
       this.ui.clear();
       this.ui.hideInput();
       this.ui.html(`
-        <div class="block">
-          <div class="valSmall" style="text-transform:uppercase; letter-spacing:1px;">MODULE LOADED</div>
-          <div style="margin-top:10px; line-height:1.35; opacity:.9;">
-            This module is next.<br/>
-            (We’ll build it clean, no random changes.)
+        <div class="valHub gliderHub">
+          <div class="valBg"></div>
+
+          <div class="gliderPanel">
+            <div class="gliderTopRow">
+              <div class="gliderTitle">
+                <div class="gliderLine">*** MODULE LOADED ***</div>
+                <div class="gliderLine gliderSub">STATUS: UNDER CONSTRUCTION</div>
+              </div>
+            </div>
+
+            <div class="gliderInfoBody">
+              <div class="gliderDim" style="line-height:1.4;">
+                This module is next.<br/>
+                (We’ll build it clean, no random changes.)
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="block">
-          <button data-action="hub_return">← BACK TO HUB</button>
+
+          <div class="gliderDock gliderDockSmall">
+            <button class="gliderTile" data-action="hub_return">
+              <div class="gliderTileIcon">${this._gliderIcon("exit")}</div>
+              <div class="gliderTileTxt">Back</div>
+            </button>
+          </div>
         </div>
       `);
       return;
     }
+    /* =========================
+       VALENTINE HUB: PLACEHOLDER MODULES END
+       ========================= */
   }
-  // ===== HUB BUTTON ACTIONS END =====
+  /* =========================
+     ACTION HANDLER END
+     ========================= */
 
-  // ===== INPUT HANDLER START =====
+
+  /* =========================
+     INPUT HANDLER START
+     ========================= */
   async handleInput(raw){
     const a = (raw || "").trim().toLowerCase();
 
     if (a === "help") return this.showHelp();
     if (this.stage === "help") return this.boot();
 
-    // LOGIN
+    /* =========================
+       LOGIN INPUT START
+       ========================= */
     if (this.stage === "login"){
       this.ui.setStatus("VALIDATING…");
 
@@ -439,7 +596,7 @@ export class Game {
       }
 
       if (a === this.NEXT_ID.toLowerCase()){
-        // Valentine Hub ONLY (not default start)
+        // This is your Valentine Hub ONLY (not default start)
         await this.ui.loading(this.loadMsgs, this.loadDetails);
         await this.ui.powerDip();
         return this.showValentineHub();
@@ -450,8 +607,13 @@ export class Game {
       this.ui.showInput("ENTER ID");
       return;
     }
+    /* =========================
+       LOGIN INPUT END
+       ========================= */
 
-    // RIDDLES
+    /* =========================
+       RIDDLE INPUT START
+       ========================= */
     if (this.stage === "riddle"){
       const current = this.riddles[this.r];
       if (a === current.a.toLowerCase()){
@@ -470,8 +632,13 @@ export class Game {
         return;
       }
     }
+    /* =========================
+       RIDDLE INPUT END
+       ========================= */
 
-    // FINAL
+    /* =========================
+       FINAL INPUT START
+       ========================= */
     if (this.stage === "final"){
       if (raw === this.finalQ.a){
         this.ui.setStatus("CODE ACCEPTED");
@@ -488,6 +655,9 @@ export class Game {
         return;
       }
     }
+    /* =========================
+       FINAL INPUT END
+       ========================= */
 
     if (this.stage === "done"){
       return this.boot();
@@ -498,5 +668,7 @@ export class Game {
       return;
     }
   }
-  // ===== INPUT HANDLER END =====
+  /* =========================
+     INPUT HANDLER END
+     ========================= */
 }
