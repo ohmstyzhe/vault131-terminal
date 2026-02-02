@@ -295,7 +295,7 @@ html, body{
 /* =========================================================
    VALENTINE HUD START
    ONLY affects the Valentine Hub screen
-   (glider look + bigger globes + pulse + hover glow)
+   (Scoped under .valHub so it cannot touch other screens)
    ========================================================= */
 
 /* Container */
@@ -329,8 +329,8 @@ html, body{
   z-index:2;
 }
 
-/* Top “system” panel (matches your reference style more) */
-.valPanel{
+/* Top “system” panel */
+.valHub .valPanel{
   border: 2px solid rgba(76,255,154,0.55);
   border-radius: 14px;
   padding: 16px 18px 14px;
@@ -338,14 +338,14 @@ html, body{
   box-shadow: 0 0 18px rgba(76,255,154,0.10);
 }
 
-.valTopBar{
+.valHub .valTopBar{
   display:flex;
   align-items:flex-start;
   justify-content:space-between;
   gap: 12px;
 }
 
-.valTitleBig{
+.valHub .valTitleBig{
   font-size: 22px;
   letter-spacing: 2px;
   text-transform: uppercase;
@@ -355,7 +355,7 @@ html, body{
   line-height: 1.12;
 }
 
-.valTitleSub{
+.valHub .valTitleSub{
   margin-top: 6px;
   font-size: 12px;
   letter-spacing: 1px;
@@ -363,21 +363,21 @@ html, body{
   text-transform: uppercase;
 }
 
-/* Countdown moved UNDER the title area, more noticeable */
-.valCountdownRow{
+/* Countdown under title */
+.valHub .valCountdownRow{
   margin-top: 14px;
   padding-top: 12px;
   border-top: 1px solid rgba(76,255,154,0.30);
 }
 
-.valCountdownLabel{
+.valHub .valCountdownLabel{
   font-size: 12px;
   letter-spacing: 2px;
   text-transform: uppercase;
   opacity: 0.92;
 }
 
-.valCountdownValue{
+.valHub .valCountdownValue{
   margin-top: 8px;
   display:flex;
   align-items:baseline;
@@ -386,7 +386,7 @@ html, body{
 }
 
 /* These IDs come from your JS countdown */
-#vDays{
+.valHub #vDays{
   font-size: 34px;
   letter-spacing: 3px;
   font-weight: 800;
@@ -395,13 +395,13 @@ html, body{
     0 0 32px rgba(76,255,154,0.12);
 }
 
-.valCountdownTime{
+.valHub .valCountdownTime{
   font-size: 18px;
   letter-spacing: 2px;
   opacity: 0.96;
 }
 
-.valTargetLine{
+.valHub .valTargetLine{
   margin-top: 10px;
   font-size: 12px;
   letter-spacing: 1px;
@@ -409,7 +409,7 @@ html, body{
 }
 
 /* ===== Globe “options” row ===== */
-.valIconRow{
+.valHub .valIconRow{
   margin-top: 16px;
   display:flex;
   justify-content:space-between;
@@ -418,7 +418,7 @@ html, body{
 }
 
 /* Each option tile */
-.valIconBtn{
+.valHub .valIconBtn{
   flex: 1 1 0;
   min-width: 0;
   border: 2px solid rgba(76,255,154,0.45);
@@ -438,8 +438,8 @@ html, body{
   will-change: transform, box-shadow;
 }
 
-.valIconBtn:hover,
-.valIconBtn:focus-visible{
+.valHub .valIconBtn:hover,
+.valHub .valIconBtn:focus-visible{
   transform: translateY(-2px);
   border-color: rgba(76,255,154,0.80);
   box-shadow:
@@ -448,13 +448,13 @@ html, body{
   filter: brightness(1.08);
 }
 
-.valIconBtn:active{
+.valHub .valIconBtn:active{
   transform: translateY(-1px);
 }
 
-/* Your globe images (KEEP SAME FILENAMES — this styles whatever you already use) */
-.valIconImg{
-  width: 74px;     /* BIGGER */
+/* Your globe images */
+.valHub .valIconImg{
+  width: 74px;
   height: 74px;
   object-fit: contain;
   filter:
@@ -465,11 +465,11 @@ html, body{
   animation: globePulse 4.8s ease-in-out infinite;
 }
 
-/* Slight variation so they don’t all pulse perfectly in sync */
-.valIconBtn:nth-child(2) .valIconImg{ animation-delay: .35s; }
-.valIconBtn:nth-child(3) .valIconImg{ animation-delay: .7s; }
-.valIconBtn:nth-child(4) .valIconImg{ animation-delay: 1.05s; }
-.valIconBtn:nth-child(5) .valIconImg{ animation-delay: 1.4s; }
+/* Stagger the pulse */
+.valHub .valIconBtn:nth-child(2) .valIconImg{ animation-delay: .35s; }
+.valHub .valIconBtn:nth-child(3) .valIconImg{ animation-delay: .7s; }
+.valHub .valIconBtn:nth-child(4) .valIconImg{ animation-delay: 1.05s; }
+.valHub .valIconBtn:nth-child(5) .valIconImg{ animation-delay: 1.4s; }
 
 @keyframes globePulse{
   0%,100%{
@@ -488,24 +488,21 @@ html, body{
   }
 }
 
-/* Extra “reactive glow” when hovering the tile */
-.valIconBtn:hover .valIconImg,
-.valIconBtn:focus-visible .valIconImg{
+.valHub .valIconBtn:hover .valIconImg,
+.valHub .valIconBtn:focus-visible .valIconImg{
   filter:
     drop-shadow(0 0 16px rgba(76,255,154,0.30))
     drop-shadow(0 0 48px rgba(76,255,154,0.16));
 }
 
-/* Label under each globe */
-.valIconText{
+.valHub .valIconText{
   font-size: 12px;
   letter-spacing: 2px;
   text-transform: uppercase;
   opacity: 0.95;
 }
 
-/* Bottom hint text (if you use it) */
-.valFootNote{
+.valHub .valFootNote{
   margin-top: 12px;
   font-size: 12px;
   letter-spacing: 1px;
@@ -514,17 +511,17 @@ html, body{
 
 /* Mobile/iPad tuning */
 @media (max-width: 900px){
-  .valTitleBig{ font-size: 20px; }
-  #vDays{ font-size: 30px; }
-  .valIconImg{ width: 66px; height: 66px; }
+  .valHub .valTitleBig{ font-size: 20px; }
+  .valHub #vDays{ font-size: 30px; }
+  .valHub .valIconImg{ width: 66px; height: 66px; }
 }
 
 @media (max-width: 720px){
-  .valPanel{ padding: 14px 14px 12px; }
-  .valIconRow{ gap: 10px; }
-  .valIconBtn{ padding: 12px 10px 10px; }
-  .valIconText{ font-size: 11px; }
-  .valIconImg{ width: 62px; height: 62px; }
+  .valHub .valPanel{ padding: 14px 14px 12px; }
+  .valHub .valIconRow{ gap: 10px; }
+  .valHub .valIconBtn{ padding: 12px 10px 10px; }
+  .valHub .valIconText{ font-size: 11px; }
+  .valHub .valIconImg{ width: 62px; height: 62px; }
 }
 
 /* =========================================================
@@ -543,7 +540,6 @@ html, body{
 /* =========================================================
    PROJECTOR / OLD MONITOR LOOK (GLOBAL)
    Applies to the ENTIRE UI inside #crt
-   Paste at BOTTOM of styles.css
    ========================================================= */
 
 html, body{
@@ -552,33 +548,27 @@ html, body{
 
 /* Make the whole CRT feel like it’s being projected */
 #crt{
-  /* warm projector tint + slight softness */
   filter:
     brightness(1.03)
     contrast(1.12)
     saturate(1.18)
     sepia(0.10);
 
-  /* bloom-y glow around the frame */
   box-shadow:
     0 0 70px rgba(255, 210, 120, 0.07),
     0 0 45px rgba(76,255,154,0.22),
     inset 0 0 170px rgba(0,0,0,0.95);
 
-  /* tiny “optical” blur without ruining readability */
-  /* (keep this small or text gets mushy) */
   -webkit-backface-visibility: hidden;
   transform: translateZ(0);
 }
 
-/* Slight keystone / perspective like a projector */
 @media (min-width: 520px){
   #crt{
     transform: perspective(1200px) rotateX(0.6deg) rotateY(-0.6deg);
   }
 }
 
-/* OVERLAYS (vignette, dust, banding) */
 #crt::before{
   content:"";
   position:absolute;
@@ -586,7 +576,6 @@ html, body{
   pointer-events:none;
   z-index:20;
 
-  /* vignette + warm falloff + slight hotspot */
   background:
     radial-gradient(circle at 50% 35%,
       rgba(255, 220, 160, 0.06),
@@ -595,7 +584,6 @@ html, body{
       rgba(0,0,0,0.0) 40%,
       rgba(0,0,0,0.55) 78%,
       rgba(0,0,0,0.92) 100%),
-    /* subtle vertical “projector haze” */
     linear-gradient(to bottom,
       rgba(255, 200, 120, 0.04),
       rgba(0,0,0,0.0) 30%,
@@ -606,7 +594,6 @@ html, body{
   opacity:0.95;
 }
 
-/* Dust / speckle layer */
 #crt::after{
   content:"";
   position:absolute;
@@ -614,7 +601,6 @@ html, body{
   pointer-events:none;
   z-index:21;
 
-  /* fake dust: tiny dots + faint streaking */
   background-image:
     radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
     radial-gradient(rgba(255,255,255,0.020) 1px, transparent 1px),
@@ -643,9 +629,7 @@ html, body{
   100%{ transform: translate3d(-18px, 14px, 0); }
 }
 
-/* A soft “rolling band” like a projector refresh */
 #powerDip{
-  /* keep your existing power dip behavior, but give it projector warmth */
   mix-blend-mode: screen;
 }
 
@@ -673,7 +657,6 @@ html, body{
   100%{ transform: translateY(60%); }
 }
 
-/* Flicker / breathing brightness (subtle!) */
 #crt{
   animation: projectorFlicker 4.2s infinite;
 }
@@ -686,7 +669,6 @@ html, body{
   }
 }
 
-/* Light chromatic fringing on text + UI edges (old optics) */
 #terminal, #uiWrap, #uiBar, #uiStatus{
   text-shadow:
     0 0 4px rgba(76,255,154,0.65),
@@ -695,13 +677,7 @@ html, body{
     -1px 0 0 rgba(120, 255, 210, 0.07);
 }
 
-/* Make scanlines feel a bit more “projector” than CRT */
 #scanlines{
   opacity:0.75;
   mix-blend-mode: overlay;
 }
-
-/* =========================================================
-   PROJECTOR BAND: add this ONE element in HTML
-   (see tiny snippet below)
-   ========================================================= */
