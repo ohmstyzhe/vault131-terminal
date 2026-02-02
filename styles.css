@@ -1403,3 +1403,172 @@ html, body{
 /* =========================================================
    VALENTINE HUB (GLIDER STYLE) END
    ========================================================= */
+  
+  /* =========================================================
+   VALENTINE HUB (GLIDER STYLE) START
+   ========================================================= */
+
+.valHub.valGlider{
+  position: relative;
+  padding: 10px 0 0;
+}
+
+/* watermark logo behind everything */
+.valHub.valGlider .valBg{
+  position:absolute;
+  inset:0;
+  background-image:url("assets/vault-tec-logo.png");
+  background-repeat:no-repeat;
+  background-position:center 62%; /* pushes logo DOWN */
+  background-size:min(920px, 92%);
+  opacity:0.16;
+  filter: blur(0.2px) brightness(1.15) contrast(1.05)
+          drop-shadow(0 0 18px rgba(76,255,154,0.18));
+  pointer-events:none;
+  z-index:0;
+  mix-blend-mode: screen;
+}
+
+/* keep content above watermark */
+.valHub.valGlider > *{ position:relative; z-index:2; }
+
+/* top panel */
+.valPanel{
+  border: 2px solid rgba(76,255,154,0.55);
+  border-radius: 14px;
+  padding: 16px 18px;
+  box-shadow: 0 0 18px rgba(76,255,154,0.10);
+}
+
+/* title block */
+.valTopBar{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap: 12px;
+}
+
+.valTitleBig{
+  font-size: 22px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(76,255,154,0.30);
+}
+
+.valTitleSub{
+  margin-top: 6px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  opacity: 0.85;
+  text-transform: uppercase;
+}
+
+/* countdown line under title */
+.valCountdownRow{
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(76,255,154,0.35);
+}
+
+.valCountdownLabel{
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.valCountdownValue{
+  margin-top: 8px;
+  display:flex;
+  align-items:baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+#vDays{
+  font-size: 34px;
+  letter-spacing: 3px;
+  font-weight: 700;
+  text-shadow: 0 0 14px rgba(76,255,154,0.30);
+}
+
+.valCountdownTime{
+  font-size: 18px;
+  letter-spacing: 2px;
+  opacity: 0.95;
+}
+
+.valTargetLine{
+  margin-top: 10px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  opacity: 0.78;
+}
+
+/* icon row */
+.valIconRow{
+  margin-top: 16px;
+  display:flex;
+  justify-content:space-between;
+  gap: 12px;
+  flex-wrap: nowrap;
+}
+
+.valIconBtn{
+  flex: 1 1 0;
+  min-width: 0;
+  border: 2px solid rgba(76,255,154,0.45);
+  border-radius: 12px;
+  background: rgba(0,0,0,0.35);
+  padding: 12px 10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap: 8px;
+}
+
+.valIconBtn:hover{
+  box-shadow: 0 0 18px rgba(76,255,154,0.12);
+}
+
+.valIconImg{
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(76,255,154,0.20));
+  image-rendering: -webkit-optimize-contrast;
+}
+
+.valIconText{
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.95;
+}
+
+/* small foot note */
+.valFootNote{
+  margin-top: 10px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  opacity: 0.65;
+}
+
+/* mobile/iPad tuning */
+@media (max-width: 900px){
+  .valTitleBig{ font-size: 20px; }
+  #vDays{ font-size: 30px; }
+  .valIconImg{ width: 40px; height: 40px; }
+}
+
+@media (max-width: 720px){
+  .valPanel{ padding: 14px 14px; }
+  .valIconRow{ gap: 10px; }
+  .valIconBtn{ padding: 10px 8px; }
+  .valIconText{ font-size: 11px; }
+}
+
+/* =========================================================
+   VALENTINE HUB (GLIDER STYLE) END
+   ========================================================= */
