@@ -664,3 +664,311 @@ html, body{
 /* ==========================================================
    GLIDER HUD – ACTIVITY LEDS END
    ========================================================== */
+  
+  /* =========================================================
+   VALENTINE HUB (GLIDER UI) — ONLY AFFECTS .valHub
+   Paste at the BOTTOM of styles.css
+   ========================================================= */
+
+.valHub{
+  position: relative;
+}
+
+/* keep your watermark option, but subtle */
+.valHub .valBg{
+  position:absolute;
+  inset:0;
+  background-image:url("assets/vault-tec-logo.png");
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:min(760px, 90%);
+  opacity:0.08;
+  filter: blur(0.2px) brightness(1.05);
+  pointer-events:none;
+  z-index:0;
+  mix-blend-mode: screen;
+}
+
+.valHub > *{
+  position:relative;
+  z-index:2;
+}
+
+/* === main “glider” panel === */
+.valGlider .gliderPanel{
+  border: 2px solid rgba(76,255,154,0.40);
+  border-radius: 14px;
+  padding: 14px 14px 12px;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.35) inset,
+    0 0 22px rgba(76,255,154,0.08);
+}
+
+/* top banner */
+.valGlider .gliderTop{
+  position: relative;
+  border: 2px solid rgba(76,255,154,0.35);
+  border-radius: 12px;
+  padding: 12px 12px 10px;
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+
+/* scanlines inside banner */
+.valGlider .gliderTop::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(76,255,154,0.06),
+    rgba(76,255,154,0.06) 1px,
+    rgba(0,0,0,0) 3px,
+    rgba(0,0,0,0) 6px
+  );
+  opacity: 0.35;
+  pointer-events:none;
+}
+
+.valGlider .gliderTitle{
+  font-size: 18px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow:
+    0 0 6px rgba(76,255,154,0.45),
+    0 0 18px rgba(76,255,154,0.18);
+  margin-bottom: 8px;
+}
+
+.valGlider .gliderMeta{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 8px;
+  font-size: 13px;
+  letter-spacing: 1px;
+  opacity: 0.95;
+}
+
+.valGlider .gliderMeta .dot{
+  opacity: 0.5;
+}
+
+.valGlider .gliderCountdown{
+  margin-left:auto;
+  display:flex;
+  gap:10px;
+  white-space: nowrap;
+}
+
+/* little “speaker” glyph */
+.valGlider .gliderSpeaker{
+  position:absolute;
+  right: 10px;
+  top: 10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  border: 2px solid rgba(76,255,154,0.35);
+  opacity: 0.9;
+}
+.valGlider .gliderSpeaker::before{
+  content:"";
+  position:absolute;
+  inset: 7px 10px 7px 8px;
+  border-left: 3px solid rgba(76,255,154,0.75);
+  border-top: 3px solid transparent;
+  border-bottom: 3px solid transparent;
+}
+.valGlider .gliderSpeaker::after{
+  content:"";
+  position:absolute;
+  right: 6px;
+  top: 7px;
+  width: 10px;
+  height: 14px;
+  border-right: 2px solid rgba(76,255,154,0.50);
+  border-top: 2px solid rgba(76,255,154,0.20);
+  border-bottom: 2px solid rgba(76,255,154,0.20);
+  border-radius: 10px;
+  opacity: 0.8;
+}
+
+/* icon row */
+.valGlider .gliderIconsRow{
+  display:flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 4px 2px 2px;
+}
+
+/* each icon button */
+.valGlider .gliderIcon{
+  flex: 1 1 110px;
+  min-width: 110px;
+  border: 2px solid rgba(76,255,154,0.35);
+  border-radius: 12px;
+  padding: 10px 10px 8px;
+  background: rgba(0,0,0,0.25);
+  cursor: pointer;
+  text-align:center;
+}
+
+.valGlider .gliderIcon:active{
+  transform: translateY(1px);
+}
+
+.valGlider .gliderIcon .lbl{
+  display:block;
+  margin-top: 8px;
+  font-size: 12px;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  opacity: 0.95;
+}
+
+/* “drawn with code” icons (no images) */
+.valGlider .gliderIcon .ico{
+  display:inline-block;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 2px solid rgba(76,255,154,0.35);
+  position: relative;
+  box-shadow:
+    0 0 10px rgba(76,255,154,0.08),
+    0 0 0 1px rgba(0,0,0,0.35) inset;
+  overflow:hidden;
+}
+
+/* scanlines inside icons */
+.valGlider .gliderIcon .ico::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(76,255,154,0.08),
+    rgba(76,255,154,0.08) 1px,
+    rgba(0,0,0,0) 3px,
+    rgba(0,0,0,0) 6px
+  );
+  opacity: 0.35;
+}
+
+/* simple “symbol” variations */
+.valGlider .ico.globe::before{
+  content:"";
+  position:absolute;
+  inset: 9px;
+  border-radius: 999px;
+  border: 2px dashed rgba(76,255,154,0.45);
+  opacity: 0.9;
+}
+.valGlider .ico.gift::before{
+  content:"";
+  position:absolute;
+  inset: 12px;
+  border: 2px solid rgba(76,255,154,0.55);
+  border-radius: 6px;
+}
+.valGlider .ico.gift::after{
+  content:"";
+  position:absolute;
+  left: 50%;
+  top: 10px;
+  width: 2px;
+  height: 24px;
+  transform: translateX(-50%);
+  background: rgba(76,255,154,0.55);
+}
+.valGlider .ico.game::before{
+  content:"";
+  position:absolute;
+  left: 12px;
+  right: 12px;
+  top: 20px;
+  height: 2px;
+  background: rgba(76,255,154,0.55);
+}
+.valGlider .ico.game::after{
+  content:"";
+  position:absolute;
+  top: 12px;
+  bottom: 12px;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  background: rgba(76,255,154,0.55);
+}
+.valGlider .ico.pin::before{
+  content:"";
+  position:absolute;
+  left: 50%;
+  top: 10px;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  transform: translateX(-50%);
+  border: 2px solid rgba(76,255,154,0.55);
+}
+.valGlider .ico.pin::after{
+  content:"";
+  position:absolute;
+  left: 50%;
+  top: 24px;
+  width: 2px;
+  height: 14px;
+  transform: translateX(-50%);
+  background: rgba(76,255,154,0.55);
+}
+.valGlider .ico.back::before{
+  content:"";
+  position:absolute;
+  left: 16px;
+  top: 21px;
+  width: 16px;
+  height: 2px;
+  background: rgba(76,255,154,0.55);
+}
+.valGlider .ico.back::after{
+  content:"";
+  position:absolute;
+  left: 16px;
+  top: 17px;
+  width: 8px;
+  height: 8px;
+  border-left: 2px solid rgba(76,255,154,0.55);
+  border-bottom: 2px solid rgba(76,255,154,0.55);
+  transform: rotate(45deg);
+}
+
+/* bottom hint line */
+.valGlider .gliderBottomHint{
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(76,255,154,0.25);
+  font-size: 12px;
+  letter-spacing: 1px;
+  opacity: 0.9;
+}
+
+.valGlider .gliderBottomHint .mono{
+  letter-spacing: 1.6px;
+}
+.valGlider .gliderBottomHint .dim{
+  opacity: 0.65;
+}
+
+/* mobile tuning */
+@media (max-width: 720px){
+  .valGlider .gliderCountdown{
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .valGlider .gliderIcon{
+    flex: 1 1 46%;
+    min-width: 46%;
+  }
+}
