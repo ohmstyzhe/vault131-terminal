@@ -635,3 +635,32 @@ html, body{
 /* ==========================================================
    GLIDER HUD – STATUS TICKER END
    ========================================================== */
+  
+  /* ==========================================================
+   GLIDER HUD – ACTIVITY LEDS START
+   ========================================================== */
+
+@keyframes ledPulse{
+  0%,100%{ opacity:.2; }
+  50%{ opacity:.9; }
+}
+
+.valHub.gliderHud .navIcon::after{
+  content:"";
+  margin-top:6px;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background: rgba(76,255,154,0.9);
+  box-shadow: 0 0 6px rgba(76,255,154,0.6);
+  animation: ledPulse 1.6s infinite ease-in-out;
+}
+
+/* stagger timing */
+.valHub.gliderHud .navIcon:nth-child(2)::after{ animation-delay:.3s; }
+.valHub.gliderHud .navIcon:nth-child(3)::after{ animation-delay:.6s; }
+.valHub.gliderHud .navIcon:nth-child(4)::after{ animation-delay:.9s; }
+
+/* ==========================================================
+   GLIDER HUD – ACTIVITY LEDS END
+   ========================================================== */
