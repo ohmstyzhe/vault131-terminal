@@ -292,1155 +292,52 @@ html, body{
   100%{filter:brightness(1) contrast(1);}
 }
 
-/* ==========================================================
-   VALENTINE HUB (GLIDER STYLE) START
-   Scoped to .valHub so nothing else changes
-   ========================================================== */
+/* =========================================================
+   VALENTINE HUD START
+   ONLY affects the Valentine Hub screen
+   (glider look + bigger globes + pulse + hover glow)
+   ========================================================= */
 
-.valHub.gliderHud{
+/* Container */
+.valHub{
+  position: relative;
   padding: 10px 0 0;
 }
 
-/* Top bar */
-.valHub.gliderHud .gliderBar{
-  border: 2px solid rgba(76,255,154,0.45);
-  border-radius: 10px;
-  padding: 10px 12px;
-  margin-bottom: 10px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  box-shadow:
-    0 0 12px rgba(76,255,154,0.10),
-    0 0 28px rgba(76,255,154,0.06);
-}
-
-.valHub.gliderHud .gliderTitle{
-  font-size: 14px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  opacity: .95;
-}
-
-.valHub.gliderHud .gliderSub{
-  margin-top: 4px;
-  font-size: 12px;
-  letter-spacing: 1px;
-  opacity: .75;
-}
-
-/* little speaker “icon” (CSS only) */
-.valHub.gliderHud .gliderSpeaker{
-  width: 28px;
-  height: 18px;
-  border: 2px solid rgba(76,255,154,0.45);
-  border-radius: 6px;
-  position: relative;
-  opacity: .9;
-}
-.valHub.gliderHud .gliderSpeaker:before{
-  content:"";
-  position:absolute;
-  left: 6px;
-  top: 4px;
-  width: 6px;
-  height: 8px;
-  border-left: 2px solid rgba(76,255,154,0.55);
-}
-.valHub.gliderHud .gliderSpeaker:after{
-  content:"";
-  position:absolute;
-  right: 6px;
-  top: 3px;
-  width: 8px;
-  height: 10px;
-  border-right: 2px solid rgba(76,255,154,0.35);
-  border-top: 2px solid rgba(76,255,154,0.25);
-  border-bottom: 2px solid rgba(76,255,154,0.25);
-  border-radius: 8px;
-}
-
-/* Icon row */
-.valHub.gliderHud .gliderNavRow{
-  display:flex;
-  gap: 10px;
-  align-items:flex-start;
-  justify-content:space-between;
-  margin: 10px 0 12px;
-}
-
-.valHub.gliderHud .navIcon{
-  flex: 1 1 0;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:flex-start;
-  gap: 6px;
-  padding: 10px 8px;
-  border-radius: 10px;
-  border: 2px solid rgba(76,255,154,0.35);
-  background: rgba(0,0,0,0.25);
-}
-
-.valHub.gliderHud .navIcon .label{
-  font-size: 12px;
-  letter-spacing: 1px;
-  opacity: .85;
-}
-
-/* “Planet” circles (CSS only) */
-.valHub.gliderHud .planet{
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-  position:relative;
-  border: 2px solid rgba(76,255,154,0.45);
-  box-shadow:
-    0 0 10px rgba(76,255,154,0.12),
-    inset 0 0 14px rgba(76,255,154,0.10);
-  overflow:hidden;
-}
-
-/* scanline + continents vibe */
-.valHub.gliderHud .planet:before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      rgba(76,255,154,0.10),
-      rgba(76,255,154,0.10) 2px,
-      rgba(0,0,0,0.0) 2px,
-      rgba(0,0,0,0.0) 4px
-    );
-  opacity:.9;
-}
-.valHub.gliderHud .planet:after{
-  content:"";
-  position:absolute;
-  left: 10px;
-  top: 12px;
-  width: 22px;
-  height: 14px;
-  border-radius: 14px;
-  background: rgba(76,255,154,0.18);
-  box-shadow:
-    12px 10px 0 rgba(76,255,154,0.12),
-    -6px 14px 0 rgba(76,255,154,0.10);
-  filter: blur(.2px);
-}
-
-/* slight variations per icon */
-.valHub.gliderHud .planet.p1{ opacity:.95; }
-.valHub.gliderHud .planet.p2{ opacity:.90; }
-.valHub.gliderHud .planet.p3{ opacity:.92; }
-.valHub.gliderHud .planet.p4{ opacity:.88; }
-
-/* Main panels */
-.valHub.gliderHud .gliderMain{
-  display:flex;
-  gap: 10px;
-  align-items:stretch;
-  margin-bottom: 12px;
-}
-
-.valHub.gliderHud .gliderPanel{
-  flex: 1 1 0;
-  border: 2px solid rgba(76,255,154,0.35);
-  border-radius: 12px;
-  padding: 12px 12px;
-  background: rgba(0,0,0,0.18);
-  box-shadow:
-    0 0 14px rgba(76,255,154,0.06);
-}
-
-.valHub.gliderHud .panelHdr{
-  font-size: 12px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  opacity: .85;
-  margin-bottom: 10px;
-}
-
-.valHub.gliderHud .panelBig{
-  font-size: 34px;
-  letter-spacing: 4px;
-  font-weight: 700;
-  text-shadow:
-    0 0 6px rgba(76,255,154,0.55),
-    0 0 18px rgba(76,255,154,0.18);
-  margin-bottom: 8px;
-}
-
-.valHub.gliderHud .panelSmall{
-  font-size: 14px;
-  letter-spacing: 1px;
-  opacity: .85;
-}
-.valHub.gliderHud .panelSmall.dim{
-  opacity: .65;
-  margin-top: 6px;
-}
-
-/* Note */
-.valHub.gliderHud .gliderNote{
-  border: 2px solid rgba(76,255,154,0.25);
-  border-radius: 12px;
-  padding: 12px 12px;
-  margin: 10px 0 12px;
-  opacity: .9;
-  line-height: 1.35;
-}
-
-/* Modules grid */
-.valHub.gliderHud .gliderModules{
-  border: 2px solid rgba(76,255,154,0.25);
-  border-radius: 12px;
-  padding: 12px 12px;
-}
-
-.valHub.gliderHud .modulesHdr{
-  font-size: 12px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  opacity: .85;
-  margin-bottom: 10px;
-}
-
-.valHub.gliderHud .modulesGrid{
-  display:flex;
-  flex-direction:column;
-  gap: 10px;
-}
-
-.valHub.gliderHud .gliderBack{
-  margin-top: 12px;
-}
-
-/* Mobile: keep it tight + prevent crazy scrolling */
-@media (max-width:720px){
-  .valHub.gliderHud .gliderNavRow{ gap: 8px; }
-  .valHub.gliderHud .planet{ width: 40px; height: 40px; }
-  .valHub.gliderHud .panelBig{ font-size: 30px; }
-}
-
-/* ==========================================================
-   VALENTINE HUB (GLIDER STYLE) END
-   ========================================================== */
-
-/* =========================
-   RESPONSIVE
-   ========================= */
-@media (max-width:720px){
-  #inputBox{width:100%;}
-  #crt{ padding:22px; }
-  .valBig{ font-size:30px; }
-  .valRow{ gap:10px; }
-  .valRow > .block{ min-width: 0; flex:1 1 100%; }
-}
-
-/* ==========================================================
-   GLIDER HUD – CRT EFFECTS START
-   ========================================================== */
-
-.valHub.gliderHud::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  z-index:1;
-
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      rgba(76,255,154,0.05),
-      rgba(76,255,154,0.05) 1px,
-      rgba(0,0,0,0) 1px,
-      rgba(0,0,0,0) 3px
-    );
-
-  mix-blend-mode: screen;
-  opacity: .35;
-}
-
-.valHub.gliderHud{
-  position: relative;
-  box-shadow:
-    inset 0 0 40px rgba(76,255,154,0.06),
-    inset 0 0 90px rgba(0,0,0,0.8);
-}
-
-/* ==========================================================
-   GLIDER HUD – CRT EFFECTS END
-   ========================================================== */
-  
-  /* ==========================================================
-   GLIDER HUD – SYSTEM NOISE START
-   ========================================================== */
-
-@keyframes noiseShift{
-  0%{ background-position: 0 0; }
-  100%{ background-position: 120px 120px; }
-}
-
-.valHub.gliderHud::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  z-index:2;
-
-  background-image:
-    repeating-radial-gradient(
-      circle at 20% 30%,
-      rgba(255,255,255,0.015),
-      rgba(255,255,255,0.015) 1px,
-      transparent 1px,
-      transparent 2px
-    );
-
-  opacity: .25;
-  animation: noiseShift 6s linear infinite;
-}
-
-/* ==========================================================
-   GLIDER HUD – SYSTEM NOISE END
-   ========================================================== */
-  
-  /* ==========================================================
-   GLIDER HUD – STATUS TICKER START
-   ========================================================== */
-
-.gliderTicker{
-  width:100%;
-  overflow:hidden;
-  white-space:nowrap;
-}
-
-.gliderTicker span{
-  display:inline-block;
-  padding-left:100%;
-  animation: tickerScroll 18s linear infinite;
-  font-size:14px;
-  letter-spacing:2px;
-  opacity:.9;
-}
-
-@keyframes tickerScroll{
-  0%{ transform: translateX(0); }
-  100%{ transform: translateX(-100%); }
-}
-
-/* ==========================================================
-   GLIDER HUD – STATUS TICKER END
-   ========================================================== */
-  
-  /* ==========================================================
-   GLIDER HUD – ACTIVITY LEDS START
-   ========================================================== */
-
-@keyframes ledPulse{
-  0%,100%{ opacity:.2; }
-  50%{ opacity:.9; }
-}
-
-.valHub.gliderHud .navIcon::after{
-  content:"";
-  margin-top:6px;
-  width:6px;
-  height:6px;
-  border-radius:50%;
-  background: rgba(76,255,154,0.9);
-  box-shadow: 0 0 6px rgba(76,255,154,0.6);
-  animation: ledPulse 1.6s infinite ease-in-out;
-}
-
-/* stagger timing */
-.valHub.gliderHud .navIcon:nth-child(2)::after{ animation-delay:.3s; }
-.valHub.gliderHud .navIcon:nth-child(3)::after{ animation-delay:.6s; }
-.valHub.gliderHud .navIcon:nth-child(4)::after{ animation-delay:.9s; }
-
-/* ==========================================================
-   GLIDER HUD – ACTIVITY LEDS END
-   ========================================================== */
-  
-  /* =========================================================
-   VALENTINE HUB (GLIDER UI) — ONLY AFFECTS .valHub
-   Paste at the BOTTOM of styles.css
-   ========================================================= */
-
-.valHub{
-  position: relative;
-}
-
-/* keep your watermark option, but subtle */
+/* Vault-Tec watermark (only inside the hub) */
 .valHub .valBg{
   position:absolute;
   inset:0;
   background-image:url("assets/vault-tec-logo.png");
   background-repeat:no-repeat;
-
-  /* MOVE LOGO DOWN */
-  background-position: center 65%;
-
-  background-size:min(760px, 90%);
-  opacity:0.08;
-  filter: blur(0.2px) brightness(1.05);
+  background-size:min(980px, 95%);
+  background-position:center 64%; /* moves it DOWN a bit */
+  opacity:0.13;
+  filter:
+    blur(0.20px)
+    brightness(1.12)
+    contrast(1.06)
+    drop-shadow(0 0 18px rgba(76,255,154,0.16));
   pointer-events:none;
   z-index:0;
   mix-blend-mode: screen;
 }
 
+/* keep hub content above watermark */
 .valHub > *{
   position:relative;
   z-index:2;
 }
 
-/* === main “glider” panel === */
-.valGlider .gliderPanel{
-  border: 2px solid rgba(76,255,154,0.40);
-  border-radius: 14px;
-  padding: 14px 14px 12px;
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,0.35) inset,
-    0 0 22px rgba(76,255,154,0.08);
-}
-
-/* top banner */
-.valGlider .gliderTop{
-  position: relative;
-  border: 2px solid rgba(76,255,154,0.35);
-  border-radius: 12px;
-  padding: 12px 12px 10px;
-  margin-bottom: 14px;
-  overflow: hidden;
-}
-
-/* scanlines inside banner */
-.valGlider .gliderTop::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(76,255,154,0.06),
-    rgba(76,255,154,0.06) 1px,
-    rgba(0,0,0,0) 3px,
-    rgba(0,0,0,0) 6px
-  );
-  opacity: 0.35;
-  pointer-events:none;
-}
-
-.valGlider .gliderTitle{
-  font-size: 18px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  text-shadow:
-    0 0 6px rgba(76,255,154,0.45),
-    0 0 18px rgba(76,255,154,0.18);
-  margin-bottom: 8px;
-}
-
-.valGlider .gliderMeta{
-  display:flex;
-  flex-wrap:wrap;
-  gap: 8px;
-  font-size: 13px;
-  letter-spacing: 1px;
-  opacity: 0.95;
-}
-
-.valGlider .gliderMeta .dot{
-  opacity: 0.5;
-}
-
-.valGlider .gliderCountdown{
-  margin-left:auto;
-  display:flex;
-  gap:10px;
-  white-space: nowrap;
-}
-
-/* little “speaker” glyph */
-.valGlider .gliderSpeaker{
-  position:absolute;
-  right: 10px;
-  top: 10px;
-  width: 28px;
-  height: 28px;
-  border-radius: 10px;
-  border: 2px solid rgba(76,255,154,0.35);
-  opacity: 0.9;
-}
-.valGlider .gliderSpeaker::before{
-  content:"";
-  position:absolute;
-  inset: 7px 10px 7px 8px;
-  border-left: 3px solid rgba(76,255,154,0.75);
-  border-top: 3px solid transparent;
-  border-bottom: 3px solid transparent;
-}
-.valGlider .gliderSpeaker::after{
-  content:"";
-  position:absolute;
-  right: 6px;
-  top: 7px;
-  width: 10px;
-  height: 14px;
-  border-right: 2px solid rgba(76,255,154,0.50);
-  border-top: 2px solid rgba(76,255,154,0.20);
-  border-bottom: 2px solid rgba(76,255,154,0.20);
-  border-radius: 10px;
-  opacity: 0.8;
-}
-
-/* icon row */
-.valGlider .gliderIconsRow{
-  display:flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  padding: 4px 2px 2px;
-}
-
-/* each icon button */
-.valGlider .gliderIcon{
-  flex: 1 1 110px;
-  min-width: 110px;
-  border: 2px solid rgba(76,255,154,0.35);
-  border-radius: 12px;
-  padding: 10px 10px 8px;
-  background: rgba(0,0,0,0.25);
-  cursor: pointer;
-  text-align:center;
-}
-
-.valGlider .gliderIcon:active{
-  transform: translateY(1px);
-}
-
-.valGlider .gliderIcon .lbl{
-  display:block;
-  margin-top: 8px;
-  font-size: 12px;
-  letter-spacing: 1.3px;
-  text-transform: uppercase;
-  opacity: 0.95;
-}
-
-/* “drawn with code” icons (no images) */
-.valGlider .gliderIcon .ico{
-  display:inline-block;
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-  border: 2px solid rgba(76,255,154,0.35);
-  position: relative;
-  box-shadow:
-    0 0 10px rgba(76,255,154,0.08),
-    0 0 0 1px rgba(0,0,0,0.35) inset;
-  overflow:hidden;
-}
-
-/* scanlines inside icons */
-.valGlider .gliderIcon .ico::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(76,255,154,0.08),
-    rgba(76,255,154,0.08) 1px,
-    rgba(0,0,0,0) 3px,
-    rgba(0,0,0,0) 6px
-  );
-  opacity: 0.35;
-}
-
-/* simple “symbol” variations */
-.valGlider .ico.globe::before{
-  content:"";
-  position:absolute;
-  inset: 9px;
-  border-radius: 999px;
-  border: 2px dashed rgba(76,255,154,0.45);
-  opacity: 0.9;
-}
-.valGlider .ico.gift::before{
-  content:"";
-  position:absolute;
-  inset: 12px;
-  border: 2px solid rgba(76,255,154,0.55);
-  border-radius: 6px;
-}
-.valGlider .ico.gift::after{
-  content:"";
-  position:absolute;
-  left: 50%;
-  top: 10px;
-  width: 2px;
-  height: 24px;
-  transform: translateX(-50%);
-  background: rgba(76,255,154,0.55);
-}
-.valGlider .ico.game::before{
-  content:"";
-  position:absolute;
-  left: 12px;
-  right: 12px;
-  top: 20px;
-  height: 2px;
-  background: rgba(76,255,154,0.55);
-}
-.valGlider .ico.game::after{
-  content:"";
-  position:absolute;
-  top: 12px;
-  bottom: 12px;
-  left: 50%;
-  width: 2px;
-  transform: translateX(-50%);
-  background: rgba(76,255,154,0.55);
-}
-.valGlider .ico.pin::before{
-  content:"";
-  position:absolute;
-  left: 50%;
-  top: 10px;
-  width: 12px;
-  height: 12px;
-  border-radius: 999px;
-  transform: translateX(-50%);
-  border: 2px solid rgba(76,255,154,0.55);
-}
-.valGlider .ico.pin::after{
-  content:"";
-  position:absolute;
-  left: 50%;
-  top: 24px;
-  width: 2px;
-  height: 14px;
-  transform: translateX(-50%);
-  background: rgba(76,255,154,0.55);
-}
-.valGlider .ico.back::before{
-  content:"";
-  position:absolute;
-  left: 16px;
-  top: 21px;
-  width: 16px;
-  height: 2px;
-  background: rgba(76,255,154,0.55);
-}
-.valGlider .ico.back::after{
-  content:"";
-  position:absolute;
-  left: 16px;
-  top: 17px;
-  width: 8px;
-  height: 8px;
-  border-left: 2px solid rgba(76,255,154,0.55);
-  border-bottom: 2px solid rgba(76,255,154,0.55);
-  transform: rotate(45deg);
-}
-
-/* bottom hint line */
-.valGlider .gliderBottomHint{
-  margin-top: 12px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(76,255,154,0.25);
-  font-size: 12px;
-  letter-spacing: 1px;
-  opacity: 0.9;
-}
-
-.valGlider .gliderBottomHint .mono{
-  letter-spacing: 1.6px;
-}
-.valGlider .gliderBottomHint .dim{
-  opacity: 0.65;
-}
-
-/* mobile tuning */
-@media (max-width: 720px){
-  .valGlider .gliderCountdown{
-    margin-left: 0;
-    width: 100%;
-    justify-content: flex-start;
-  }
-  .valGlider .gliderIcon{
-    flex: 1 1 46%;
-    min-width: 46%;
-  }
-}
-
-/* ============================================================
-   VALENTINE HUB (GLIDER STYLE) START
-   Only affects .valHub.gliderHub
-   ============================================================ */
-
-.valHub.gliderHub{
-  position: relative;
-  padding: 10px 0 0;
-}
-
-/* watermark behind hub only */
-.valHub.gliderHub .valBg{
-  position:absolute;
-  inset:0;
-  background-image:url("assets/vault-tec-logo.png");
-  background-repeat:no-repeat;
-  background-size:min(860px, 92%);
-  background-position: center 62%; /* <-- moves it DOWN a bit */
-  opacity:0.10;
-  filter: blur(0.2px) brightness(1.12) contrast(1.05);
-  pointer-events:none;
-  z-index:0;
-  mix-blend-mode: screen;
-}
-
-.valHub.gliderHub > *{
-  position: relative;
-  z-index: 2;
-}
-
-/* main “screen” panel */
-.valHub.gliderHub .gliderPanel{
-  border: 2px solid rgba(76,255,154,0.45);
-  border-radius: 12px;
-  padding: 14px 14px 10px;
-  box-shadow: 0 0 18px rgba(76,255,154,0.10);
-}
-
-/* top row: title + right cluster */
-.valHub.gliderHub .gliderTopRow{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap: 14px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgba(76,255,154,0.25);
-}
-
-.valHub.gliderHub .gliderTitle .gliderLine{
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  opacity: 0.92;
-  line-height: 1.25;
-}
-
-.valHub.gliderHub .gliderTitle .gliderSub{
-  opacity: 0.78;
-  margin-top: 4px;
-}
-
-.valHub.gliderHub .gliderDim{ opacity: .75; }
-
-.valHub.gliderHub .gliderRight{
-  display:flex;
-  align-items:flex-start;
-  gap: 10px;
-}
-
-.valHub.gliderHub .gliderSpeaker{
-  border: 2px solid rgba(76,255,154,0.35);
-  border-radius: 10px;
-  padding: 6px 10px;
-  opacity: .85;
-  line-height: 1;
-}
-
-.valHub.gliderHub .gliderCountdown{
-  border: 2px solid rgba(76,255,154,0.35);
-  border-radius: 10px;
-  padding: 6px 10px;
-  min-width: 140px;
-  text-align: right;
-}
-
-.valHub.gliderHub .gliderCDTop{
-  font-weight: 700;
-  letter-spacing: 1px;
-}
-
-.valHub.gliderHub .gliderCDBot{
-  margin-top: 2px;
-  opacity: .85;
-}
-
-/* “world” row */
-.valHub.gliderHub .gliderWorldRow{
-  display:flex;
-  justify-content:space-between;
-  gap: 10px;
-  padding-top: 12px;
-}
-
-.valHub.gliderHub .gliderWorldItem{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap: 6px;
-  width: 100%;
-  min-width: 0;
-  opacity: .88;
-}
-
-.valHub.gliderHub .gliderWorldIcon{
-  width: 44px;
-  height: 44px;
-  display:grid;
-  place-items:center;
-  border-radius: 999px;
-  border: 2px solid rgba(76,255,154,0.35);
-  box-shadow: 0 0 14px rgba(76,255,154,0.10);
-}
-
-.valHub.gliderHub .gliderWorldIcon svg{
-  width: 30px;
-  height: 30px;
-  color: rgba(76,255,154,0.85);
-}
-
-.valHub.gliderHub .gliderWorldLbl{
-  font-size: 12px;
-  letter-spacing: .6px;
-  text-transform: none;
-  opacity: .78;
-  white-space: nowrap;
-}
-
-/* dock buttons */
-.valHub.gliderHub .gliderDock{
-  display:flex;
-  gap: 12px;
-  margin-top: 12px;
-}
-
-.valHub.gliderHub .gliderDockSmall{
-  justify-content:flex-start;
-}
-
-.valHub.gliderHub .gliderTile{
-  flex: 1 1 0;
-  min-width: 0;
-  border: 2px solid rgba(76,255,154,0.35);
-  border-radius: 12px;
-  padding: 10px 10px 8px;
-  background: rgba(0,0,0,0.25);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  cursor: pointer;
-}
-
-.valHub.gliderHub .gliderTileIcon{
-  width: 48px;
-  height: 48px;
-  margin: 0 auto 6px;
-  display:grid;
-  place-items:center;
-  border-radius: 999px;
-  border: 2px solid rgba(76,255,154,0.25);
-}
-
-.valHub.gliderHub .gliderTileIcon svg{
-  width: 30px;
-  height: 30px;
-  color: rgba(76,255,154,0.85);
-}
-
-.valHub.gliderHub .gliderTileTxt{
-  font-size: 12px;
-  opacity: .9;
-}
-
-/* footer status line */
-.valHub.gliderHub .gliderFooterLine{
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(76,255,154,0.25);
-  opacity: .85;
-  font-size: 12px;
-  letter-spacing: .6px;
-}
-
-/* responsive: stack world row if needed */
-@media (max-width: 820px){
-  .valHub.gliderHub .gliderWorldRow{
-    flex-wrap: wrap;
-    justify-content:center;
-  }
-  .valHub.gliderHub .gliderWorldItem{
-    width: auto;
-    min-width: 90px;
-  }
-  .valHub.gliderHub .gliderDock{
-    flex-wrap: wrap;
-  }
-  .valHub.gliderHub .gliderTile{
-    flex: 1 1 140px;
-  }
-}
-
-/* ============================================================
-   VALENTINE HUB (GLIDER STYLE) END
-   ============================================================ */
-  
-  /* =========================================================
-   VALENTINE HUB (GLIDER STYLE) START
-   Only affects .valHub / .valGlider
-   ========================================================= */
-
-.valHub.valGlider{
-  position: relative;
-  padding: 14px 0 0;
-}
-
-/* watermark behind hub */
-.valHub.valGlider .valBg{
-  position:absolute;
-  inset:0;
-  background-image:url("assets/vault-tec-logo.png");
-  background-repeat:no-repeat;
-  background-size: min(980px, 95%);
-  background-position: center 65%;
-  opacity: 0.10;
-  filter: blur(0.2px) brightness(1.08) contrast(1.05);
-  pointer-events:none;
-  z-index:0;
-  mix-blend-mode: screen;
-}
-
-.valHub.valGlider > *{ position:relative; z-index:2; }
-
-.valHub.valGlider .valPanel{
-  border: 2px solid rgba(76,255,154,0.55);
-  border-radius: 14px;
-  padding: 16px 16px 12px;
-  box-shadow:
-    0 0 0 2px rgba(0,0,0,0.45) inset,
-    0 0 28px rgba(76,255,154,0.08);
-  background: rgba(0,0,0,0.18);
-}
-
-/* top header row */
-.valHub.valGlider .valTop{
-  display:flex;
-  justify-content: space-between;
-  gap: 16px;
-  align-items: flex-start;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(76,255,154,0.30);
-}
-
-.valHub.valGlider .valTitle{
-  text-transform: uppercase;
-  letter-spacing: 1.6px;
-  font-size: 16px;
-  opacity: 0.95;
-  text-shadow: 0 0 10px rgba(76,255,154,0.25);
-}
-
-.valHub.valGlider .valSub{
-  margin-top: 6px;
-  font-size: 12px;
-  letter-spacing: 1px;
-  opacity: 0.82;
-}
-
-/* countdown mini box (top right like your circled 2 area) */
-.valHub.valGlider .valMiniBox{
-  border: 1px solid rgba(76,255,154,0.45);
-  border-radius: 12px;
-  padding: 10px 12px;
-  min-width: 160px;
-  background: rgba(0,0,0,0.22);
-  box-shadow: 0 0 18px rgba(76,255,154,0.08);
-}
-
-.valHub.valGlider .valMiniLabel{
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-size: 11px;
-  opacity: 0.75;
-}
-
-.valHub.valGlider .valMiniBig{
-  margin-top: 6px;
-  font-size: 20px;
-  letter-spacing: 2px;
-  font-weight: 700;
-  text-shadow: 0 0 10px rgba(76,255,154,0.30);
-}
-
-.valHub.valGlider .valMiniTime{
-  margin-top: 6px;
-  font-size: 12px;
-  letter-spacing: 1.4px;
-  opacity: 0.90;
-}
-
-/* globe row */
-.valHub.valGlider .valGlobeRow{
-  display:flex;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 14px 6px 6px;
-  align-items: flex-end;
-}
-
-.valHub.valGlider .valGlobeBtn{
-  flex: 1 1 0;
-  background: transparent;
-  border: 1px solid rgba(76,255,154,0.35);
-  border-radius: 16px;
-  padding: 14px 10px 12px;
-  display:flex;
-  flex-direction: column;
-  align-items:center;
-  gap: 10px;
-  transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
-}
-
-.valHub.valGlider .valGlobeBtn:hover{
-  transform: translateY(-1px);
-  border-color: rgba(76,255,154,0.65);
-  box-shadow: 0 0 20px rgba(76,255,154,0.12);
-}
-
-.valHub.valGlider .valGlobeLabel{
-  text-transform: uppercase;
-  letter-spacing: 1.2px;
-  font-size: 12px;
-  opacity: 0.92;
-}
-
-/* fake “earth” globe */
-.valHub.valGlider .valGlobe{
-  width: 56px;
-  height: 56px;
-  border-radius: 999px;
-  position: relative;
-  border: 1px solid rgba(76,255,154,0.55);
-  box-shadow:
-    0 0 0 2px rgba(0,0,0,0.35) inset,
-    0 0 18px rgba(76,255,154,0.10);
-  background:
-    radial-gradient(circle at 35% 30%, rgba(76,255,154,0.22), transparent 45%),
-    radial-gradient(circle at 70% 65%, rgba(76,255,154,0.10), transparent 55%),
-    radial-gradient(circle at 50% 50%, rgba(0,0,0,0.55), rgba(0,0,0,0.9));
-  overflow:hidden;
-}
-
-/* scanlines */
-.valHub.valGlider .valGlobe::after{
-  content:"";
-  position:absolute;
-  inset:-6px;
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      rgba(76,255,154,0.12) 0px,
-      rgba(76,255,154,0.12) 2px,
-      rgba(0,0,0,0.00) 3px,
-      rgba(0,0,0,0.00) 6px
-    );
-  opacity: 0.55;
-  mix-blend-mode: screen;
-  pointer-events:none;
-}
-
-/* “continents” blobs (different per globe) */
-.valHub.valGlider .valGlobe::before{
-  content:"";
-  position:absolute;
-  inset: 8px;
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at 30% 40%, rgba(76,255,154,0.38) 0 18%, transparent 19%),
-    radial-gradient(circle at 55% 35%, rgba(76,255,154,0.32) 0 14%, transparent 15%),
-    radial-gradient(circle at 60% 65%, rgba(76,255,154,0.28) 0 16%, transparent 17%),
-    radial-gradient(circle at 38% 68%, rgba(76,255,154,0.22) 0 12%, transparent 13%);
-  filter: blur(0.2px);
-  opacity: 0.70;
-}
-
-/* small variations so each looks unique */
-.valHub.valGlider .valGlobe.g2::before{ transform: translate(2px,-1px) scale(1.02); opacity:0.65; }
-.valHub.valGlider .valGlobe.g3::before{ transform: translate(-2px,1px) scale(1.00); opacity:0.62; }
-.valHub.valGlider .valGlobe.g4::before{ transform: translate(1px,2px) scale(1.03); opacity:0.66; }
-.valHub.valGlider .valGlobe.g5::before{ transform: translate(-1px,-2px) scale(0.98); opacity:0.58; }
-
-/* bottom line */
-.valHub.valGlider .valBottomLine{
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(76,255,154,0.22);
-  font-size: 12px;
-  letter-spacing: 1px;
-  opacity: 0.85;
-}
-
-/* responsive */
-@media (max-width: 820px){
-  .valHub.valGlider .valGlobeRow{
-    gap: 10px;
-    padding-left: 0;
-    padding-right: 0;
-  }
-  .valHub.valGlider .valGlobe{ width: 50px; height: 50px; }
-  .valHub.valGlider .valGlobeBtn{ padding: 12px 8px 10px; }
-  .valHub.valGlider .valMiniBox{ min-width: 150px; }
-}
-
-@media (max-width: 520px){
-  .valHub.valGlider .valGlobeLabel{ font-size: 11px; letter-spacing: 1px; }
-  .valHub.valGlider .valTitle{ font-size: 14px; }
-}
-
-/* =========================================================
-   VALENTINE HUB (GLIDER STYLE) END
-   ========================================================= */
-  
-  /* =========================================================
-   VALENTINE HUB (GLIDER STYLE) START
-   ========================================================= */
-
-.valHub.valGlider{
-  position: relative;
-  padding: 10px 0 0;
-}
-
-/* watermark logo behind everything */
-.valHub.valGlider .valBg{
-  position:absolute;
-  inset:0;
-  background-image:url("assets/vault-tec-logo.png");
-  background-repeat:no-repeat;
-  background-position:center 62%; /* pushes logo DOWN */
-  background-size:min(920px, 92%);
-  opacity:0.16;
-  filter: blur(0.2px) brightness(1.15) contrast(1.05)
-          drop-shadow(0 0 18px rgba(76,255,154,0.18));
-  pointer-events:none;
-  z-index:0;
-  mix-blend-mode: screen;
-}
-
-/* keep content above watermark */
-.valHub.valGlider > *{ position:relative; z-index:2; }
-
-/* top panel */
+/* Top “system” panel (matches your reference style more) */
 .valPanel{
   border: 2px solid rgba(76,255,154,0.55);
   border-radius: 14px;
-  padding: 16px 18px;
+  padding: 16px 18px 14px;
+  background: rgba(0,0,0,0.22);
   box-shadow: 0 0 18px rgba(76,255,154,0.10);
 }
 
-/* title block */
 .valTopBar{
   display:flex;
   align-items:flex-start;
@@ -1452,7 +349,10 @@ html, body{
   font-size: 22px;
   letter-spacing: 2px;
   text-transform: uppercase;
-  text-shadow: 0 0 10px rgba(76,255,154,0.30);
+  text-shadow:
+    0 0 10px rgba(76,255,154,0.28),
+    0 0 26px rgba(76,255,154,0.12);
+  line-height: 1.12;
 }
 
 .valTitleSub{
@@ -1463,18 +363,18 @@ html, body{
   text-transform: uppercase;
 }
 
-/* countdown line under title */
+/* Countdown moved UNDER the title area, more noticeable */
 .valCountdownRow{
   margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid rgba(76,255,154,0.35);
+  padding-top: 12px;
+  border-top: 1px solid rgba(76,255,154,0.30);
 }
 
 .valCountdownLabel{
   font-size: 12px;
   letter-spacing: 2px;
   text-transform: uppercase;
-  opacity: 0.9;
+  opacity: 0.92;
 }
 
 .valCountdownValue{
@@ -1485,17 +385,20 @@ html, body{
   flex-wrap: wrap;
 }
 
+/* These IDs come from your JS countdown */
 #vDays{
   font-size: 34px;
   letter-spacing: 3px;
-  font-weight: 700;
-  text-shadow: 0 0 14px rgba(76,255,154,0.30);
+  font-weight: 800;
+  text-shadow:
+    0 0 14px rgba(76,255,154,0.26),
+    0 0 32px rgba(76,255,154,0.12);
 }
 
 .valCountdownTime{
   font-size: 18px;
   letter-spacing: 2px;
-  opacity: 0.95;
+  opacity: 0.96;
 }
 
 .valTargetLine{
@@ -1505,7 +408,7 @@ html, body{
   opacity: 0.78;
 }
 
-/* icon row */
+/* ===== Globe “options” row ===== */
 .valIconRow{
   margin-top: 16px;
   display:flex;
@@ -1514,32 +417,86 @@ html, body{
   flex-wrap: nowrap;
 }
 
+/* Each option tile */
 .valIconBtn{
   flex: 1 1 0;
   min-width: 0;
   border: 2px solid rgba(76,255,154,0.45);
-  border-radius: 12px;
-  background: rgba(0,0,0,0.35);
-  padding: 12px 10px;
+  border-radius: 14px;
+  background: rgba(0,0,0,0.28);
+  padding: 14px 12px 12px;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap: 8px;
+  gap: 10px;
+  transition:
+    transform 120ms ease,
+    border-color 120ms ease,
+    box-shadow 160ms ease,
+    filter 160ms ease;
+  will-change: transform, box-shadow;
 }
 
-.valIconBtn:hover{
-  box-shadow: 0 0 18px rgba(76,255,154,0.12);
+.valIconBtn:hover,
+.valIconBtn:focus-visible{
+  transform: translateY(-2px);
+  border-color: rgba(76,255,154,0.80);
+  box-shadow:
+    0 0 18px rgba(76,255,154,0.14),
+    inset 0 0 14px rgba(76,255,154,0.06);
+  filter: brightness(1.08);
 }
 
+.valIconBtn:active{
+  transform: translateY(-1px);
+}
+
+/* Your globe images (KEEP SAME FILENAMES — this styles whatever you already use) */
 .valIconImg{
-  width: 44px;
-  height: 44px;
+  width: 74px;     /* BIGGER */
+  height: 74px;
   object-fit: contain;
-  filter: drop-shadow(0 0 10px rgba(76,255,154,0.20));
+  filter:
+    drop-shadow(0 0 12px rgba(76,255,154,0.22))
+    drop-shadow(0 0 26px rgba(76,255,154,0.10));
   image-rendering: -webkit-optimize-contrast;
+  transform: translateZ(0);
+  animation: globePulse 4.8s ease-in-out infinite;
 }
 
+/* Slight variation so they don’t all pulse perfectly in sync */
+.valIconBtn:nth-child(2) .valIconImg{ animation-delay: .35s; }
+.valIconBtn:nth-child(3) .valIconImg{ animation-delay: .7s; }
+.valIconBtn:nth-child(4) .valIconImg{ animation-delay: 1.05s; }
+.valIconBtn:nth-child(5) .valIconImg{ animation-delay: 1.4s; }
+
+@keyframes globePulse{
+  0%,100%{
+    transform: scale(1);
+    filter:
+      drop-shadow(0 0 10px rgba(76,255,154,0.18))
+      drop-shadow(0 0 22px rgba(76,255,154,0.08));
+    opacity: 0.92;
+  }
+  50%{
+    transform: scale(1.045);
+    filter:
+      drop-shadow(0 0 16px rgba(76,255,154,0.26))
+      drop-shadow(0 0 38px rgba(76,255,154,0.14));
+    opacity: 1;
+  }
+}
+
+/* Extra “reactive glow” when hovering the tile */
+.valIconBtn:hover .valIconImg,
+.valIconBtn:focus-visible .valIconImg{
+  filter:
+    drop-shadow(0 0 16px rgba(76,255,154,0.30))
+    drop-shadow(0 0 48px rgba(76,255,154,0.16));
+}
+
+/* Label under each globe */
 .valIconText{
   font-size: 12px;
   letter-spacing: 2px;
@@ -1547,28 +504,38 @@ html, body{
   opacity: 0.95;
 }
 
-/* small foot note */
+/* Bottom hint text (if you use it) */
 .valFootNote{
-  margin-top: 10px;
+  margin-top: 12px;
   font-size: 12px;
   letter-spacing: 1px;
-  opacity: 0.65;
+  opacity: 0.70;
 }
 
-/* mobile/iPad tuning */
+/* Mobile/iPad tuning */
 @media (max-width: 900px){
   .valTitleBig{ font-size: 20px; }
   #vDays{ font-size: 30px; }
-  .valIconImg{ width: 40px; height: 40px; }
+  .valIconImg{ width: 66px; height: 66px; }
 }
 
 @media (max-width: 720px){
-  .valPanel{ padding: 14px 14px; }
+  .valPanel{ padding: 14px 14px 12px; }
   .valIconRow{ gap: 10px; }
-  .valIconBtn{ padding: 10px 8px; }
+  .valIconBtn{ padding: 12px 10px 10px; }
   .valIconText{ font-size: 11px; }
+  .valIconImg{ width: 62px; height: 62px; }
 }
 
 /* =========================================================
-   VALENTINE HUB (GLIDER STYLE) END
+   VALENTINE HUD END
    ========================================================= */
+
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+@media (max-width:720px){
+  #inputBox{width:100%;}
+  #crt{ padding:22px; }
+}
