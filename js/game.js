@@ -1,6 +1,5 @@
+// game.js
 export class Game {
-
-  // ===== GAME CLASS START =====
   constructor(ui, audio){
     this.ui = ui;
     this.audio = audio;
@@ -35,7 +34,7 @@ export class Game {
     };
     // ===== FINAL QUESTION END =====
 
-    // ===== LOADING MESSAGES START =====
+    // ===== LOADING TEXT START =====
     this.loadMsgs = [
       "ACCESSING VAULT RECORDS…",
       "DECRYPTING MEMORY SECTORS…",
@@ -59,13 +58,12 @@ export class Game {
       "CORE: SPINNING UP MODULES",
       "VAULT-TEC: INTEGRITY 100%"
     ];
-    // ===== LOADING MESSAGES END =====
+    // ===== LOADING TEXT END =====
 
     // ===== STATE START =====
-    this.stage = "login"; // login | riddle | final | done | hub
+    this.stage = "login"; // login | riddle | final | done | hub | help
     this.r = 0;
     this.hintUsed = 0;
-
     this.timer = null;
 
     // UI actions (for hub buttons)
@@ -73,11 +71,13 @@ export class Game {
     // ===== STATE END =====
   }
 
-  // ===== START/BOOT START =====
+  // ===== GAME START START =====
   start(){
     this.boot();
   }
+  // ===== GAME START END =====
 
+  // ===== LOGIN SCREEN START =====
   async boot(){
     this.stopCountdown();
 
@@ -98,7 +98,7 @@ export class Game {
 
     this.ui.showInput("ENTER ID");
   }
-  // ===== START/BOOT END =====
+  // ===== LOGIN SCREEN END =====
 
   // ===== HELP SCREEN START =====
   async showHelp(){
@@ -125,7 +125,7 @@ export class Game {
   }
   // ===== HELP SCREEN END =====
 
-  // ===== RIDDLE FLOW START =====
+  // ===== RIDDLES FLOW START =====
   async askRiddle(){
     this.stopCountdown();
 
@@ -146,7 +146,9 @@ export class Game {
     this.renderHints(current.h);
     this.ui.setStatus("AWAITING INPUT…");
   }
+  // ===== RIDDLES FLOW END =====
 
+  // ===== FINAL FLOW START =====
   async askFinal(){
     this.stopCountdown();
 
@@ -161,7 +163,9 @@ export class Game {
     this.renderHints(this.finalQ.h);
     this.ui.setStatus("AWAITING FINAL INPUT…");
   }
+  // ===== FINAL FLOW END =====
 
+  // ===== HINTS START =====
   renderHints(hArr){
     const remaining = hArr.slice(this.hintUsed, 3);
     this.ui.showHintButtons(remaining, async (idx) => {
@@ -176,9 +180,9 @@ export class Game {
       this.renderHints(hArr);
     });
   }
-  // ===== RIDDLE FLOW END =====
+  // ===== HINTS END =====
 
-  // ===== FINAL SUCCESS START =====
+  // ===== FINAL SUCCESS / BRIEFCASE START =====
   async showFinalSuccess(){
     this.stopCountdown();
 
@@ -216,11 +220,12 @@ export class Game {
     this.ui.addButton("RETURN TO MAIN MENU", () => this.boot());
     this.ui.setStatus("SESSION COMPLETE");
   }
-  // ===== FINAL SUCCESS END =====
+  // ===== FINAL SUCCESS / BRIEFCASE END =====
 
-  // ==========================================================
-  // ===== VALENTINE HUB START (ONLY UI CHANGED HERE) ==========
-  // ==========================================================
+
+  // ============================================================
+  // ===== VALENTINE HUB START (ONLY SECTION CHANGED) ============
+  // ============================================================
   showValentineHub(){
     this.stage = "hub";
     this.ui.setHeaderUnlocked("IZABELLA");
@@ -229,69 +234,96 @@ export class Game {
     this.ui.hideInput();
     this.ui.clearHints();
 
-    // Glider-style hub (no big “modules list” box)
+    // NOTE:
+    // This is ONLY markup/layout. All other game logic is unchanged.
+    // Countdown still uses #vDays and #vTime (kept).
+
     this.ui.html(`
-      <div class="valHub valGlider">
-        <div class="valBg"></div>
+      <div class="valHub gliderHub">
+        <div class="valBg gliderBg"></div>
 
-        <div class="gliderPanel">
+        <!-- ===== GLIDER PANEL START ===== -->
+        <div class="gliderPanel block">
 
+          <!-- TOP BAR (matches circled reference area) -->
           <div class="gliderTop">
-            <div class="gliderTitle">*** GLIDER OPERATING SYSTEM ***</div>
-            <div class="gliderMeta">
-              <span>128k RAM</span>
-              <span class="dot">•</span>
-              <span>83259 Bytes Free</span>
-              <span class="dot">•</span>
-              <span class="gliderCountdown">
-                <span id="vDays">-- DAYS</span>
-                <span id="vTime">--:--:--</span>
-              </span>
+            <div class="gliderTitle">
+              <span class="gliderStars">***</span>
+              <span>GLIDER OPERATING SYSTEM</span>
+              <span class="gliderStars">***</span>
             </div>
 
-            <div class="gliderSpeaker" aria-hidden="true"></div>
+            <div class="gliderRight">
+              <span class="gliderSpeaker" aria-hidden="true">🔊</span>
+            </div>
           </div>
 
-          <div class="gliderIconsRow">
-            <button class="gliderIcon" data-action="hub_stats" type="button">
-              <span class="ico globe"></span>
-              <span class="lbl">SysInfo</span>
+          <div class="gliderSub">
+            <span>128k RAM — 83259 Bytes Free</span>
+            <span class="gliderDivider">|</span>
+            <span class="gliderSmall">VALENTINE LINK: ACTIVE</span>
+          </div>
+
+          <!-- GLOBE ROW -->
+          <div class="globeRow" aria-label="Glider locations">
+            <button class="globeBtn" data-action="hub_stats" title="SysInfo">
+              <span class="globeIcon">🌐</span>
+              <span class="globeLabel">SYSINFO</span>
             </button>
 
-            <button class="gliderIcon" data-action="hub_rewards" type="button">
-              <span class="ico gift"></span>
-              <span class="lbl">Rewards</span>
+            <button class="globeBtn" data-action="hub_rewards" title="Rewards">
+              <span class="globeIcon">🏅</span>
+              <span class="globeLabel">REWARDS</span>
             </button>
 
-            <button class="gliderIcon" data-action="hub_minigames" type="button">
-              <span class="ico game"></span>
-              <span class="lbl">G.A.M.E</span>
+            <button class="globeBtn" data-action="hub_minigames" title="G.A.M.E">
+              <span class="globeIcon">🎮</span>
+              <span class="globeLabel">G.A.M.E</span>
             </button>
 
-            <button class="gliderIcon" data-action="hub_mission" type="button">
-              <span class="ico pin"></span>
-              <span class="lbl">Mission</span>
+            <button class="globeBtn" data-action="hub_mission" title="Mission">
+              <span class="globeIcon">🧭</span>
+              <span class="globeLabel">MISSION</span>
             </button>
 
-            <button class="gliderIcon" data-action="hub_back" type="button">
-              <span class="ico back"></span>
-              <span class="lbl">Exit</span>
+            <button class="globeBtn" data-action="hub_back" title="Exit">
+              <span class="globeIcon">⏎</span>
+              <span class="globeLabel">EXIT</span>
             </button>
           </div>
 
-          <div class="gliderBottomHint">
-            TARGET: <span class="mono">02/14/2026 00:00</span> <span class="dim">(Local time)</span>
+          <!-- STATUS STRIP (countdown + target, compact) -->
+          <div class="gliderStrip">
+            <div class="stripCol">
+              <div class="stripLabel">COUNTDOWN</div>
+              <div class="stripBig" id="vDays">-- DAYS</div>
+              <div class="stripSmall" id="vTime">--:--:--</div>
+            </div>
+
+            <div class="stripCol">
+              <div class="stripLabel">TARGET</div>
+              <div class="stripSmall">02/14/2026 00:00</div>
+              <div class="stripSmall" style="opacity:.75;">(Local time)</div>
+            </div>
+
+            <div class="stripCol stripNote">
+              <div class="stripLabel">NOTICE</div>
+              <div class="stripSmall">This hub is live — counting down to Valentine’s Day.</div>
+              <div class="stripSmall" style="opacity:.75;">(Yes, this is extremely official.)</div>
+            </div>
           </div>
 
         </div>
+        <!-- ===== GLIDER PANEL END ===== -->
       </div>
     `);
 
     this.startCountdown();
   }
-  // ==========================================================
-  // ===== VALENTINE HUB END ==================================
-  // ==========================================================
+  // ============================================================
+  // ===== VALENTINE HUB END (ONLY SECTION CHANGED) ==============
+  // ============================================================
+
 
   // ===== COUNTDOWN START =====
   startCountdown(){
@@ -332,11 +364,12 @@ export class Game {
   }
   // ===== COUNTDOWN END =====
 
-  // ===== HUB ACTIONS START (NO LOGIC CHANGES) =====
+  // ===== HUB BUTTON ACTIONS START =====
   handleAction(action){
-    // Keep it simple for now: placeholders
+    // Return to ID terminal
     if (action === "hub_back") return this.boot();
 
+    // SYSINFO / VAULT STATS
     if (action === "hub_stats"){
       this.ui.setStatus("VAULT STATS: LOADING");
       this.ui.clear();
@@ -362,7 +395,7 @@ export class Game {
       return this.showValentineHub();
     }
 
-    // rewards / minigames / mission will be built next
+    // rewards / minigames / mission placeholders
     if (action === "hub_rewards" || action === "hub_minigames" || action === "hub_mission"){
       this.ui.setStatus("MODULE: UNDER CONSTRUCTION");
       this.ui.clear();
@@ -382,7 +415,7 @@ export class Game {
       return;
     }
   }
-  // ===== HUB ACTIONS END =====
+  // ===== HUB BUTTON ACTIONS END =====
 
   // ===== INPUT HANDLER START =====
   async handleInput(raw){
@@ -391,6 +424,7 @@ export class Game {
     if (a === "help") return this.showHelp();
     if (this.stage === "help") return this.boot();
 
+    // LOGIN
     if (this.stage === "login"){
       this.ui.setStatus("VALIDATING…");
 
@@ -405,7 +439,7 @@ export class Game {
       }
 
       if (a === this.NEXT_ID.toLowerCase()){
-        // This is your Valentine Hub ONLY (not default start)
+        // Valentine Hub ONLY (not default start)
         await this.ui.loading(this.loadMsgs, this.loadDetails);
         await this.ui.powerDip();
         return this.showValentineHub();
@@ -417,6 +451,7 @@ export class Game {
       return;
     }
 
+    // RIDDLES
     if (this.stage === "riddle"){
       const current = this.riddles[this.r];
       if (a === current.a.toLowerCase()){
@@ -436,6 +471,7 @@ export class Game {
       }
     }
 
+    // FINAL
     if (this.stage === "final"){
       if (raw === this.finalQ.a){
         this.ui.setStatus("CODE ACCEPTED");
@@ -463,6 +499,4 @@ export class Game {
     }
   }
   // ===== INPUT HANDLER END =====
-
-  // ===== GAME CLASS END =====
 }
