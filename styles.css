@@ -539,3 +539,38 @@ html, body{
   .valRow{ gap:10px; }
   .valRow > .block{ min-width: 0; flex:1 1 100%; }
 }
+
+/* ==========================================================
+   GLIDER HUD – CRT EFFECTS START
+   ========================================================== */
+
+.valHub.gliderHud::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:1;
+
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(76,255,154,0.05),
+      rgba(76,255,154,0.05) 1px,
+      rgba(0,0,0,0) 1px,
+      rgba(0,0,0,0) 3px
+    );
+
+  mix-blend-mode: screen;
+  opacity: .35;
+}
+
+.valHub.gliderHud{
+  position: relative;
+  box-shadow:
+    inset 0 0 40px rgba(76,255,154,0.06),
+    inset 0 0 90px rgba(0,0,0,0.8);
+}
+
+/* ==========================================================
+   GLIDER HUD – CRT EFFECTS END
+   ========================================================== */
