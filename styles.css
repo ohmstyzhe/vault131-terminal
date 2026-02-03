@@ -1665,3 +1665,23 @@ body{
   mix-blend-mode: overlay !important;
   opacity: 0.12 !important;
 }
+
+#crt::after{
+  content:"";
+  position:absolute;
+  inset:10px;
+  pointer-events:none;
+  z-index:9999;
+  border-radius:16px;
+
+  /* loud dot pattern */
+  background:
+    radial-gradient(circle, rgba(255,255,255,0.22) 1px, transparent 1px);
+  background-size: 6px 6px;
+
+  /* THIS is what your JS is controlling */
+  background-position: 0 var(--maskScroll, 0px);
+
+  mix-blend-mode: overlay;
+  opacity: 0.35; /* loud on purpose */
+}
