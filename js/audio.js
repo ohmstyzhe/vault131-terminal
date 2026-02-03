@@ -1,66 +1,56 @@
 export class AudioSystem {
-  constructor(){
+  constructor() {
+    this.enabled = false;
     this.ctx = null;
-    this.hum = null;
-    this.gain = null;
-    this.audioOn = false;
-
-    // iOS unlock: first user gesture unlocks audio context
-    const unlock = () => {
-      this.ensure();
-      if (this.ctx && this.ctx.state === "suspended") this.ctx.resume();
-      window.removeEventListener("pointerdown", unlock);
-      window.removeEventListener("touchstart", unlock);
-    };
-    window.addEventListener("pointerdown", unlock, { once:false });
-    window.addEventListener("touchstart", unlock, { once:false });
+    this.humOsc = null;
+    this.humGain = null;
   }
 
-  ensure(){
+  async init() {
     if (this.ctx) return;
     this.ctx = new (window.AudioContext || window.webkitAudioContext)();
 
-    this.hum = this.ctx.createOscillator();
-    this.gain = this.ctx.createGain();
+    // soft CRT hum using an oscillator (no external audio files needed)
+    this.humOsc = this.ctx.createOscillator();
+    this.humGain = this.ctx.createGain();
 
-    this.hum.type = "sawtooth";
-    this.hum.frequency.value = 60;
-    this.gain.gain.value = 0;
+    this.humOsc.type = "sine";
+    this.humOsc.frequency.value = 55; // low hum
 
-    this.hum.connect(this.gain);
-    this.gain.connect(this.ctx.destination);
-    this.hum.start();
+    this.humGain.gain.value = 0.0;
+
+    this.humOsc.connect(this.humGain);
+    this.humGain.connect(this.ctx.destination);
+    this.humOsc.start();
   }
 
-  setOn(on){
-    this.ensure();
-    if (this.ctx.state === "suspended") this.ctx.resume();
-    this.audioOn = !!on;
+  async toggle() {
+    await this.init();
 
-    const t = this.ctx.currentTime;
-    this.gain.gain.cancelScheduledValues(t);
-    this.gain.gain.linearRampToValueAtTime(
-      this.audioOn ? 0.02 : 0.0,
-      t + (this.audioOn ? 0.6 : 0.15)
-    );
+    this.enabled = !this.enabled;
+
+    if (this.enabled) {
+      // fade in
+      this.humGain.gain.setTargetAtTime(0.035, this.ctx.currentTime, 0.08);
+    } else {
+      // fade out
+      this.humGain.gain.setTargetAtTime(0.0, this.ctx.currentTime, 0.08);
+    }
+
+    return this.enabled;
   }
 
-  toggle(){
-    this.setOn(!this.audioOn);
-    return this.audioOn;
-  }
-
-  beep(freq=880, dur=0.03, vol=0.03){
-    if (!this.ctx || !this.audioOn) return;
+  async click() {
+    // tiny “button click” blip
+    if (!this.ctx) return;
     const o = this.ctx.createOscillator();
     const g = this.ctx.createGain();
+    o.type = "square";
+    o.frequency.value = 900;
+    g.gain.value = 0.03;
     o.connect(g); g.connect(this.ctx.destination);
-    o.frequency.value = freq;
-    g.gain.value = vol;
     o.start();
-    o.stop(this.ctx.currentTime + dur);
+    g.gain.setTargetAtTime(0.0001, this.ctx.currentTime, 0.03);
+    o.stop(this.ctx.currentTime + 0.06);
   }
-
-  hoverBeep(){ this.beep(640, 0.02, 0.018); }
-  typeBeep(){ this.beep(920, 0.015, 0.016); }
 }
