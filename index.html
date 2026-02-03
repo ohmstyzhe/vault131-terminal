@@ -4,65 +4,64 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>VAULT 131 DATABASE</title>
+
+  <!-- Keep your filename; bump v if you want -->
   <link rel="stylesheet" href="styles.css?v=99">
 </head>
 
 <body>
   <div id="crt">
-    <!-- ===== CONTENT ===== -->
-    <div id="screen">
-      <div id="uiWrap">
-        <div id="uiTop">
-          <div id="uiBar">VAULT 131 DATABASE │ STATUS: LOCKED</div>
-          <button id="volBtn" type="button">AUDIO: OFF</button>
-        </div>
-        <div id="uiStatus">STANDBY… AWAITING INPUT</div>
+    <!-- ======================
+         CONTENT (leave as-is)
+         ====================== -->
+    <div id="uiWrap">
+      <div id="uiTop">
+        <div id="uiBar">VAULT 131 DATABASE │ STATUS: LOCKED</div>
+        <button id="volBtn" type="button">AUDIO: OFF</button>
       </div>
-
-      <!-- Everything inside here gets the “tube” feel -->
-      <div id="tube">
-        <div id="terminal"></div>
-        <input id="inputBox" autocomplete="off" spellcheck="false" />
-        <div id="hintContainer"></div>
-      </div>
-
-      <!-- ===== FX LAYERS (now correctly bound to the SCREEN) ===== -->
-      <div id="powerDip" aria-hidden="true"></div>
-      <div id="scanlines" aria-hidden="true"></div>
-      <div class="projectorBand" aria-hidden="true"></div>
-
-      <!-- ===== REALISM / GLASS STACK ===== -->
-      <div class="crtGlassLayer" aria-hidden="true"></div>
-
-      <!-- Optional image overlays (if you add PNGs later) -->
-      <div class="crtImageGrime" aria-hidden="true"></div>
-      <div class="crtImageDust" aria-hidden="true"></div>
-
-      <!-- CSS overlays (dynamic) -->
-      <div class="crtSmudgeLayer" aria-hidden="true"></div>
-      <div class="crtDustLayer" aria-hidden="true"></div>
-      <div class="crtNoiseLayer" aria-hidden="true"></div>
-      <div class="crtVignetteLayer" aria-hidden="true"></div>
+      <div id="uiStatus">STANDBY… AWAITING INPUT</div>
     </div>
+
+    <div id="terminal"></div>
+    <input id="inputBox" autocomplete="off" spellcheck="false" />
+    <div id="hintContainer"></div>
+
+    <!-- ======================
+         FX LAYERS (order matters)
+         ====================== -->
+    <div id="powerDip" aria-hidden="true"></div>
+    <div id="scanlines" aria-hidden="true"></div>
+    <div class="projectorBand" aria-hidden="true"></div>
+
+    <!-- ======================
+         REALISM / GLASS STACK
+         (ONE stack ONLY)
+         ====================== -->
+    <div class="crtWarpLayer" aria-hidden="true"></div>
+    <div class="crtGlassLayer" aria-hidden="true"></div>
+
+    <!-- Image overlays (realistic). Put PNGs in /assets/overlays/ -->
+    <div class="crtImageGrime" aria-hidden="true"></div>
+    <div class="crtImageDust" aria-hidden="true"></div>
+
+    <!-- CSS overlays (dynamic) -->
+    <div class="crtSmudgeLayer" aria-hidden="true"></div>
+    <div class="crtDustLayer" aria-hidden="true"></div>
+    <div class="crtNoiseLayer" aria-hidden="true"></div>
+    <div class="crtVignetteLayer" aria-hidden="true"></div>
   </div>
 
+  <!-- Your app (leave as-is) -->
   <script type="module" src="js/app.js?v=9"></script>
 
-  <!-- Cache buster (keep) -->
+  <!-- HARD CACHE BUSTER (optional but helpful on iOS) -->
   <script>
+    // Bust CSS cache each load (iOS Safari is stubborn)
     const link = document.querySelector('link[rel="stylesheet"]');
     if (link) {
       const base = link.getAttribute('href').split('?')[0];
       link.setAttribute('href', base + '?v=' + Date.now());
     }
   </script>
-
-  <!-- Optional SVG filter: subtle tube curvature (Safari will ignore if unsupported) -->
-  <svg width="0" height="0" style="position:absolute">
-    <filter id="tubeCurve" x="-20%" y="-20%" width="140%" height="140%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="2" seed="2" result="noise"/>
-      <feDisplacementMap in="SourceGraphic" in2="noise" scale="8" xChannelSelector="R" yChannelSelector="G"/>
-    </filter>
-  </svg>
 </body>
 </html>
