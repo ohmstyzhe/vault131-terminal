@@ -1,66 +1,35 @@
 export class AudioSystem {
   constructor(){
+    this.enabled = false;
     this.ctx = null;
-    this.hum = null;
+    this.osc = null;
     this.gain = null;
-    this.audioOn = false;
-
-    // iOS unlock: first user gesture unlocks audio context
-    const unlock = () => {
-      this.ensure();
-      if (this.ctx && this.ctx.state === "suspended") this.ctx.resume();
-      window.removeEventListener("pointerdown", unlock);
-      window.removeEventListener("touchstart", unlock);
-    };
-    window.addEventListener("pointerdown", unlock, { once:false });
-    window.addEventListener("touchstart", unlock, { once:false });
   }
 
-  ensure(){
-    if (this.ctx) return;
-    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-
-    this.hum = this.ctx.createOscillator();
+  async ensure(){
+    if(this.ctx) return;
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    this.ctx = new AudioCtx();
     this.gain = this.ctx.createGain();
-
-    this.hum.type = "sawtooth";
-    this.hum.frequency.value = 60;
-    this.gain.gain.value = 0;
-
-    this.hum.connect(this.gain);
+    this.gain.gain.value = 0.00001; // start silent
     this.gain.connect(this.ctx.destination);
-    this.hum.start();
+
+    // simple “terminal hum” oscillator (no external files needed)
+    this.osc = this.ctx.createOscillator();
+    this.osc.type = "sine";
+    this.osc.frequency.value = 55;
+    this.osc.connect(this.gain);
+    this.osc.start();
   }
 
-  setOn(on){
-    this.ensure();
-    if (this.ctx.state === "suspended") this.ctx.resume();
-    this.audioOn = !!on;
+  async toggle(){
+    await this.ensure();
 
-    const t = this.ctx.currentTime;
-    this.gain.gain.cancelScheduledValues(t);
-    this.gain.gain.linearRampToValueAtTime(
-      this.audioOn ? 0.02 : 0.0,
-      t + (this.audioOn ? 0.6 : 0.15)
-    );
+    if(this.ctx.state === "suspended"){
+      await this.ctx.resume();
+    }
+
+    this.enabled = !this.enabled;
+    this.gain.gain.value = this.enabled ? 0.015 : 0.00001;
   }
-
-  toggle(){
-    this.setOn(!this.audioOn);
-    return this.audioOn;
-  }
-
-  beep(freq=880, dur=0.03, vol=0.03){
-    if (!this.ctx || !this.audioOn) return;
-    const o = this.ctx.createOscillator();
-    const g = this.ctx.createGain();
-    o.connect(g); g.connect(this.ctx.destination);
-    o.frequency.value = freq;
-    g.gain.value = vol;
-    o.start();
-    o.stop(this.ctx.currentTime + dur);
-  }
-
-  hoverBeep(){ this.beep(640, 0.02, 0.018); }
-  typeBeep(){ this.beep(920, 0.015, 0.016); }
 }
