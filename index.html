@@ -5,58 +5,59 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>VAULT 131 DATABASE</title>
 
-  <!-- Keep your filename; bump v if you want -->
   <link rel="stylesheet" href="styles.css?v=99">
 </head>
 
 <body>
   <div id="crt">
-    <!-- ======================
-         CONTENT (leave as-is)
-         ====================== -->
-    <div id="uiWrap">
-      <div id="uiTop">
-        <div id="uiBar">VAULT 131 DATABASE │ STATUS: LOCKED</div>
-        <button id="volBtn" type="button">AUDIO: OFF</button>
+
+    <!-- SCREEN (this is what gives the “tube” / inset feel) -->
+    <div id="screen">
+
+      <!-- ======================
+           CONTENT (leave IDs as-is)
+           ====================== -->
+      <div id="uiWrap">
+        <div id="uiTop">
+          <div id="uiBar">VAULT 131 DATABASE │ STATUS: LOCKED</div>
+          <button id="volBtn" type="button">AUDIO: OFF</button>
+        </div>
+        <div id="uiStatus">STANDBY… AWAITING INPUT</div>
       </div>
-      <div id="uiStatus">STANDBY… AWAITING INPUT</div>
+
+      <div id="terminal"></div>
+      <input id="inputBox" autocomplete="off" spellcheck="false" />
+      <div id="hintContainer"></div>
+
+      <!-- ======================
+           FX LAYERS (inside screen)
+           ====================== -->
+      <div id="powerDip" aria-hidden="true"></div>
+      <div id="scanlines" aria-hidden="true"></div>
+      <div class="projectorBand" aria-hidden="true"></div>
+
+      <!-- ======================
+           REALISM / GLASS STACK (ONE stack only)
+           ====================== -->
+      <div class="crtGlassLayer" aria-hidden="true"></div>
+
+      <!-- IMAGE overlays (optional). Put PNGs in /assets/overlays/ -->
+      <div class="crtImageGrime" aria-hidden="true"></div>
+      <div class="crtImageDust" aria-hidden="true"></div>
+
+      <!-- CSS overlays (dynamic) -->
+      <div class="crtSmudgeLayer" aria-hidden="true"></div>
+      <div class="crtDustLayer" aria-hidden="true"></div>
+      <div class="crtNoiseLayer" aria-hidden="true"></div>
+      <div class="crtVignetteLayer" aria-hidden="true"></div>
+
     </div>
-
-    <div id="terminal"></div>
-    <input id="inputBox" autocomplete="off" spellcheck="false" />
-    <div id="hintContainer"></div>
-
-    <!-- ======================
-         FX LAYERS (order matters)
-         ====================== -->
-    <div id="powerDip" aria-hidden="true"></div>
-    <div id="scanlines" aria-hidden="true"></div>
-    <div class="projectorBand" aria-hidden="true"></div>
-
-    <!-- ======================
-         REALISM / GLASS STACK
-         (ONE stack ONLY)
-         ====================== -->
-    <div class="crtWarpLayer" aria-hidden="true"></div>
-    <div class="crtGlassLayer" aria-hidden="true"></div>
-
-    <!-- Image overlays (realistic). Put PNGs in /assets/overlays/ -->
-    <div class="crtImageGrime" aria-hidden="true"></div>
-    <div class="crtImageDust" aria-hidden="true"></div>
-
-    <!-- CSS overlays (dynamic) -->
-    <div class="crtSmudgeLayer" aria-hidden="true"></div>
-    <div class="crtDustLayer" aria-hidden="true"></div>
-    <div class="crtNoiseLayer" aria-hidden="true"></div>
-    <div class="crtVignetteLayer" aria-hidden="true"></div>
   </div>
 
-  <!-- Your app (leave as-is) -->
   <script type="module" src="js/app.js?v=9"></script>
 
-  <!-- HARD CACHE BUSTER (optional but helpful on iOS) -->
+  <!-- iOS cache buster -->
   <script>
-    // Bust CSS cache each load (iOS Safari is stubborn)
     const link = document.querySelector('link[rel="stylesheet"]');
     if (link) {
       const base = link.getAttribute('href').split('?')[0];
