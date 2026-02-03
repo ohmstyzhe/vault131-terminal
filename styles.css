@@ -1685,3 +1685,23 @@ body{
   mix-blend-mode: overlay;
   opacity: 0.35; /* loud on purpose */
 }
+
+/* =========================
+   TEMP: DISABLE IMAGE OVERLAYS (grime/dust)
+   ========================= */
+.crtImageGrime,
+.crtImageDust{
+  background-image: none !important;
+  opacity: 0 !important;
+}
+
+/* =========================
+   TEMP: DISABLE CSS “smudge/noise/vignette” layers too
+   (keep scanlines if you want)
+   ========================= */
+.crtSmudgeLayer,
+.crtDustLayer,
+.crtNoiseLayer,
+.crtVignetteLayer{
+  opacity: 0 !important;
+}
