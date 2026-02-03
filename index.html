@@ -5,43 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>VAULT 131 DATABASE</title>
 
-  <!-- Keep your version query for cache busting -->
-  <link rel="stylesheet" href="styles.css?v=14">
+  <!-- Keep your filenames; bump the ?v= when you want to force-refresh -->
+  <link rel="stylesheet" href="styles.css?v=15">
 </head>
 
 <body>
   <div id="crt">
-
-    <!-- Everything “behind the glass” goes in here -->
-    <div class="crtScreen">
-
-      <div id="uiWrap">
-        <div id="uiTop">
-          <div id="uiBar">VAULT 131 DATABASE │ STATUS: LOCKED</div>
-          <button id="volBtn" type="button">AUDIO: OFF</button>
-        </div>
-        <div id="uiStatus">STANDBY… AWAITING INPUT</div>
+    <!-- ===== CONTENT ===== -->
+    <div id="uiWrap">
+      <div id="uiTop">
+        <div id="uiBar">VAULT 131 DATABASE │ STATUS: LOCKED</div>
+        <button id="volBtn" type="button">AUDIO: OFF</button>
       </div>
-
-      <div id="terminal"></div>
-      <input id="inputBox" autocomplete="off" spellcheck="false" />
-      <div id="hintContainer"></div>
-
+      <div id="uiStatus">STANDBY… AWAITING INPUT</div>
     </div>
-    <!-- end crtScreen -->
 
-    <!-- Overlays / effects (outside the glass content layer) -->
-    <div id="powerDip"></div>
-    <div id="scanlines"></div>
-    <div class="projectorBand"></div>
+    <div id="terminal"></div>
+    <input id="inputBox" autocomplete="off" spellcheck="false" />
+    <div id="hintContainer"></div>
 
-    <!-- New: grime + dust + glass highlight layers -->
-    <div class="crtNoiseLayer"></div>
-    <div class="crtGlass"></div>
+    <!-- ===== FX LAYERS (order matters) ===== -->
+    <div id="powerDip" aria-hidden="true"></div>
+    <div id="scanlines" aria-hidden="true"></div>
 
+    <!-- Old projector-style rolling band (you already had this) -->
+    <div class="projectorBand" aria-hidden="true"></div>
+
+    <!-- NEW: CRT “bubble glass” + grime overlays (CSS will style these) -->
+    <div class="crtGlassLayer" aria-hidden="true"></div>
+    <div class="crtSmudgeLayer" aria-hidden="true"></div>
+    <div class="crtDustLayer" aria-hidden="true"></div>
+    <div class="crtNoiseLayer" aria-hidden="true"></div>
+    <div class="crtVignetteLayer" aria-hidden="true"></div>
   </div>
 
-  <!-- Your app stays exactly the same -->
+  <!-- Your app (leave this as-is; just bump v= if you want) -->
   <script type="module" src="js/app.js?v=9"></script>
 </body>
 </html>
