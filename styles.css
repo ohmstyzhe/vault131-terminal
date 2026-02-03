@@ -1023,3 +1023,155 @@ html, body{
    THICK GLASS CRT LOOK END
    ========================================================= */
   
+  /* =========================================================
+   CRT THICK GLASS + GRIME OVERLAYS (GLOBAL)
+   Requires these divs inside #crt (once):
+   <div class="crtGlassLayer" aria-hidden="true"></div>
+   <div class="crtGrimeLayer" aria-hidden="true"></div>
+   ========================================================= */
+
+.crtGlassLayer,
+.crtGrimeLayer{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index: 9999;
+  border-radius: 22px; /* match #crt */
+}
+
+/* =========================
+   THICK "BUBBLE" GLASS
+   ========================= */
+.crtGlassLayer{
+  /* curved screen edge darkening + center bloom */
+  background:
+    radial-gradient(circle at 50% 45%,
+      rgba(255,255,255,0.06) 0%,
+      rgba(255,255,255,0.03) 22%,
+      rgba(0,0,0,0.00) 45%,
+      rgba(0,0,0,0.18) 72%,
+      rgba(0,0,0,0.45) 100%),
+
+    /* thick glass edge highlight ring */
+    radial-gradient(circle at 50% 50%,
+      rgba(255,255,255,0.00) 58%,
+      rgba(255,255,255,0.06) 66%,
+      rgba(255,255,255,0.00) 74%),
+
+    /* subtle diagonal reflection streaks */
+    linear-gradient(135deg,
+      rgba(255,255,255,0.06) 0%,
+      rgba(255,255,255,0.00) 22%,
+      rgba(255,255,255,0.03) 45%,
+      rgba(255,255,255,0.00) 65%);
+
+  mix-blend-mode: screen;
+  opacity: 0.95;
+
+  /* this is the “bubble” — slight barrel warp look */
+  filter: contrast(1.05) saturate(1.02);
+}
+
+/* Add a fake glossy hotspot / glare that moves slightly */
+.crtGlassLayer::after{
+  content:"";
+  position:absolute;
+  inset:-10%;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 25% 18%,
+      rgba(255,255,255,0.16) 0%,
+      rgba(255,255,255,0.05) 18%,
+      rgba(255,255,255,0.00) 42%),
+    radial-gradient(circle at 78% 24%,
+      rgba(255,255,255,0.08) 0%,
+      rgba(255,255,255,0.00) 46%);
+  opacity: 0.55;
+  mix-blend-mode: screen;
+  transform: translate3d(0,0,0);
+  animation: glassDrift 7.5s ease-in-out infinite;
+}
+
+@keyframes glassDrift{
+  0%,100%{ transform: translate3d(0,0,0); opacity:0.52; }
+  50%{ transform: translate3d(-8px, 6px, 0); opacity:0.62; }
+}
+
+/* =========================
+   GRIME / DUST / SMEARS
+   (subtle realism; “thrift store”)
+   ========================= */
+.crtGrimeLayer{
+  opacity: 0.75;
+  mix-blend-mode: overlay;
+  filter: contrast(1.12) brightness(0.98);
+}
+
+/* Dust specks + micro scratches */
+.crtGrimeLayer::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius: 22px;
+
+  background-image:
+    /* dust field */
+    radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
+    radial-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+
+    /* faint vertical wipe marks */
+    linear-gradient(to bottom,
+      rgba(255,255,255,0.05),
+      rgba(255,255,255,0.00) 25%,
+      rgba(255,255,255,0.00) 70%,
+      rgba(255,255,255,0.03));
+
+  background-size:
+    140px 140px,
+    260px 260px,
+    100% 100%;
+
+  background-position:
+    0 0,
+    70px 40px,
+    0 0;
+
+  opacity: 0.35;
+  mix-blend-mode: screen;
+  animation: dustCrawl 9s linear infinite;
+}
+
+@keyframes dustCrawl{
+  0%{ transform: translate3d(0,0,0); }
+  100%{ transform: translate3d(-18px, 12px, 0); }
+}
+
+/* Finger smudges / greasy arcs */
+.crtGrimeLayer::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius: 22px;
+
+  background:
+    /* big thumb smear bottom-left */
+    radial-gradient(ellipse at 18% 82%,
+      rgba(255,255,255,0.12) 0%,
+      rgba(255,255,255,0.06) 18%,
+      rgba(255,255,255,0.00) 48%),
+
+    /* palm haze center-right */
+    radial-gradient(ellipse at 76% 55%,
+      rgba(255,255,255,0.08) 0%,
+      rgba(255,255,255,0.03) 22%,
+      rgba(255,255,255,0.00) 55%),
+
+    /* random wipe arc */
+    radial-gradient(ellipse at 55% 28%,
+      rgba(255,255,255,0.09) 0%,
+      rgba(255,255,255,0.00) 52%);
+
+  opacity: 0.28;
+  mix-blend-mode: screen;
+  filter: blur(0.6px);
+}
