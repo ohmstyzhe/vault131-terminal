@@ -1644,3 +1644,24 @@ body{
   border-radius: 22px;
   z-index: 999 !important;
 }
+
+/* ==== HOTFIX: stop the wavy/warped border illusion on iPad ==== */
+
+/* Make grime layers NOT distort hard UI lines */
+.crtSmudgeLayer{
+  mix-blend-mode: normal !important;
+  filter: none !important;
+  opacity: 0.22 !important;
+  background: none !important; /* kills the streak pattern that causes wobble */
+}
+
+/* Keep dust/noise but make them subtle + safe */
+.crtDustLayer{
+  mix-blend-mode: screen !important;
+  opacity: 0.22 !important;
+}
+
+.crtNoiseLayer{
+  mix-blend-mode: overlay !important;
+  opacity: 0.12 !important;
+}
