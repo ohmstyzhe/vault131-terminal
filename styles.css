@@ -1535,3 +1535,112 @@ body{
   .crtScreenInner{ filter: url(#crt-warp-soft); }
   .crtScreen{ transform: perspective(900px) rotateX(0.6deg) rotateY(-0.4deg); }
 }
+
+/* =========================================================
+   iPad / Safari FIX PATCH (scroll + centering + visible grime)
+   Paste at VERY BOTTOM of styles.css
+   ========================================================= */
+
+/* 1) STOP locking the whole page */
+html, body{
+  height: 100%;
+  overflow: auto !important;
+}
+
+body{
+  /* kill the old "display:flex center + overflow:hidden" behavior */
+  display: block !important;
+  margin: 0;
+  background: #000;
+  padding:
+    max(12px, env(safe-area-inset-top))
+    max(12px, env(safe-area-inset-right))
+    max(12px, env(safe-area-inset-bottom))
+    max(12px, env(safe-area-inset-left));
+}
+
+/* 2) Make #crt centered AND sized for iPad */
+#crt{
+  margin: 0 auto !important;
+  width: min(1220px, 96vw);
+  /* IMPORTANT: use dynamic viewport so it fits Safari */
+  height: auto !important;
+  max-height: calc(100svh - 24px) !important;
+  min-height: 520px;
+}
+
+/* 3) Ensure the screen area can scroll INSIDE */
+.crtScreen{
+  flex: 1;
+  min-height: 0;
+}
+
+.crtScreenInner{
+  min-height: 0;
+}
+
+#terminal{
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* If your Valentine hub is taller than screen, let it scroll too */
+#crt, .crtScreen, .crtScreenInner{
+  min-height: 0;
+}
+
+/* =========================================================
+   GRIME BOOST (make it obvious)
+   ========================================================= */
+
+/* If layers exist but are too subtle, crank them up */
+.crtSmudgeLayer{
+  opacity: 0.55 !important;
+  mix-blend-mode: overlay !important;
+  filter: blur(0.8px) contrast(1.25) saturate(0.9) !important;
+}
+
+.crtDustLayer{
+  opacity: 0.32 !important;
+  mix-blend-mode: screen !important;
+}
+
+.crtNoiseLayer{
+  opacity: 0.18 !important;
+}
+
+.crtVignetteLayer{
+  opacity: 0.98 !important;
+}
+
+/* Add some “gross streaks” (CSS-only grime) */
+.crtSmudgeLayer{
+  background:
+    radial-gradient(circle at 18% 35%, rgba(255,255,255,0.18), rgba(255,255,255,0) 42%),
+    radial-gradient(circle at 72% 55%, rgba(255,255,255,0.14), rgba(255,255,255,0) 45%),
+    radial-gradient(circle at 40% 78%, rgba(255,255,255,0.10), rgba(255,255,255,0) 48%),
+    radial-gradient(circle at 88% 28%, rgba(255,255,255,0.08), rgba(255,255,255,0) 45%),
+    /* smear/streak direction */
+    repeating-linear-gradient(
+      115deg,
+      rgba(255,255,255,0.03) 0px,
+      rgba(255,255,255,0.03) 2px,
+      rgba(0,0,0,0) 10px,
+      rgba(0,0,0,0) 22px
+    ) !important;
+}
+
+/* Make grime sit ABOVE everything */
+.crtGlassLayer,
+.crtSmudgeLayer,
+.crtDustLayer,
+.crtNoiseLayer,
+.crtVignetteLayer{
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 22px;
+  z-index: 999 !important;
+}
