@@ -3,15 +3,12 @@ export class Game {
     this.ui = ui;
     this.audio = audio;
 
-    // ====== CODES ======
-    // --- CODES START ---
-    this.ID = "101-317-76";        // riddle login
-    this.NEXT_ID = "14-LOVE-READY"; // unlocks Valentine Hub
-    this.FINAL_CODE = "531";        // briefcase code
-    // --- CODES END ---
+    // ===== CODES =====
+    this.ID = "101-317-76";          // starts riddles
+    this.NEXT_ID = "14-LOVE-READY";  // opens Valentine Hub
+    this.FINAL_CODE = "531";         // briefcase code
 
-    // ====== DATA ======
-    // --- RIDDLES START ---
+    // ===== DATA =====
     this.riddles = [
       { q:"I move without legs and follow you everywhere.", a:"shadow",
         h:["You see me when light hits you.","I copy your shape perfectly.","I disappear in darkness."] },
@@ -25,68 +22,33 @@ export class Game {
         a:"keyboard",
         h:["Think: terminal.","You’re using me right now.","Keys + space + enter = me."] }
     ];
-    // --- RIDDLES END ---
 
-    // --- FINAL QUESTION START ---
     this.finalQ = {
       q:"FINAL AUTHORIZATION REQUIRED.\n\nThis number marks the day everything changed.\nWhat is the code?",
-      a: this.FINAL_CODE,
+      a:this.FINAL_CODE,
       h:["There were flowers.","You went to the beach.","Someone was running late… for a good reason."]
     };
-    // --- FINAL QUESTION END ---
 
-    // --- LOADING MESSAGES START ---
-    this.loadMsgs = [
-      "ACCESSING VAULT RECORDS…",
-      "DECRYPTING MEMORY SECTORS…",
-      "VERIFYING EMOTIONAL STABILITY…",
-      "CHECKING RADIATION LEVELS…",
-      "SYNCING PERSONAL DATA…",
-      "VAULT-TEC PROTOCOL ACTIVE…",
-      "AUTHORIZATION PENDING…",
-      "BUFFERING… PLEASE WAIT…"
-    ];
-
-    this.loadDetails = [
-      "LINK: VAULTNET/131 :: HANDSHAKE OK",
-      "CACHE: REBUILDING INDEX TABLES",
-      "SECURITY: HASHING CREDENTIALS",
-      "I/O: CALIBRATING CONSOLE INPUT",
-      "SYS: SCANNING FOR ANOMALIES",
-      "MEM: FLUSHING TEMP BUFFERS",
-      "DATA: CHECKSUM VALIDATION PASS",
-      "COMMS: SIGNAL STRENGTH STABLE",
-      "CORE: SPINNING UP MODULES",
-      "VAULT-TEC: INTEGRITY 100%"
-    ];
-    // --- LOADING MESSAGES END ---
-
-    // ====== STATE ======
-    // --- STATE START ---
-    this.stage = "login"; // login | riddle | final | done | hub
+    // ===== STATE =====
+    this.stage = "login"; // login | riddle | final | ready | hub
     this.r = 0;
     this.hintUsed = 0;
-    this.timer = null;
-    // --- STATE END ---
 
-    // --- HUB ACTIONS HOOK START ---
-    this.ui.onAction = (action) => this.handleAction(action);
-    // --- HUB ACTIONS HOOK END ---
+    this.timer = null;
   }
 
   start(){
-    // --- START START ---
     this.boot();
-    // --- START END ---
   }
 
+  // ==========================
+  // MAIN / TYPEWRITER SCREENS
+  // ==========================
   async boot(){
-    // --- BOOT START ---
-    this.stopCountdown();
-
     this.stage = "login";
     this.r = 0;
     this.hintUsed = 0;
+    this.stopTimer();
 
     this.ui.setHeaderLocked();
     this.ui.setStatus("STANDBY… AWAITING INPUT");
@@ -100,96 +62,56 @@ export class Game {
     ], 35);
 
     this.ui.showInput("ENTER ID");
-    // --- BOOT END ---
-  }
-
-  async showHelp(){
-    // --- HELP START ---
-    this.stopCountdown();
-    this.stage = "help";
-    this.ui.clear();
-    this.ui.setStatus("VAULT-TEC NOTICE");
-
-    await this.ui.type([
-      "VAULT-TEC INTERNAL MEMO // DO NOT DISTRIBUTE",
-      "------------------------------------------",
-      "",
-      "If you are reading this, you are doing great.",
-      "You are safe here.",
-      "",
-      "OPERATOR TIP:",
-      "- HINT buttons are limited to 3 per question.",
-      "- Answers are NOT case sensitive.",
-      "",
-      "To continue: press ENTER to return."
-    ], 30);
-
-    this.ui.showInput("PRESS ENTER");
-    // --- HELP END ---
+    this.ui.clearHints();
   }
 
   async askRiddle(){
-    // --- RIDDLE FLOW START ---
-    this.stopCountdown();
-
-    if (this.r >= this.riddles.length){
+    if(this.r >= this.riddles.length){
       return this.askFinal();
     }
 
     this.stage = "riddle";
     this.hintUsed = 0;
+
+    const cur = this.riddles[this.r];
+
     this.ui.clear();
     this.ui.setStatus(`TEST MODULE ${this.r+1}/5 LOADED`);
 
-    const current = this.riddles[this.r];
-
-    await this.ui.type([`RIDDLE ${this.r+1}: ${current.q}`, "", "> "], 35);
+    await this.ui.type([
+      `RIDDLE ${this.r+1}: ${cur.q}`,
+      "",
+      "> "
+    ], 35);
 
     this.ui.showInput("TYPE ANSWER");
-    this.renderHints(current.h);
+    this.renderHints(cur.h);
     this.ui.setStatus("AWAITING INPUT…");
-    // --- RIDDLE FLOW END ---
   }
 
   async askFinal(){
-    // --- FINAL FLOW START ---
-    this.stopCountdown();
-
     this.stage = "final";
     this.hintUsed = 0;
+
     this.ui.clear();
     this.ui.setStatus("FINAL AUTHORIZATION");
 
-    await this.ui.type([this.finalQ.q, "", "> "], 35);
+    await this.ui.type([
+      this.finalQ.q,
+      "",
+      "> "
+    ], 35);
 
     this.ui.showInput("ENTER CODE");
     this.renderHints(this.finalQ.h);
     this.ui.setStatus("AWAITING FINAL INPUT…");
-    // --- FINAL FLOW END ---
-  }
-
-  renderHints(hArr){
-    // --- HINTS START ---
-    const remaining = hArr.slice(this.hintUsed, 3);
-    this.ui.showHintButtons(remaining, async (idx) => {
-      const realIndex = this.hintUsed + idx;
-      const hint = hArr[realIndex];
-
-      this.ui.setStatus("HINT MODULE: ACTIVE");
-      await this.ui.type([`HINT: ${hint}`], 30);
-      this.ui.setStatus("AWAITING INPUT…");
-
-      this.hintUsed++;
-      this.renderHints(hArr);
-    });
-    // --- HINTS END ---
   }
 
   async showFinalSuccess(){
-    // --- FINAL SUCCESS START ---
-    this.stopCountdown();
+    this.stage = "ready";
+    this.ui.clearHints();
+    this.ui.hideInput();
 
-    this.stage = "done";
     this.ui.clear();
     this.ui.setStatus("AUTHORIZATION GRANTED");
 
@@ -220,305 +142,170 @@ export class Game {
       "I love you so much — I hope you enjoy today."
     ], 32);
 
-    this.ui.addButton("RETURN TO MAIN MENU", () => this.boot());
+    this.ui.addButton("RETURN TO ID SCREEN", () => this.boot());
     this.ui.setStatus("SESSION COMPLETE");
-    // --- FINAL SUCCESS END ---
   }
 
-    /* =========================================================
-     VALENTINE HUB START
-     (ONLY TOUCHING VALENTINE HUB UI + countdown placement/icons)
-     ========================================================= */
+  // ==========================
+  // HINTS (buttons)
+  // ==========================
+  renderHints(hArr){
+    const remaining = hArr.slice(this.hintUsed, 3);
+    this.ui.showHintButtons(remaining, async (idx) => {
+      // idx is 0.. based on remaining array
+      const realIndex = this.hintUsed + idx;
+      const hint = hArr[realIndex];
+      if(!hint) return;
 
-  // ===== Valentine Hub (separate screen) START =====
+      this.ui.setStatus("HINT MODULE: ACTIVE");
+      await this.ui.type([`HINT: ${hint}`], 30);
+      this.ui.setStatus("AWAITING INPUT…");
+
+      this.hintUsed++;
+      this.renderHints(hArr);
+    });
+  }
+
+  // ==========================
+  // VALENTINE HUB (HUD screen)
+  // ==========================
   showValentineHub(){
     this.stage = "hub";
-    this.ui.setHeaderUnlocked("IZABELLA");
-    this.ui.setStatus("VALENTINE HUB: ONLINE");
-    this.ui.clear();
-    this.ui.hideInput();
     this.ui.clearHints();
+    this.ui.hideInput();
+    this.ui.clear();
+    this.stopTimer();
 
+    this.ui.setHeaderUnlocked("IZABELLA");
+    this.ui.setStatus("VALENTINE MODULE: ACTIVE");
+
+    // HUD layout (HTML) — ONLY THIS screen uses ui.html
     this.ui.html(`
-      <div class="valHub valGlider">
+      <div class="valHub">
         <div class="valBg"></div>
 
-        <!-- TOP PANEL START -->
-        <div class="valPanel">
-          <div class="valTopBar">
-            <div class="valTitle">
-              <div class="valTitleBig">VAULT-TEC OPERATIONS TERMINAL</div>
-              <div class="valTitleSub">PERSONAL ACCESS NODE :: VAULT 131</div>
+        <div class="block">
+          <div class="smallHdr">VAULT-TEC STATUS | VALENTINE ACCESS</div>
+          <div class="hr"></div>
+
+          <div class="valRow">
+            <div class="block" style="margin:0;">
+              <div class="smallHdr">COUNTDOWN</div>
+              <div class="valBig" id="dLeft">-- DAYS</div>
+              <div class="valSmall" id="tLeft">--:--:--</div>
+            </div>
+
+            <div class="block" style="margin:0;">
+              <div class="smallHdr">COUNTDOWN TARGET</div>
+              <div class="valSmall">02/14/2026 00:00</div>
+              <div class="valSmall" style="opacity:.75;margin-top:6px;">Local time</div>
             </div>
           </div>
+        </div>
 
-          <div class="valCountdownRow">
-            <div class="valCountdownLabel">VALENTINE’S DAY COUNTDOWN</div>
-            <div class="valCountdownValue">
-              <span id="vDays">-- DAYS</span>
-              <span class="valCountdownTime" id="vTime">--:--:--</span>
-            </div>
-            <div class="valTargetLine">TARGET: 02/14/2026 00:00 (Local time)</div>
+        <div class="block">
+          <div class="smallHdr">MODULES</div>
+          <div class="hr"></div>
+          <div class="menuWrap">
+            <button disabled>✓ COMPLETED</button>
+            <button data-action="info">INFO</button>
+            <button data-action="reward">REWARD QUIZ</button>
+            <button data-action="mini">MINI GAMES</button>
+            <button data-action="log">MISSION LOG</button>
           </div>
         </div>
-        <!-- TOP PANEL END -->
 
-        <!-- ICON ROW START -->
-        <div class="valIconRow">
-          <!-- IMPORTANT:
-               Replace the src paths with YOUR images.
-               Put them in /assets/ and match the filenames exactly. -->
-          <button class="valIconBtn" data-action="hub_stats">
-            <img class="valIconImg" src="assets/globe-sysinfo.png" alt="SYSINFO" />
-            <div class="valIconText">SYSINFO</div>
-          </button>
-
-          <button class="valIconBtn" data-action="hub_rewards">
-            <img class="valIconImg" src="assets/globe-rewards.png" alt="REWARDS" />
-            <div class="valIconText">REWARDS</div>
-          </button>
-
-          <button class="valIconBtn" data-action="hub_minigames">
-            <img class="valIconImg" src="assets/globe-game.png" alt="G.A.M.E" />
-            <div class="valIconText">G.A.M.E</div>
-          </button>
-
-          <button class="valIconBtn" data-action="hub_mission">
-            <img class="valIconImg" src="assets/globe-mission.png" alt="MISSION" />
-            <div class="valIconText">MISSION</div>
-          </button>
-
-          <button class="valIconBtn" data-action="hub_back">
-            <img class="valIconImg" src="assets/globe-exit.png" alt="EXIT" />
-            <div class="valIconText">EXIT</div>
-          </button>
+        <div class="block">
+          <button data-action="back">← RETURN TO ID SCREEN</button>
         </div>
-        <!-- ICON ROW END -->
-
-        <!-- OPTIONAL FOOT NOTE START (small, not boxy) -->
-        <div class="valFootNote">
-          This hub is live — counting down to Valentine’s Day.
-        </div>
-        <!-- OPTIONAL FOOT NOTE END -->
       </div>
     `);
 
+    // Hook the hub buttons using event delegation
+    this.ui.bindActions?.((action) => this.handleClick(action));
+
     this.startCountdown();
   }
-  // ===== Valentine Hub (separate screen) END =====
 
+  handleClick(action){
+    if(action === "back"){
+      this.boot();
+      return;
+    }
+    if(action === "info"){
+      this.ui.setStatus("INFO MODULE (NEXT)");
+      return;
+    }
+    if(action === "reward"){
+      this.ui.setStatus("REWARD QUIZ (NEXT)");
+      return;
+    }
+    if(action === "mini"){
+      this.ui.setStatus("MINI GAMES (NEXT)");
+      return;
+    }
+    if(action === "log"){
+      this.ui.setStatus("MISSION LOG (NEXT)");
+      return;
+    }
+  }
 
-  // ===== Countdown START =====
   startCountdown(){
-    this.stopCountdown();
+    this.stopTimer();
+    const target = new Date(2026, 1, 14, 0, 0, 0); // Feb 14, 2026 00:00 local
 
-    const target = new Date(2026, 1, 14, 0, 0, 0); // Feb 14 2026 00:00 local
-    const dEl = document.getElementById("vDays");
-    const tEl = document.getElementById("vTime");
+    const dEl = document.getElementById("dLeft");
+    const tEl = document.getElementById("tLeft");
 
     const pad = (n) => String(n).padStart(2, "0");
 
     const tick = () => {
       const now = new Date();
       let ms = target - now;
-      if (ms < 0) ms = 0;
+      if(ms < 0) ms = 0;
 
-      const totalSeconds = Math.floor(ms / 1000);
-      const days = Math.floor(totalSeconds / 86400);
-      const rem = totalSeconds % 86400;
-
+      const total = Math.floor(ms / 1000);
+      const days = Math.floor(total / 86400);
+      const rem = total % 86400;
       const hrs = Math.floor(rem / 3600);
       const mins = Math.floor((rem % 3600) / 60);
       const secs = rem % 60;
 
-      if (dEl) dEl.textContent = `${days} DAYS`;
-      if (tEl) tEl.textContent = `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+      if(dEl) dEl.textContent = `${days} DAYS`;
+      if(tEl) tEl.textContent = `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
     };
 
     tick();
     this.timer = setInterval(tick, 1000);
   }
 
-  stopCountdown(){
-    if (this.timer){
+  stopTimer(){
+    if(this.timer){
       clearInterval(this.timer);
       this.timer = null;
     }
   }
-  // ===== Countdown END =====
 
-
-  // ===== Hub Actions START =====
-  handleAction(action){
-    // Exit back to terminal
-    if (action === "hub_back") return this.boot();
-
-    // SYSINFO / Vault stats
-    if (action === "hub_stats"){
-      this.ui.setStatus("SYSINFO: LOADING");
-      this.ui.clear();
-      this.ui.hideInput();
-      this.ui.html(`
-        <div class="block">
-          <div class="valSmall" style="text-transform:uppercase; letter-spacing:1px;">SYSINFO</div>
-          <div style="margin-top:10px; line-height:1.35;">
-            BUILD TIME: <b>3 DAYS</b><br/>
-            MODULES: <b>TERMINAL + HUB</b><br/>
-            AUDIO: <b>OPTIONAL</b><br/>
-            USER: <b>IZABELLA</b><br/>
-          </div>
-        </div>
-        <div class="block">
-          <button data-action="hub_return">← BACK</button>
-        </div>
-      `);
-      return;
-    }
-
-    if (action === "hub_return"){
-      return this.showValentineHub();
-    }
-
-    // rewards / minigames / mission placeholders
-    if (action === "hub_rewards" || action === "hub_minigames" || action === "hub_mission"){
-      this.ui.setStatus("MODULE: UNDER CONSTRUCTION");
-      this.ui.clear();
-      this.ui.hideInput();
-      this.ui.html(`
-        <div class="block">
-          <div class="valSmall" style="text-transform:uppercase; letter-spacing:1px;">MODULE LOADED</div>
-          <div style="margin-top:10px; line-height:1.35; opacity:.9;">
-            This module is next.<br/>
-            (We’ll build it clean, no random changes.)
-          </div>
-        </div>
-        <div class="block">
-          <button data-action="hub_return">← BACK</button>
-        </div>
-      `);
-      return;
-    }
-  }
-  // ===== Hub Actions END =====
-
-  /* =========================================================
-     VALENTINE HUB END
-     ========================================================= */
-
-  startCountdown(){
-    // --- COUNTDOWN START ---
-    this.stopCountdown();
-
-    const target = new Date(2026, 1, 14, 0, 0, 0); // Feb 14 2026 00:00 local
-    const dEl = document.getElementById("vDays");
-    const tEl = document.getElementById("vTime");
-
-    const pad = (n) => String(n).padStart(2, "0");
-
-    const tick = () => {
-      const now = new Date();
-      let ms = target - now;
-      if (ms < 0) ms = 0;
-
-      const totalSeconds = Math.floor(ms / 1000);
-      const days = Math.floor(totalSeconds / 86400);
-      const rem = totalSeconds % 86400;
-
-      const hrs = Math.floor(rem / 3600);
-      const mins = Math.floor((rem % 3600) / 60);
-      const secs = rem % 60;
-
-      if (dEl) dEl.textContent = `${days} DAYS`;
-      if (tEl) tEl.textContent = `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
-    };
-
-    tick();
-    this.timer = setInterval(tick, 1000);
-    // --- COUNTDOWN END ---
-  }
-
-  stopCountdown(){
-    // --- STOP COUNTDOWN START ---
-    if (this.timer){
-      clearInterval(this.timer);
-      this.timer = null;
-    }
-    // --- STOP COUNTDOWN END ---
-  }
-
-  handleAction(action){
-    // --- ACTION HANDLER START ---
-    if (action === "hub_back") return this.boot();
-
-    if (action === "hub_stats"){
-      this.ui.setStatus("VAULT STATS: LOADING");
-      this.ui.clear();
-      this.ui.hideInput();
-      this.ui.html(`
-        <div class="block">
-          <div class="valSmall" style="text-transform:uppercase; letter-spacing:1px;">VAULT STATS</div>
-          <div style="margin-top:10px; line-height:1.35;">
-            BUILD TIME: <b>3 DAYS</b><br/>
-            MODULES: <b>TERMINAL + HUB</b><br/>
-            AUDIO: <b>OPTIONAL</b><br/>
-            USER: <b>IZABELLA</b><br/>
-          </div>
-        </div>
-        <div class="block">
-          <button data-action="hub_return">← BACK TO HUB</button>
-        </div>
-      `);
-      return;
-    }
-
-    if (action === "hub_return"){
-      return this.showValentineHub();
-    }
-
-    if (action === "hub_rewards" || action === "hub_minigames" || action === "hub_mission"){
-      this.ui.setStatus("MODULE: UNDER CONSTRUCTION");
-      this.ui.clear();
-      this.ui.hideInput();
-      this.ui.html(`
-        <div class="block">
-          <div class="valSmall" style="text-transform:uppercase; letter-spacing:1px;">MODULE LOADED</div>
-          <div style="margin-top:10px; line-height:1.35; opacity:.9;">
-            This module is next.<br/>
-            (We’ll build it clean, no random changes.)
-          </div>
-        </div>
-        <div class="block">
-          <button data-action="hub_return">← BACK TO HUB</button>
-        </div>
-      `);
-      return;
-    }
-    // --- ACTION HANDLER END ---
-  }
-
+  // ==========================
+  // INPUT HANDLING
+  // ==========================
   async handleInput(raw){
-    // --- INPUT HANDLER START ---
     const a = (raw || "").trim().toLowerCase();
 
-    if (a === "help") return this.showHelp();
-    if (this.stage === "help") return this.boot();
-
-    if (this.stage === "login"){
+    if(this.stage === "login"){
       this.ui.setStatus("VALIDATING…");
 
-      if (a === this.ID.toLowerCase()){
+      if(a === this.ID.toLowerCase()){
         this.ui.setHeaderUnlocked("IZABELLA");
         this.ui.clear();
         await this.ui.type(["ID VERIFIED.","Welcome, Izabella.","Initializing test modules…"], 35);
-        await this.ui.loading(this.loadMsgs, this.loadDetails);
-        await this.ui.powerDip();
+        // go to riddle 1
         this.r = 0;
         return this.askRiddle();
       }
 
-      if (a === this.NEXT_ID.toLowerCase()){
-        await this.ui.loading(this.loadMsgs, this.loadDetails);
-        await this.ui.powerDip();
+      if(a === this.NEXT_ID.toLowerCase()){
+        // go to hub
         return this.showValentineHub();
       }
 
@@ -528,31 +315,27 @@ export class Game {
       return;
     }
 
-    if (this.stage === "riddle"){
-      const current = this.riddles[this.r];
-      if (a === current.a.toLowerCase()){
+    if(this.stage === "riddle"){
+      const cur = this.riddles[this.r];
+      if(a === cur.a.toLowerCase()){
         this.ui.setStatus("ANSWER ACCEPTED");
         await this.ui.type(["✔ CORRECT."], 30);
-        await this.ui.loading(this.loadMsgs, this.loadDetails);
-        await this.ui.powerDip();
         this.r++;
         return this.askRiddle();
       } else {
         this.ui.setStatus("ANSWER REJECTED");
         await this.ui.type(["✖ TRY AGAIN", "> "], 30);
         this.ui.showInput("TYPE ANSWER");
-        this.renderHints(current.h);
+        this.renderHints(cur.h);
         this.ui.setStatus("AWAITING INPUT…");
         return;
       }
     }
 
-    if (this.stage === "final"){
-      if (raw === this.finalQ.a){
+    if(this.stage === "final"){
+      if(raw.trim() === this.finalQ.a){
         this.ui.setStatus("CODE ACCEPTED");
         await this.ui.type(["✔ AUTHORIZED."], 30);
-        await this.ui.loading(this.loadMsgs, this.loadDetails);
-        await this.ui.powerDip();
         return this.showFinalSuccess();
       } else {
         this.ui.setStatus("CODE INVALID");
@@ -564,13 +347,6 @@ export class Game {
       }
     }
 
-    if (this.stage === "done"){
-      return this.boot();
-    }
-
-    if (this.stage === "hub"){
-      return; // hub uses buttons
-    }
-    // --- INPUT HANDLER END ---
+    // hub ignores input box because it's hidden
   }
 }
