@@ -1,64 +1,245 @@
 export class UI {
-  constructor(audio) {
+  constructor(audio){
     this.audio = audio;
 
-    this.output = document.getElementById("output");
-    this.form = document.getElementById("inputForm");
-    this.input = document.getElementById("terminalInput");
-    this.audioBtn = document.getElementById("audioBtn");
+    this.crt = document.getElementById("crt");
+    this.uiBar = document.getElementById("uiBar");
+    this.uiStatus = document.getElementById("uiStatus");
+    this.term = document.getElementById("terminal");
+    this.input = document.getElementById("inputBox");
+    this.hints = document.getElementById("hintContainer");
+    this.dip = document.getElementById("powerDip");
+    this.volBtn = document.getElementById("volBtn");
 
     this.onSubmit = null;
+    this.locked = false;
 
-    this.form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const v = this.input.value.trim();
-      if (!v) return;
-      this.print(`> ${v}`, "dim");
+    this.cursor = document.createElement("span");
+    this.cursor.id = "cursor";
+    this.term.appendChild(this.cursor);
+
+    this._bindAudioButton();
+    this._bindInput();
+    this._bindButtonHoverSounds();
+  }
+
+  _bindAudioButton(){
+    this._updateVolBtn();
+    this.volBtn.addEventListener("click", () => {
+      const on = this.audio.toggle();
+      this._updateVolBtn();
+      this.setStatus(on ? "AUDIO ENABLED" : "AUDIO MUTED");
+      this.audio.beep(on ? 980 : 420, 0.05, 0.03);
+    });
+  }
+
+  _updateVolBtn(){
+    this.volBtn.textContent = this.audio.audioOn ? "AUDIO: ON" : "AUDIO: OFF";
+    this.volBtn.classList.toggle("on", this.audio.audioOn);
+  }
+
+  _bindInput(){
+    this.input.addEventListener("keydown", (e) => {
+      // typing sound (not on Enter)
+      if (e.key && e.key.length === 1) this.audio.typeBeep();
+
+      if (e.key !== "Enter") return;
+      if (this.locked) return;
+
+      const raw = this.input.value.trim();
       this.input.value = "";
-      if (this.onSubmit) this.onSubmit(v);
+      this.hideInput();
+      this.clearHints();
+
+      if (this.onSubmit) this.onSubmit(raw);
+    });
+  }
+
+  _bindButtonHoverSounds(){
+    const fire = (btn) => {
+      if (!btn || btn.disabled) return;
+      this.audio.hoverBeep();
+    };
+
+    this.crt.addEventListener("mouseover", (e) => {
+      const btn = e.target.closest("button");
+      if (btn) fire(btn);
     });
 
-    this.audioBtn.addEventListener("click", async () => {
-      const enabled = await this.audio.toggle();
-      await this.audio.click();
-      this.audioBtn.textContent = enabled ? "AUDIO: ON" : "AUDIO: OFF";
-      this.audioBtn.setAttribute("aria-pressed", enabled ? "true" : "false");
-      this.input.focus();
-    });
-
-    // focus convenience
-    setTimeout(() => this.input.focus(), 50);
+    this.crt.addEventListener("touchstart", (e) => {
+      const btn = e.target.closest("button");
+      if (btn) fire(btn);
+    }, { passive:true });
   }
 
-  clear() {
-    this.output.innerHTML = "";
+  setHeaderLocked(){
+    this.uiBar.textContent = "VAULT 131 DATABASE │ STATUS: LOCKED";
   }
 
-  print(text, cls = "line") {
-    const p = document.createElement("p");
-    p.className = `line ${cls}`;
-    p.textContent = text;
-    this.output.appendChild(p);
-    this.output.scrollTop = this.output.scrollHeight;
+  setHeaderUnlocked(user="IZABELLA"){
+    this.uiBar.textContent = `VAULT 131 DATABASE │ STATUS: OPERATIONAL │ USER: ${user}`;
   }
 
-  async type(text, cls = "line", speed = 12) {
-    const p = document.createElement("p");
-    p.className = `line ${cls}`;
-    this.output.appendChild(p);
+  setStatus(text){ this.uiStatus.textContent = text; }
 
-    for (let i = 0; i < text.length; i++) {
-      p.textContent += text[i];
-      this.output.scrollTop = this.output.scrollHeight;
-      await new Promise((r) => setTimeout(r, speed));
-    }
+  clear(){
+    this.term.innerHTML = "";
+    this.term.appendChild(this.cursor);
   }
 
-  setPlaceholder(text) {
-    this.input.placeholder = text;
-  }
-
-  focus() {
+  showInput(placeholder=""){
+    this.input.style.display = "block";
+    this.input.placeholder = placeholder;
     this.input.focus();
+  }
+
+  hideInput(){ this.input.style.display = "none"; }
+
+  clearHints(){ this.hints.innerHTML = ""; }
+
+  showHintButtons(hintsArr, onHint){
+    this.clearHints();
+    hintsArr.forEach((_, idx) => {
+      const b = document.createElement("button");
+      b.textContent = `HINT ${idx + 1}`;
+      b.onclick = () => onHint(idx);
+      this.hints.appendChild(b);
+    });
+  }
+
+  html(markup){
+    const wrap = document.createElement("div");
+    wrap.innerHTML = markup;
+    this.term.insertBefore(wrap, this.cursor);
+    this.term.scrollTop = this.term.scrollHeight;
+
+    // wire any data-action buttons
+    wrap.querySelectorAll("[data-action]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const action = btn.getAttribute("data-action");
+        if (this.onAction) this.onAction(action);
+      });
+    });
+
+    return wrap;
+  }
+
+  type(lines, speed=35){
+    return new Promise((resolve) => {
+      let i = 0;
+
+      const nextLine = () => {
+        if (i >= lines.length) return resolve();
+
+        const d = document.createElement("div");
+        this.term.insertBefore(d, this.cursor);
+
+        let j = 0;
+        const prePause = (Math.random() < 0.18) ? (180 + Math.random()*240) : 0;
+
+        setTimeout(() => {
+          const tick = () => {
+            if (j >= lines[i].length){
+              i++;
+              this.term.scrollTop = this.term.scrollHeight;
+              setTimeout(nextLine, 260 + Math.random()*120);
+              return;
+            }
+            d.textContent += lines[i][j++];
+            this.audio.beep(880, 0.03, 0.02);
+            this.term.scrollTop = this.term.scrollHeight;
+            setTimeout(tick, speed + Math.random()*25);
+          };
+          tick();
+        }, prePause);
+      };
+
+      nextLine();
+    });
+  }
+
+  powerDip(){
+    return new Promise((resolve) => {
+      this.dip.classList.remove("powerDipOn");
+      void this.dip.offsetWidth;
+      this.dip.classList.add("powerDipOn");
+
+      this.setStatus("POWER FLUCTUATION… STABILIZING");
+      setTimeout(() => {
+        this.setStatus("STABILITY: NOMINAL");
+        resolve();
+      }, 420);
+    });
+  }
+
+  loading(loadMsgs, loadDetails){
+    return new Promise((resolve) => {
+      this.locked = true;
+      this.hideInput();
+      this.clearHints();
+      this.setStatus("PROCESSING… PLEASE WAIT");
+
+      const track = document.createElement("div");
+      const fill = document.createElement("div");
+      track.className = "loadTrack";
+      fill.className = "loadFill";
+      track.appendChild(fill);
+
+      const msg = document.createElement("div");
+      msg.className = "loadMsg";
+
+      const detail = document.createElement("div");
+      detail.className = "loadDetail";
+
+      this.term.insertBefore(track, this.cursor);
+      this.term.insertBefore(msg, this.cursor);
+      this.term.insertBefore(detail, this.cursor);
+
+      this.crt.classList.add("radFlicker");
+
+      let p = 0, mi = 0, di = 0;
+      msg.textContent = loadMsgs[Math.floor(Math.random()*loadMsgs.length)];
+      detail.textContent = loadDetails[Math.floor(Math.random()*loadDetails.length)];
+
+      const msgI = setInterval(() => msg.textContent = loadMsgs[mi++ % loadMsgs.length], 650);
+      const detI = setInterval(() => detail.textContent = loadDetails[di++ % loadDetails.length], 520);
+
+      const t = setInterval(() => {
+        p += 2 + Math.floor(Math.random()*6);
+        if (p > 100) p = 100;
+        fill.style.width = p + "%";
+        this.term.scrollTop = this.term.scrollHeight;
+
+        if (p >= 100){
+          clearInterval(t); clearInterval(msgI); clearInterval(detI);
+
+          setTimeout(() => {
+            track.remove(); msg.remove(); detail.remove();
+            this.locked = false;
+            this.crt.classList.remove("radFlicker");
+            this.setStatus("READY");
+            resolve();
+          }, 240);
+        }
+      }, 60);
+    });
+  }
+
+  showBigCode(code){
+    const big = document.createElement("div");
+    big.className = "bigCode";
+    big.textContent = code;
+    this.term.insertBefore(big, this.cursor);
+    this.term.scrollTop = this.term.scrollHeight;
+  }
+
+  addButton(label, onClick, { disabled=false } = {}){
+    const btn = document.createElement("button");
+    btn.textContent = label;
+    btn.disabled = !!disabled;
+    btn.onclick = onClick;
+    this.term.insertBefore(btn, this.cursor);
+    this.term.scrollTop = this.term.scrollHeight;
+    return btn;
   }
 }
