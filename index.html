@@ -5,13 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>VAULT 131 DATABASE</title>
 
-  <!-- Keep your filenames; bump the ?v= when you want to force-refresh -->
-  <link rel="stylesheet" href="styles.css?v=15">
+  <!-- Keep your cache-busting -->
+  <link rel="stylesheet" href="styles.css?v=14">
 </head>
 
 <body>
   <div id="crt">
-    <!-- ===== CONTENT ===== -->
+
+    <!-- ===== UI HEADER ===== -->
     <div id="uiWrap">
       <div id="uiTop">
         <div id="uiBar">VAULT 131 DATABASE │ STATUS: LOCKED</div>
@@ -20,34 +21,40 @@
       <div id="uiStatus">STANDBY… AWAITING INPUT</div>
     </div>
 
+    <!-- ===== TERMINAL CORE (DO NOT CHANGE) ===== -->
     <div id="terminal"></div>
     <input id="inputBox" autocomplete="off" spellcheck="false" />
     <div id="hintContainer"></div>
 
-    <!-- ===== FX LAYERS (order matters) ===== -->
+    <!-- ===== FX LAYERS (ORDER MATTERS) ===== -->
+
+    <!-- Power dip (your existing effect) -->
     <div id="powerDip" aria-hidden="true"></div>
+
+    <!-- Scanlines (your existing effect) -->
     <div id="scanlines" aria-hidden="true"></div>
 
-    <!-- Old projector-style rolling band (you already had this) -->
+    <!-- Old projector-style rolling band -->
     <div class="projectorBand" aria-hidden="true"></div>
 
-    <!-- NEW: CRT “bubble glass” + grime overlays (CSS will style these) -->
+    <!-- ===== NEW: CRT “BUBBLE GLASS” + GRIME OVERLAYS ===== -->
     <div class="crtGlassLayer" aria-hidden="true"></div>
-    <div class="crtSmudgeLayer" aria-hidden="true"></div>
-    <div class="crtDustLayer" aria-hidden="true"></div>
-    <div class="crtNoiseLayer" aria-hidden="true"></div>
-    <div class="crtVignetteLayer" aria-hidden="true"></div>
-    <!-- =========================
-     OVERLAYS START (BUBBLE + GRIME)
-     ========================= -->
-<div class="crtGlassLayer"></div>
-<div class="crtGrimeLayer"></div>
-<!-- =========================
-     OVERLAYS END
-     ========================= -->
-  </div>
+    <div class="crtGrimeLayer" aria-hidden="true"></div>
+    <!-- ===== END OVERLAYS ===== -->
 
-  <!-- Your app (leave this as-is; just bump v= if you want) -->
+  </div> <!-- closes #crt -->
+
+  <!-- Your app (leave this exactly as-is) -->
   <script type="module" src="js/app.js?v=9"></script>
+
+  <!-- Auto cache-buster (your existing helper) -->
+  <script>
+    const links = document.querySelectorAll('link[rel="stylesheet"]');
+    links.forEach(link => {
+      const href = link.getAttribute('href').split('?')[0];
+      link.setAttribute('href', `${href}?v=${Date.now()}`);
+    });
+  </script>
+
 </body>
 </html>
