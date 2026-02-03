@@ -400,3 +400,110 @@ body{
   #screen{ padding: 14px 14px 12px; }
   #uiBar{ font-size: 13px; }
 }
+
+/* =========================================================
+   OLD LOOK RESTORE + CLEAN CRT POLISH (iPad safe)
+   Paste at the VERY BOTTOM of styles.css
+   ========================================================= */
+
+/* 1) Stop anything from forcing weird scaling/warping */
+#crt{
+  transform: none !important;
+  filter: none !important;
+}
+
+/* 2) Make sure the frame stays centered and not “tiny” */
+html, body{
+  overflow: auto !important;
+}
+
+/* 3) Keep your CRT clean + readable (no washed-out glow layers) */
+#scanlines{
+  opacity: 0.38 !important;     /* subtle */
+  mix-blend-mode: overlay !important;
+  animation: none !important;   /* remove motion = less “cheap” */
+}
+
+/* 4) Add a subtle “tube falloff” + thicker glass edge WITHOUT bleaching */
+#crt::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index: 20;
+
+  /* tube falloff + edge thickening */
+  background:
+    radial-gradient(circle at 50% 45%,
+      rgba(76,255,154,0.06),
+      rgba(0,0,0,0.00) 38%),
+    radial-gradient(circle at 50% 50%,
+      rgba(0,0,0,0.00) 52%,
+      rgba(0,0,0,0.45) 78%,
+      rgba(0,0,0,0.80) 100%),
+    /* slightly brighter rim like thick glass */
+    radial-gradient(circle at 50% 50%,
+      rgba(255,255,255,0.00) 62%,
+      rgba(255,255,255,0.04) 76%,
+      rgba(255,255,255,0.00) 90%);
+
+  opacity: 1;
+}
+
+/* 5) Subtle grain/noise (does NOT wash out) */
+#crt::after{
+  content:"";
+  position:absolute;
+  inset:-8%;
+  pointer-events:none;
+  z-index: 21;
+
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,0.00) 0px,
+      rgba(255,255,255,0.00) 2px,
+      rgba(255,255,255,0.018) 3px
+    );
+  opacity: 0.10;
+  mix-blend-mode: overlay;
+  animation: crtNoiseShift 0.85s steps(2) infinite;
+}
+
+@keyframes crtNoiseShift{
+  0%{ transform: translate3d(0,0,0); }
+  100%{ transform: translate3d(-6px, 4px, 0); }
+}
+
+/* 6) Restore strong terminal contrast/glow (less “milky”) */
+#terminal, #uiWrap, #uiBar, #uiStatus{
+  text-shadow:
+    0 0 4px rgba(76,255,154,0.70),
+    0 0 10px rgba(76,255,154,0.35) !important;
+}
+
+/* 7) Slight edge-darkening inside the terminal area to fake curvature */
+#terminal{
+  background:
+    radial-gradient(circle at 50% 50%,
+      rgba(0,0,0,0.00) 55%,
+      rgba(0,0,0,0.18) 86%,
+      rgba(0,0,0,0.32) 100%);
+  border-radius: 14px;
+}
+
+/* 8) Optional: tiny “glass sheen” that won’t bleach your blacks */
+#uiWrap{
+  position: relative;
+}
+#uiWrap::after{
+  content:"";
+  position:absolute;
+  inset:-8px -8px -12px -8px;
+  pointer-events:none;
+
+  background: radial-gradient(120% 80% at 20% 0%,
+    rgba(255,255,255,0.06),
+    rgba(255,255,255,0.00) 45%);
+  opacity: 0.55;
+}
