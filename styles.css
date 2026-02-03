@@ -1022,3 +1022,24 @@ html, body{
 /* =========================================================
    THICK GLASS CRT LOOK END
    ========================================================= */
+  
+  /* ===== OVERLAY TEST (TEMP) ===== */
+.crtGlassLayer,
+.crtGrimeLayer{
+  position: absolute !important;
+  inset: 0 !important;
+  pointer-events: none !important;
+  z-index: 99999 !important;
+  display: block !important;
+}
+
+/* bright RED so you cannot miss it */
+.crtGlassLayer{
+  background: rgba(255,0,0,0.35) !important;
+}
+
+/* bright BLUE so you cannot miss it */
+.crtGrimeLayer{
+  background: rgba(0,140,255,0.25) !important;
+}
+/* ===== END TEST ===== */
