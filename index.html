@@ -1,39 +1,69 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>VAULT 131 DATABASE</title>
-  <link rel="stylesheet" href="./styles.css?v=1">
+  <title>VAULT 131 DATABASE - TEST 123</title>
+
+  <!-- Keep your filename; bump v if you want -->
+  <link rel="stylesheet" href="styles.css?v=99">
+  <link rel="stylesheet" href="css/fx/crt-mask.css?v=1">
 </head>
 
 <body>
-  <main class="stage">
-    <section class="terminal-shell crt" aria-label="Vault 131 Terminal">
-      <!-- CRT glass + textures overlay layer (purely visual) -->
-      <div class="crt-glass" aria-hidden="true"></div>
-
-      <header class="topbar">
-        <div class="brand">VAULT 131 DATABASE</div>
-
-        <button id="audioBtn" class="audioBtn" type="button" aria-pressed="false">
-          AUDIO: OFF
-        </button>
-      </header>
-
-      <div class="screen">
-        <div id="output" class="output" role="log" aria-live="polite"></div>
-
-        <form id="inputForm" class="inputRow" autocomplete="off">
-          <span class="prompt">&gt;</span>
-          <input id="terminalInput" class="terminalInput" type="text"
-                 inputmode="text" autocapitalize="off" autocomplete="off"
-                 spellcheck="false" placeholder="ENTER ID" />
-        </form>
+  <div id="crt">
+    <!-- ======================
+         CONTENT (leave as-is)
+         ====================== -->
+    <div id="uiWrap">
+      <div id="uiTop">
+        <div id="uiBar">VAULT 131 DATABASE │ STATUS: LOCKED</div>
+        <button id="volBtn" type="button">AUDIO: OFF</button>
       </div>
-    </section>
-  </main>
+      <div id="uiStatus">STANDBY… AWAITING INPUT</div>
+    </div>
 
-  <script type="module" src="./js/app.js?v=1"></script>
+    <div id="terminal"></div>
+    <input id="inputBox" autocomplete="off" spellcheck="false" />
+    <div id="hintContainer"></div>
+
+    <!-- ======================
+         FX LAYERS (order matters)
+         ====================== -->
+    <div id="powerDip" aria-hidden="true"></div>
+    <div id="scanlines" aria-hidden="true"></div>
+    <div class="crtMask" aria-hidden="true"></div>
+    <div class="projectorBand" aria-hidden="true"></div>
+
+    <!-- ======================
+         REALISM / GLASS STACK
+         (ONE stack ONLY)
+         ====================== -->
+    <div class="crtWarpLayer" aria-hidden="true"></div>
+    <div class="crtGlassLayer" aria-hidden="true"></div>
+
+    <!-- Image overlays (realistic). Put PNGs in /assets/overlays/ -->
+    <div class="crtImageGrime" aria-hidden="true"></div>
+    <div class="crtImageDust" aria-hidden="true"></div>
+
+    <!-- CSS overlays (dynamic) -->
+    <div class="crtSmudgeLayer" aria-hidden="true"></div>
+    <div class="crtDustLayer" aria-hidden="true"></div>
+    <div class="crtNoiseLayer" aria-hidden="true"></div>
+    <div class="crtVignetteLayer" aria-hidden="true"></div>
+  </div>
+
+  <!-- Your app (leave as-is) -->
+  <script type="module" src="js/app.js?v=10"></script>
+
+  <!-- HARD CACHE BUSTER (optional but helpful on iOS) -->
+  <script>
+    // Bust CSS cache each load (iOS Safari is stubborn)
+    const link = document.querySelector('link[rel="stylesheet"]');
+    if (link) {
+      const base = link.getAttribute('href').split('?')[0];
+      link.setAttribute('href', base + '?v=' + Date.now());
+    }
+  </script>
 </body>
-</html>
+</html> 
